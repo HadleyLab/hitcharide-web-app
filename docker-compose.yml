@@ -1,0 +1,11 @@
+version: '3'
+services:
+  app:
+    build: .
+    volumes:
+      - ./src:/home/user/app/src
+      - ./.babelrc:/home/user/app/.babelrc
+      - ./webpack:/home/user/app/webpack
+    command: yarn start
+    ports:
+      - "8000:8000"
