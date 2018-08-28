@@ -8,8 +8,6 @@ const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const PrerenderSPAPlugin = require('prerender-spa-plugin');
 
-const Renderer = PrerenderSPAPlugin.PuppeteerRenderer;
-
 const devCss = {
     test: /\.css$/,
     use: [
@@ -88,6 +86,14 @@ function modules(mode) {
             },
             css(mode),
             {
+                test: /\.less/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    { loader: 'less-loader', options: { javascriptEnabled: true } },
+                ],
+            },
+            {
                 test: /robots.txt/,
                 use: [
                     {
@@ -156,9 +162,6 @@ function plugins(mode) {
         pluginsList.push(new PrerenderSPAPlugin({
             staticDir: path.resolve(__dirname, '../build'),
             routes: ['/'],
-            renderer: new Renderer({
-                renderAfterElementExists: '#router',
-            }),
         }));
     }
 
@@ -170,6 +173,8 @@ const resolve = {
     alias: {
         components: path.resolve('../src/components/'),
         pages: path.resolve('../src/pages/'),
+        libs: path.resolve('../src/libs'),
+        services: path.resolve('../src/services'),
         src: path.resolve('../src/'),
     },
     extensions: ['*', '.json', '.js'],

@@ -3,7 +3,7 @@ const utils = require('./webpack.utils');
 
 const config = {
     url: 'localhost',
-    port: 8000,
+    port: 3000,
 };
 
 const publicPath = `http://${config.url}:${config.port}/`;
@@ -11,6 +11,7 @@ const publicPath = `http://${config.url}:${config.port}/`;
 module.exports = {
     entry: [
         `webpack-dev-server/client?${publicPath}`,
+        'babel-polyfill',
         './src/app.js',
     ],
     output: {

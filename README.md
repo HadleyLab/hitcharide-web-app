@@ -37,3 +37,7 @@ yarn build
 cd build/
 python -m SimpleHTTPServer
 ```
+#### Check mobile version
+
+1. Go to `./webpack/webpack.dev.config.js` and change `localhost` to your host IP
+2. Restart the app with `docker-compose up` or `yarn start`

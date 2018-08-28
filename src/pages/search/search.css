@@ -1,0 +1,6 @@
+.form {
+    :global .am-list-extra {
+        overflow: visible!important;
+        text-overflow: unset!important;
+    }
+}
