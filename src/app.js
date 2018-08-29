@@ -2,12 +2,13 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { HashRouter as Router, Route, Redirect } from 'react-router-dom';
+import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { Button, WingBlank, WhiteSpace, Flex, List, InputItem, LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import { LoginPage, MainPage, RegistrationPage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
+import { getToken } from 'components/utils';
 import 'components/styles/styles.less';
 import 'components/styles/styles.css';
 import 'components/fonts/fonts.css';
@@ -15,12 +16,7 @@ import 'components/robots.txt';
 
 const model = {
     tree: {
-        token: {
-            // data: {
-            //     token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo0LCJ1c2VybmFtZSI6ImFkbWluQGJzLmNvbSIsImV4cCI6MTUzNTQ0MDI2NiwiZW1haWwiOiJhZG1pbkBicy5jb20ifQ.5WMCIvcSX2YCoqWf4oyf4lD2iBttjcPTmZORuklcuz0'
-            // },
-            // status: 'Succeed',
-        },
+        token: getToken(),
         login: {},
         registration: {},
         app: {},
@@ -31,11 +27,6 @@ const App = schema(model)(createReactClass({
     render() {
         const tokenCursor = this.props.tree.token;
         const token = tokenCursor.get();
-        // console.log('token', token);
-
-        // return (
-        //     <MainPage tree={this.props.tree.app} />
-        // );
 
         return (
             <Router>
@@ -43,9 +34,15 @@ const App = schema(model)(createReactClass({
                     <Route
                         path="/"
                         exact
-                        render={() => {
+                        render={(props) => {
                             if (!_.isEmpty(token) && token.status === 'Succeed') {
-                                return <MainPage tree={this.props.tree.app} />
+                                return (
+                                    <MainPage
+                                        tree={this.props.tree.app}
+                                        tokenCursor={this.props.tree.token}
+                                        {...props}
+                                    />
+                                );
                             }
 
                             return (
@@ -79,10 +76,8 @@ const App = schema(model)(createReactClass({
 }));
 
 ReactDOM.render(
-    <Router>
-        <LocaleProvider locale={enUS}>
-            <App tree={tree} />
-        </LocaleProvider>
-    </Router>,
+    <LocaleProvider locale={enUS}>
+        <App tree={tree} />
+    </LocaleProvider>,
     document.getElementById('root')
 );

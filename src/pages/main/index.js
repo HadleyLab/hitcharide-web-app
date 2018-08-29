@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Route, withRouter } from 'react-router-dom';
 import { Flex, TabBar } from 'antd-mobile';
 import { SearchPage, MyRidesPage, ProfilePage } from 'pages';
 
@@ -16,9 +15,10 @@ const tabs = [
     {
         title: 'Browse',
         name: 'searchTab',
-        path: '/',
+        path: '/search',
         icon: searchIcon,
         iconActive: searchIconActive,
+        renderComponent: (props) => <SearchPage {...props} />,
     },
     {
         title: 'My Rides',
@@ -26,6 +26,7 @@ const tabs = [
         path: '/my-rides',
         icon: routeIcon,
         iconActive: routeIconActive,
+        renderComponent: (props) => <MyRidesPage {...props} />,
     },
     {
         title: 'Profile',
@@ -33,6 +34,7 @@ const tabs = [
         path: '/profile',
         icon: profileIcon,
         iconActive: profileIconActive,
+        renderComponent: (props) => <ProfilePage {...props} />,
     },
 ];
 
@@ -46,7 +48,7 @@ const Icon = ({ icon }) => (
     />
 );
 
-export const MainPage = withRouter(createReactClass({
+export const MainPage = createReactClass({
     getInitialState() {
         return {
             selectedTab: 'searchTab',
@@ -56,9 +58,6 @@ export const MainPage = withRouter(createReactClass({
     render() {
         return (
             <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
-                <Route path="/" exact component={SearchPage} />
-                <Route path="/my-rides" component={MyRidesPage} />
-                <Route path="/profile" component={ProfilePage} />
                 <TabBar
                     unselectedTintColor="#949494"
                     tintColor="#33A3F4"
@@ -70,15 +69,16 @@ export const MainPage = withRouter(createReactClass({
                             key={`tab-${index}`}
                             icon={(<Icon icon={tab.icon} />)}
                             selectedIcon={(<Icon icon={tab.iconActive} selected />)}
-                            selected={this.props.location.pathname === tab.path}
+                            selected={this.state.selectedTab === tab.name}
                             onPress={() => {
                                 this.setState({ selectedTab: tab.name });
-                                this.props.history.push(tab.path);
                             }}
-                        />
+                        >
+                            {tab.renderComponent(this.props)}
+                        </TabBar.Item>
                     ))}
                 </TabBar>
             </Flex>
         );
     },
-}));
+});

@@ -2,10 +2,14 @@ import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import { Redirect, Link } from 'react-router-dom';
-import { Button, WingBlank, WhiteSpace, Flex, List, InputItem } from 'antd-mobile';
+import {
+    Button, WingBlank, WhiteSpace, Flex, List, InputItem
+} from 'antd-mobile';
 import { signInService } from 'services';
 import schema from 'libs/state';
-import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
+import {
+    validateForm, checkInputError, checkUnhandledFormErrors, setToken
+} from 'components/utils';
 import * as yup from 'yup';
 
 const validationSchema = yup.object().shape({
@@ -23,8 +27,10 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            email: null,
-            password: null,
+            // email: null,
+            // password: null,
+            email: 'admin@bs.com',
+            password: 'k134rf2i',
         },
         result: {},
         errors: {},
@@ -35,10 +41,6 @@ export const LoginPage = schema(model)(createReactClass({
     async onSubmit() {
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
-        // const data = {
-        //     username: 'admin@bs.com',
-        //     password: 'k134rf2i',
-        // };
 
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
@@ -58,6 +60,11 @@ export const LoginPage = schema(model)(createReactClass({
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
             }
+
+            if (result.status === 'Succeed') {
+                setToken(result.data);
+                this.props.tokenCursor.set(result);
+            }
         }
     },
 
@@ -71,6 +78,7 @@ export const LoginPage = schema(model)(createReactClass({
                 formCursor.select(name).set(v);
                 errorsCursor.select(name).set(null);
             },
+            defaultValue: formCursor.get(name),
         }, errorProps);
     },
 
@@ -92,9 +100,11 @@ export const LoginPage = schema(model)(createReactClass({
     },
 
     render() {
+        const formCursor = this.props.tree.form;
         const token = this.props.tokenCursor.get();
+        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
-        if (!_.isEmpty(token) && token.status === 'Succeed') {
+        if (isTokenExists) {
             return <Redirect to="/" />;
         }
 

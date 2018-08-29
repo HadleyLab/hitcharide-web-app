@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { Toast } from 'antd-mobile';
 
+/* Form validation */
+
 function formatErrors(errors) {
     let result = {};
 
@@ -46,4 +48,27 @@ export function checkUnhandledFormErrors(form, errors) {
 
         return error;
     }), ' ');
+}
+
+/* Token */
+
+export function setToken(data) {
+    localStorage.setItem('token', data.token);
+}
+
+export function getToken() {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        return null;
+    }
+
+    return {
+        data: { token },
+        status: 'Succeed',
+    };
+}
+
+export function logout() {
+    localStorage.removeItem('token');
 }
