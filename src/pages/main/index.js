@@ -1,8 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Flex, TabBar } from 'antd-mobile';
-import { SearchPage, MyRidesPage, ProfilePage } from 'pages';
+import { Flex, TabBar, NavBar } from 'antd-mobile';
+import schema from 'libs/state';
+import { getToken } from 'components/utils';
+import { Route, Link } from 'react-router-dom';
+import { SearchPage, MyRidesPage, ProfilePage, CreateRidePage } from 'pages';
 
 import searchIcon from './images/search.svg';
 import routeIcon from './images/route.svg';
@@ -13,12 +16,12 @@ import profileIconActive from './images/user-active.svg';
 
 const tabs = [
     {
-        title: 'Browse',
+        title: 'Search',
         name: 'searchTab',
         path: '/search',
         icon: searchIcon,
         iconActive: searchIconActive,
-        renderComponent: (props) => <SearchPage {...props} />,
+        renderComponent: (props) => <SearchPage {...props} tree={props.tree.select('searchTab')} />,
     },
     {
         title: 'My Rides',
@@ -48,7 +51,13 @@ const Icon = ({ icon }) => (
     />
 );
 
-export const MainPage = createReactClass({
+const model = {
+    tree: {
+        profile: {},
+    },
+};
+
+export const MainPage = schema(model)(createReactClass({
     getInitialState() {
         return {
             selectedTab: 'searchTab',
@@ -58,6 +67,7 @@ export const MainPage = createReactClass({
     render() {
         return (
             <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
+
                 <TabBar
                     unselectedTintColor="#949494"
                     tintColor="#33A3F4"
@@ -74,6 +84,12 @@ export const MainPage = createReactClass({
                                 this.setState({ selectedTab: tab.name });
                             }}
                         >
+                            <NavBar
+                                mode="dark"
+                                leftContent="Hitcharide"
+                                rightContent={(<Link to="/create-ride" style={{ whiteSpace: 'nowrap', fontSize: '14px', color: '#fff' }}>+ Create a ride</Link>)}
+                                // rightContent={(<Button size="small">+ Create a ride</Button>)}
+                            />
                             {tab.renderComponent(this.props)}
                         </TabBar.Item>
                     ))}
@@ -81,4 +97,4 @@ export const MainPage = createReactClass({
             </Flex>
         );
     },
-});
+}));

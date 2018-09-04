@@ -1,6 +1,15 @@
 .form {
+    :global .am-list-content {
+        color: rgba(#1A1B20, .3)!important;
+    }
+
     :global .am-list-extra {
         overflow: visible!important;
         text-overflow: unset!important;
     }
+}
+
+.text {
+    margin-right: 10px;
+    color: rgba(#1A1B20, .3);
 }

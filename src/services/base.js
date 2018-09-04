@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
 export function checkStatus(response) {
-    console.log('response', response);
     if (response.status >= 200 && response.status < 300) {
         return response;
     }
@@ -66,8 +65,6 @@ export function buildPostService(
             headers,
         };
 
-        console.log('payload', payload);
-
         try {
             let response = await fetch(`${url}${path}`, payload).then(checkStatus);
             let dehydratedData = cursor.get('data');
@@ -97,4 +94,18 @@ export function wrapItemsAsRemoteData(items) {
         data,
         status: 'Succeed',
     }));
+}
+
+export function dehydrateBundle(bundle) {
+    return bundle.results;
+}
+
+export function paramsToString(params) {
+    let paramsRow = '?';
+
+    _.forEach(params, (value, key) => {
+        paramsRow += `${key}=${value}`;
+    });
+
+    return paramsRow;
 }

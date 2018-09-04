@@ -37,6 +37,7 @@
     "antd-mobile": "^2.2.3",
     "babel-polyfill": "^6.26.0",
     "baobab": "^2.5.2",
+    "baobab-prop-types": "^1.0.2",
     "classnames": "^2.2.5",
     "create-react-class": "^15.6.3",
     "lodash": "^4.17.5",

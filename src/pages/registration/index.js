@@ -1,12 +1,13 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Button, WingBlank, WhiteSpace, Flex, List, InputItem, Toast } from 'antd-mobile';
 import schema from 'libs/state';
 import * as yup from 'yup';
-import { signUpService } from 'services';
-import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
-import s from './registration.css';
+import { signUpService, signInService } from 'services';
+import {
+    validateForm, checkInputError, checkUnhandledFormErrors, setToken
+} from 'components/utils';
 
 const validationSchema = yup.object().shape({
     email: yup
@@ -29,11 +30,12 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            email: 'test4@mail.com',
+            email: 'test@mail.com',
             password: 'k134rf2i',
             confirmPassword: 'k134rf2i',
         },
         result: {},
+        loginResult: {},
         errors: {},
     },
 };
@@ -41,20 +43,8 @@ const model = {
 const RegistrationForm = createReactClass({
     async onSubmit() {
         const formCursor = this.props.tree.form;
-        const formData = formCursor.get();
-        const data = _.merge({
-            first_name: 'test',
-            last_name: 'test',
-            phone: '8887776655',
-        }, formData);
-        // const data = {
-        //     first_name: 'test',
-        //     last_name: 'test',
-        //     phone: '8887776655',
-        //     email: 'test4@mail.com',
-        //     password: 'k134rf2i',
-        // };
-        const validationResult = await validateForm(validationSchema, formData);
+        const data = formCursor.get();
+        const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
 
         if (!isDataValid) {
@@ -64,10 +54,26 @@ const RegistrationForm = createReactClass({
         }
 
         if (isDataValid) {
-            const result = await signUpService(this.props.tree.result, data);
+            const signUpResult = await signUpService(this.props.tree.result, data);
 
-            if (result.status === 'Failure') {
-                this.props.tree.errors.set(result.error.data);
+            console.log('signUpResult', signUpResult);
+
+            if (signUpResult.status === 'Failure') {
+                this.props.tree.errors.set(signUpResult.error.data);
+            }
+
+            if (signUpResult.status === 'Succeed') {
+                const signInResult = await signInService(this.props.tree.loginResult, {
+                    username: data.email,
+                    password: data.password,
+                });
+
+                console.log('signInResult', signInResult);
+
+                if (signInResult.status === 'Succeed') {
+                    setToken(signInResult.data);
+                    this.props.tokenCursor.set(signInResult);
+                }
             }
         }
     },
@@ -83,6 +89,7 @@ const RegistrationForm = createReactClass({
                 formCursor.select(name).set(v);
                 errorsCursor.select(name).set(null);
             },
+            defaultValue: formCursor.get(name),
         }, errorProps);
     },
 
@@ -104,20 +111,18 @@ const RegistrationForm = createReactClass({
     },
 
     render() {
+        const token = this.props.tokenCursor.get();
+        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
+
+        if (isTokenExists) {
+            return <Redirect to="/" />;
+        }
+
         return (
             <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
                 <Flex align="center" justify="center">
                     Hitcharide
                 </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
-                <WingBlank>
-                    <Button
-                        onClick={() => console.log('sign up with google')}
-                    >
-                        Sign up with Google+
-                    </Button>
-                </WingBlank>
                 <WhiteSpace />
                 <WhiteSpace />
                 <form>

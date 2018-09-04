@@ -100,7 +100,6 @@ export const LoginPage = schema(model)(createReactClass({
     },
 
     render() {
-        const formCursor = this.props.tree.form;
         const token = this.props.tokenCursor.get();
         const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
@@ -116,23 +115,9 @@ export const LoginPage = schema(model)(createReactClass({
                 <WhiteSpace />
                 <WhiteSpace />
                 <WingBlank>
-                    <Button
-                        onClick={() => {
-                            const auth2 = gapi.auth2.getAuthInstance();
-
-                            auth2.signIn().then((data) => {
-                                const tokenData = data.getAuthResponse(true);
-                                this.props.tokenCursor.set({
-                                    status: 'Succeed',
-                                    data: tokenData,
-                                })
-                                // console.log("data", data.getAuthResponse(true));
-                                console.log('User signed in.');
-                            });
-                        }}
-                    >
+                    <a href="http://localhost:8000/accounts/social/login/google-oauth2/">
                         Sign in with Google+
-                    </Button>
+                    </a>
                 </WingBlank>
                 <WhiteSpace />
                 <WhiteSpace />

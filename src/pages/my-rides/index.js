@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Button, Tabs, NavBar } from 'antd-mobile';
+import { Button, Tabs } from 'antd-mobile';
 
 const tabs = [
     { title: 'Suggested', sub: '1' },
@@ -13,15 +13,9 @@ export const MyRidesPage = createReactClass({
     render() {
         return (
             <div>
-                <NavBar
-                    mode="dark"
-                    leftContent="Hitcharide"
-                    rightContent={(<div style={{ whiteSpace: 'nowrap', fontSize: '14px' }}>+ Create a ride</div>)}
-                    // rightContent={(<Button size="small">+ Create a ride</Button>)}
-                />
                 <Tabs
                     tabs={tabs}
-                    initialPage={1}
+                    initialPage={0}
                     renderTab={tab => <span>{tab.title}</span>}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150px', backgroundColor: '#fff' }}>

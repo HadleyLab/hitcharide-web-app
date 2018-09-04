@@ -6,6 +6,11 @@
         height: 100%;
     }
 
+    body {
+        background-color: #fff;
+        color: #1A1B20;
+    }
+
     * {
     	box-sizing: border-box;
     }

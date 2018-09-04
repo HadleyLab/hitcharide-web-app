@@ -5,7 +5,7 @@ import createReactClass from 'create-react-class';
 import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { Button, WingBlank, WhiteSpace, Flex, List, InputItem, LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
-import { LoginPage, MainPage, RegistrationPage } from 'pages';
+import { LoginPage, MainPage, RegistrationPage, CreateRidePage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
 import { getToken } from 'components/utils';
@@ -20,6 +20,7 @@ const model = {
         login: {},
         registration: {},
         app: {},
+        rideCreation: {},
     },
 };
 
@@ -27,6 +28,7 @@ const App = schema(model)(createReactClass({
     render() {
         const tokenCursor = this.props.tree.token;
         const token = tokenCursor.get();
+        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
         return (
             <Router>
@@ -35,7 +37,7 @@ const App = schema(model)(createReactClass({
                         path="/"
                         exact
                         render={(props) => {
-                            if (!_.isEmpty(token) && token.status === 'Succeed') {
+                            if (isTokenExists) {
                                 return (
                                     <MainPage
                                         tree={this.props.tree.app}
@@ -52,6 +54,25 @@ const App = schema(model)(createReactClass({
                     />
 
                     <Route
+                        path="/create-ride"
+                        render={() => (
+                            <CreateRidePage tree={this.props.tree.rideCreation} />
+                        )}
+                    />
+
+                    {/*
+                    {isTokenExists ?
+                        <MainPage
+                            tree={this.props.tree.app}
+                            tokenCursor={this.props.tree.token}
+                            {...props}
+                        />
+                    :
+                        <Redirect to="/login" />
+                    }
+                    */}
+
+                    <Route
                         path="/login"
                         render={() => (
                             <LoginPage
@@ -66,6 +87,7 @@ const App = schema(model)(createReactClass({
                         render={() => (
                             <RegistrationPage
                                 tree={this.props.tree.registration}
+                                tokenCursor={this.props.tree.token}
                             />
                         )}
                     />
