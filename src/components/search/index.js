@@ -4,9 +4,12 @@ import classNames from 'classnames';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
+import { Input } from 'components';
 import s from './search.css';
 
 export const Search = createReactClass({
+    displayName: 'Search',
+
     propTypes: {
         cursor: BaobabPropTypes.cursor.isRequired,
         service: PropTypes.func.isRequired,
@@ -103,22 +106,19 @@ export const Search = createReactClass({
         console.log('data', cursor.get());
 
         return (
-            <div
+            <Input
                 className={classNames(s.container, className, {
                     [s._focused]: focused,
                 })}
+                {...inputProps}
+                type="text"
+                value={value}
+                onChange={this.onChange}
+                onFocus={() => this.setState({ focused: true })}
+                onBlur={this.closeResults}
+                ref={(ref) => { this.input = ref; }}
             >
                 {children}
-                <div className={s.touchableArea} onClick={() => this.input.focus()} />
-                <input
-                    {...inputProps}
-                    type="text"
-                    value={value}
-                    onChange={this.onChange}
-                    onFocus={() => this.setState({ focused: true })}
-                    onBlur={this.closeResults}
-                    ref={(ref) => { this.input = ref; }}
-                />
                 {showResults ? (
                     <div className={s.items}>
                         {results.data.length > 0 ?
@@ -141,7 +141,7 @@ export const Search = createReactClass({
                         }
                     </div>
                 ) : null}
-            </div>
+            </Input>
         );
     },
 });

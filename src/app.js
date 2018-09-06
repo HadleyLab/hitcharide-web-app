@@ -2,29 +2,47 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { HashRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-import { Button, WingBlank, WhiteSpace, Flex, List, InputItem, LocaleProvider } from 'antd-mobile';
+import {
+    HashRouter as Router, Route, Redirect,
+} from 'react-router-dom';
+import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
-import { LoginPage, MainPage, RegistrationPage, CreateRidePage } from 'pages';
+import {
+    LoginPage, MainPage, RegistrationPage, HomePage,
+} from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
 import { getToken } from 'components/utils';
+import { getMyProfileService } from 'services';
 import 'components/styles/styles.less';
 import 'components/styles/styles.css';
 import 'components/fonts/fonts.css';
 import 'components/robots.txt';
 
-const model = {
-    tree: {
-        token: getToken(),
-        login: {},
-        registration: {},
-        app: {},
-        rideCreation: {},
-    },
+const model = () => {
+    const token = getToken();
+
+    return {
+        tree: {
+            token,
+            login: {},
+            registration: {},
+            app: {
+                profile: (cursor) => {
+                    if (token) {
+                        return getMyProfileService(token.data.token, cursor);
+                    }
+
+                    return null;
+                },
+            },
+        },
+    };
 };
 
 const App = schema(model)(createReactClass({
+    displayName: 'App',
+
     render() {
         const tokenCursor = this.props.tree.token;
         const token = tokenCursor.get();
@@ -32,10 +50,16 @@ const App = schema(model)(createReactClass({
 
         return (
             <Router>
-                <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
+                <div>
                     <Route
                         path="/"
                         exact
+                        render={() => (
+                            <HomePage />
+                        )}
+                    />
+                    <Route
+                        path="/app"
                         render={(props) => {
                             if (isTokenExists) {
                                 return (
@@ -52,25 +76,6 @@ const App = schema(model)(createReactClass({
                             );
                         }}
                     />
-
-                    <Route
-                        path="/create-ride"
-                        render={() => (
-                            <CreateRidePage tree={this.props.tree.rideCreation} />
-                        )}
-                    />
-
-                    {/*
-                    {isTokenExists ?
-                        <MainPage
-                            tree={this.props.tree.app}
-                            tokenCursor={this.props.tree.token}
-                            {...props}
-                        />
-                    :
-                        <Redirect to="/login" />
-                    }
-                    */}
 
                     <Route
                         path="/login"
@@ -91,7 +96,7 @@ const App = schema(model)(createReactClass({
                             />
                         )}
                     />
-                </Flex>
+                </div>
             </Router>
         );
     },

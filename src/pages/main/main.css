@@ -1,0 +1,6 @@
+.tabs {
+    :global .am-tab-bar {
+        height: auto!important;
+        overflow: auto!important;
+    }
+}

@@ -11,6 +11,7 @@ export const ProfilePage = createReactClass({
     },
 
     render() {
+
         return (
             <div>
                 <Button onClick={this.logout}>Logout</Button>

@@ -1,0 +1,16 @@
+.logo {
+    width: 108px;
+    height: 21px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-top: 6px;
+}
+
+.profile {
+    width: 21px;
+    height: 20px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}

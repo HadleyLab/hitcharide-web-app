@@ -7,13 +7,6 @@ import { getCitiesService } from 'services';
 import schema from 'libs/state';
 import s from './search.css';
 
-import locationIcon from 'components/icons/location.svg';
-
-const tabs = [
-    { title: 'List', sub: '1' },
-    { title: 'Calendar', sub: '2' },
-];
-
 const model = {
     tree: {
         cities: {},
@@ -26,11 +19,7 @@ const model = {
 };
 
 export const SearchPage = schema(model)(createReactClass({
-    getInitialState() {
-        return {
-            date: new Date(),
-        };
-    },
+    displayName: 'SearchPage',
 
     render() {
         const citiesCursor = this.props.tree.cities;
@@ -82,54 +71,38 @@ export const SearchPage = schema(model)(createReactClass({
                     </Flex>
                 </WingBlank>
                 <WhiteSpace />
-
-                <WhiteSpace />
-
-                <Tabs
-                    tabs={tabs}
-                    initialPage={0}
-                    renderTab={tab => <span>{tab.title}</span>}
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' }}>
-                        <List>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                            <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                              From Krasnoyarsk To Novosibirsk <br />
-                              on Sunday 2.09.2018 at 4:00 p.m<br />
-                              4 seats available
-                            </List.Item>
-                        </List>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150px', backgroundColor: '#fff' }}>
-                        Calendar View of rides list
-                    </div>
-                </Tabs>
-
-
+                <List>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
+                      From Krasnoyarsk To Novosibirsk <br />
+                      on Sunday 2.09.2018 at 4:00 p.m<br />
+                      4 seats available
+                    </List.Item>
+                </List>
             </div>
         );
     },

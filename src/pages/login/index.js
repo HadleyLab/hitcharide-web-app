@@ -7,6 +7,7 @@ import {
 } from 'antd-mobile';
 import { signInService } from 'services';
 import schema from 'libs/state';
+import { Input } from 'components';
 import {
     validateForm, checkInputError, checkUnhandledFormErrors, setToken
 } from 'components/utils';
@@ -104,7 +105,7 @@ export const LoginPage = schema(model)(createReactClass({
         const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
         if (isTokenExists) {
-            return <Redirect to="/" />;
+            return <Redirect to="/app" />;
         }
 
         return (
@@ -113,6 +114,19 @@ export const LoginPage = schema(model)(createReactClass({
                     Hitcharide
                 </Flex>
                 <WhiteSpace />
+
+                {/*
+                <Input
+                type="number"
+                    onKeyPress={(evt) => {
+                        console.log('evt.which', evt.which);
+                        if (evt.which < 48 || evt.which > 57) {
+                            evt.preventDefault();
+                        }
+                    }}
+                />
+                */}
+
                 <WhiteSpace />
                 <WingBlank>
                     <a href="http://localhost:8000/accounts/social/login/google-oauth2/">

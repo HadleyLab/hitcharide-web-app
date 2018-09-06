@@ -5,3 +5,5 @@ export { SearchPage } from './search';
 export { MyRidesPage } from './my-rides';
 export { ProfilePage } from './profile';
 export { CreateRidePage } from './create-ride';
+export { CalendarPage } from './calendar';
+export { HomePage } from './home';

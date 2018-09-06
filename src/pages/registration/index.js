@@ -6,7 +6,7 @@ import schema from 'libs/state';
 import * as yup from 'yup';
 import { signUpService, signInService } from 'services';
 import {
-    validateForm, checkInputError, checkUnhandledFormErrors, setToken
+    validateForm, checkInputError, checkUnhandledFormErrors, setToken,
 } from 'components/utils';
 
 const validationSchema = yup.object().shape({
@@ -115,7 +115,7 @@ const RegistrationForm = createReactClass({
         const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
         if (isTokenExists) {
-            return <Redirect to="/" />;
+            return <Redirect to="/app" />;
         }
 
         return (
