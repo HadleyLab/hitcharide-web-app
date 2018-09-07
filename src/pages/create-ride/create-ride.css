@@ -2,10 +2,6 @@
     :global .am-list-content {
         color: rgba(#1A1B20, .3)!important;
     }
-
-    :global .am-list-extra {
-        color: #1A1B20!important;
-    }
 }
 
 .text {
@@ -22,7 +18,7 @@
     }
 }
 
-.datePicker {
+.datePicker, .carPicker {
     background-color: #f00;
 
     :global .am-list-body:before {
@@ -40,6 +36,40 @@
     :global .am-list-extra {
         min-width: 160px;
     }
+}
+
+.stops {
+    border-top: 1px solid #ddd;
+
+    input {
+        text-align: left;
+
+        &::placeholder {
+            color: rgba(#1A1B20, .3);
+        }
+    }
+}
+
+.addStop {
+    font-size: 17px;
+    line-height: 25px;
+    padding: 5px 15px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #ddd;
+    color: rgba(#1A1B20, .3);
+}
+
+.stopIcon {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: 15px;
 }
 
 .inputWithIcon {

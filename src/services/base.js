@@ -65,6 +65,8 @@ export function buildPostService(
             headers,
         };
 
+        console.log('payload', payload);
+
         try {
             let response = await fetch(`${url}${path}`, payload).then(checkStatus);
             let dehydratedData = cursor.get('data');

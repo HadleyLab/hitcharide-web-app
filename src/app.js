@@ -13,7 +13,6 @@ import {
 import tree from 'libs/tree';
 import schema from 'libs/state';
 import { getToken } from 'components/utils';
-import { getMyProfileService } from 'services';
 import 'components/styles/styles.less';
 import 'components/styles/styles.css';
 import 'components/fonts/fonts.css';
@@ -27,15 +26,7 @@ const model = () => {
             token,
             login: {},
             registration: {},
-            app: {
-                profile: (cursor) => {
-                    if (token) {
-                        return getMyProfileService(token.data.token, cursor);
-                    }
-
-                    return null;
-                },
-            },
+            app: {},
         },
     };
 };

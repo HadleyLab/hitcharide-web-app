@@ -1,0 +1,98 @@
+.text {
+    white-space: nowrap;
+    margin-right: 10px;
+    color: rgba(#1A1B20, .3);
+}
+
+.profile {
+    padding: 30px 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.section {
+    margin-top: 25px;
+}
+
+.photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #CADEF3;
+    color: #4263CA;
+    font-size: 12px;
+    line-height: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.name {
+    margin-top: 15px;
+    font-size: 18px;
+    line-height: 18px;
+}
+
+.infoField {
+    position: relative;
+    font-size: 17px;
+    line-height: 25px;
+    padding: 5px 15px;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgba(#1A1B20, .3);
+
+    &:after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        right: 0;
+        bottom: 1px;
+        height: 1px;
+        background-color: #ddd;
+    }
+}
+
+.tick {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+}
+
+.car {
+    position: relative;
+    min-height: 45px;
+    padding: 5px 15px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(#1A1B20, .3);
+    font-size: 16px;
+
+    &:after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        right: 0;
+        bottom: 1px;
+        height: 1px;
+        background-color: #ddd;
+    }
+}
+
+.logout {
+    width: 250px;
+    text-align: center;
+    font-size: 17px;
+    line-height: 25px;
+    padding: 15px;
+    color: #4263CA;
+}

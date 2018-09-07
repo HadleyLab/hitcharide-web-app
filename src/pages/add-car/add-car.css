@@ -1,0 +1,11 @@
+.text {
+    white-space: nowrap;
+    margin-right: 10px;
+    color: rgba(#1A1B20, .3);
+}
+
+.container {
+    input {
+        color: #1A1B20;
+    }
+}

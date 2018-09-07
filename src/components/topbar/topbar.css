@@ -1,16 +1,26 @@
-.logo {
-    width: 108px;
-    height: 21px;
+.icon {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-    margin-top: 6px;
+}
+
+.arrow {
+    width: 16px;
+    height: 30px;
+}
+
+.logo {
+    width: 95px;
+    height: 20px;
+    margin-top: 4px;
 }
 
 .profile {
     width: 21px;
     height: 20px;
-    background-position: center;
-    background-size: contain;
-    background-repeat: no-repeat;
+}
+
+.wrapper {
+    padding: 10px 15px;
+    margin: -10px -15px;
 }

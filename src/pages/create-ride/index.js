@@ -1,23 +1,25 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Link } from 'react-router-dom';
 import { Search, Title, Input } from 'components';
 import schema from 'libs/state';
 import {
-    Flex, NavBar, WingBlank, Button, List, DatePicker, WhiteSpace,
+    Flex, Button, List, DatePicker, WhiteSpace, Picker,
 } from 'antd-mobile';
-import { getCitiesService, addRideService } from 'services';
+import { getCitiesService, addRideService, getCarListService } from 'services';
 import { validateForm, getToken } from 'components/utils';
 import * as yup from 'yup';
 import s from './create-ride.css';
+
+import minusIcon from 'components/icons/minus-circle.svg';
+import plusIcon from 'components/icons/plus-circle.svg';
 
 // const data = {
 //     city_from: "city_pk",
 //     city_to: "city_pk",
 //     date: "date",
 //     priceForSeat: float,
-//     stops: ['achinsk_pk', 'kemerovo_pk'],
+//     stops: [{city: ’achinsk_pk’, order: 1},{city: 'kemerovo_pk’, order:2}],
 //     number_of_sits: number,
 //     car: 'car_pk',
 //     description: "",
@@ -32,7 +34,7 @@ const validationSchema = yup.object().shape({
         .nullable()
         .required('Add price for a seat'),
     car: yup.object().shape({
-        model: yup.string().ensure().required('Add car model'),
+        model: yup.number().typeError('Wrong format').nullable().required('Select a car'),
         availableSeats: yup.number()
             .typeError('Wrong format')
             .nullable()
@@ -41,11 +43,16 @@ const validationSchema = yup.object().shape({
     description: yup.string().ensure().required('Add notes about this ride'),
 });
 
-const model = {
-    cities: {},
-    form: {},
-    result: {},
-    errors: {},
+const model = () => {
+    const token = getToken();
+
+    return {
+        cities: {},
+        cars: (cursor) => getCarListService(token.data.token, cursor),
+        form: {},
+        result: {},
+        errors: {},
+    };
 };
 
 export const CreateRidePage = schema(model)(createReactClass({
@@ -55,8 +62,22 @@ export const CreateRidePage = schema(model)(createReactClass({
         return {};
     },
 
-    componentDidMount() {
+    async componentDidMount() {
+        const token = getToken();
+        const cars = this.props.tree.get('cars');
+
         this.initForm();
+
+        if (_.isEmpty(cars)) {
+            const result = await getCarListService(token.data.token, this.props.tree.cars);
+
+            if (result.status === 'Succeed' && !_.isEmpty(result.data)) {
+                const car = result.data[0];
+                const formCursor = this.props.tree.form;
+
+                formCursor.car.model.set(car.pk);
+            }
+        }
     },
 
     initForm() {
@@ -65,6 +86,7 @@ export const CreateRidePage = schema(model)(createReactClass({
             to: null,
             date: new Date(),
             price: null,
+            stops: [],
             car: {
                 model: null,
                 availableSeats: null,
@@ -92,16 +114,18 @@ export const CreateRidePage = schema(model)(createReactClass({
         if (isDataValid) {
             const token = getToken();
             const result = await addRideService(token.data.token, this.props.tree.result, {
-                from_city: data.from,
-                to_city: data.to,
-                car: {
-                    brand: 'test',
-                    model: data.car.model,
-                    number_of_sits: data.car.availableSeats,
-                },
-                stops: [],
-                number_of_sits: data.car.availableSeats,
+                cityFrom: data.from.pk,
+                cityTo: data.to.pk,
+                car: data.car.model,
+                stops: _.map(data.stops, (stop, index) => ({
+                    city: stop.pk,
+                    order: index,
+                })),
+                dateTime: data.date,
+                price: data.price,
+                numberOfSeats: data.car.availableSeats,
                 description: data.description,
+
             });
 
             console.log('result', result);
@@ -112,11 +136,75 @@ export const CreateRidePage = schema(model)(createReactClass({
         }
     },
 
+    renderCarPicker() {
+        const cars = this.props.tree.cars.get();
+        const formCursor = this.props.tree.form;
+        let pickerData = [];
+
+        if (!_.isEmpty(cars) && cars.status === 'Succeed' && !_.isEmpty(cars.data)) {
+            _.forEach(cars.data, (car) => pickerData.push({
+                value: car.pk,
+                label: `${car.brand} ${car.model} (Black)`,
+            }));
+
+            return (
+                <div className={s.carPicker}>
+                    <List>
+                        <Picker
+                            data={pickerData}
+                            cols={1}
+                            value={[formCursor.car.model.get()]}
+                            onChange={([v]) => formCursor.car.model.set(v)}
+                            onOk={([v]) => formCursor.car.model.set(v)}
+                        >
+                            <List.Item arrow="horizontal">Car</List.Item>
+                        </Picker>
+                    </List>
+                </div>
+            );
+        }
+
+        return null;
+    },
+
+    renderStopOvers() {
+        const citiesCursor = this.props.tree.cities;
+        const formCursor = this.props.tree.form;
+        const stopsCursor = formCursor.stops;
+        const stops = stopsCursor.get();
+
+        return (
+            <div className={s.stops}>
+                {_.map(stops, (stop, index) => (
+                    <Search
+                        key={`stop-${index}`}
+                        cursor={citiesCursor}
+                        selectedValue={stopsCursor.get(index)}
+                        valueCursor={stopsCursor.select(index)}
+                        service={getCitiesService}
+                        displayItem={({ name, state }) => `${name}, ${state.name}`}
+                        onItemSelect={(v) => stopsCursor.select(index).set(v)}
+                        placeholder="Select a stop"
+                    >
+                        <div className={s.stopIcon} style={{ backgroundImage: `url(${minusIcon})`}} />
+                    </Search>
+                ))}
+                <div
+                    className={s.addStop}
+                    onClick={() => formCursor.stops.push({})}
+                >
+                    <div className={s.stopIcon} style={{ backgroundImage: `url(${plusIcon})`}} />
+                    <div>Add one</div>
+                </div>
+            </div>
+        );
+    },
+
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
 
-        console.log('form', this.props.tree.get());
+        console.log('tree', this.props.tree.get());
 
         return (
             <div className={s.container}>
@@ -171,12 +259,16 @@ export const CreateRidePage = schema(model)(createReactClass({
                 </div>
                 <div className={s.section}>
                     <Title>Stop overs</Title>
+                    {this.renderStopOvers()}
                 </div>
                 <div className={s.section}>
                     <Title>Car</Title>
+                    {this.renderCarPicker()}
+                    {/*
                     <Input onChange={(e) => formCursor.car.model.set(e.target.value)}>
                         <div className={s.text}>Model</div>
                     </Input>
+                    */}
                     <Input
                         type="number"
                         onKeyPress={(e) => {

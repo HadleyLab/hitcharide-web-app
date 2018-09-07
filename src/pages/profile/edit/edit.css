@@ -1,0 +1,104 @@
+.photoPicker {
+    padding: 30px 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: #4263CA;
+    font-size: 17px;
+    line-height: 17px;
+}
+
+.photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: #CADEF3;
+    font-size: 12px;
+    line-height: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.section {
+    margin-top: 25px;
+}
+
+.text {
+    white-space: nowrap;
+    margin-right: 10px;
+    color: rgba(#1A1B20, .3);
+}
+
+.general {
+    input {
+        color: #1A1B20;
+    }
+}
+
+.moreInfo {
+    input {
+        text-align: left;
+
+        &::placeholder {
+            color: rgba(#1A1B20, .3);
+        }
+    }
+}
+
+.cars {
+    border-top: 1px solid #ddd;
+}
+
+.car {
+    position: relative;
+    min-height: 45px;
+    padding: 5px 38px 8px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #888;
+    font-size: 16px;
+
+    &:after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        right: 0;
+        bottom: 1px;
+        height: 1px;
+        background-color: #ddd;
+    }
+}
+
+.addCar {
+    font-size: 17px;
+    line-height: 25px;
+    padding: 5px 15px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #ddd;
+    color: rgba(#1A1B20, .3);
+}
+
+.icon {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    &._plus {
+        margin-right: 15px;
+    }
+
+    &._arrow {
+        position: absolute;
+        right: 15px;
+    }
+}

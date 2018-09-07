@@ -17,7 +17,9 @@
     "react/prefer-es6-class": "off",
     "react/no-multi-comp": "off",
     "react/jsx-one-expression-per-line": "off",
-    "click-events-have-key-events": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "react/destructuring-assignment": "off",
+    "class-methods-use-this": "off",
     "react/sort-comp": ["error", {
       "order": [
         "static-methods",

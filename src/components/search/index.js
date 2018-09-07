@@ -103,7 +103,6 @@ export const Search = createReactClass({
         const results = cursor.get();
         const showResults = focused && !_.isEmpty(results) && results.status === 'Succeed';
         const inputProps = this.getInputProps();
-        console.log('data', cursor.get());
 
         return (
             <Input
