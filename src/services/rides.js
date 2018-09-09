@@ -1,11 +1,12 @@
 import _ from 'lodash';
+import { getToken } from 'components/utils';
 import { buildGetService, buildPostService, defaultHeaders } from './base';
 
-export function addRideService(token, cursor, data) {
+export function addRideService(cursor, data) {
     const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: `JWT ${token}`,
+        Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildPostService(
@@ -19,10 +20,10 @@ export function addRideService(token, cursor, data) {
     return service(cursor, data);
 }
 
-export function addCarService(token, cursor, data) {
+export function addCarService(cursor, data) {
     const headers = {
         Accept: 'application/json',
-        Authorization: `JWT ${token}`,
+        Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildPostService(
@@ -36,9 +37,9 @@ export function addCarService(token, cursor, data) {
     return service(cursor, data);
 }
 
-export function getCarListService(token, cursor) {
+export function getCarListService(cursor) {
     const headers = {
-        Authorization: `JWT ${token}`,
+        Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildGetService(

@@ -9,7 +9,7 @@ import {
     CalendarPage, ProfilePage,
 } from 'pages';
 import schema from 'libs/state';
-import { getToken, logout } from 'components/utils';
+import { removeToken } from 'components/utils';
 import { getMyProfileService } from 'services';
 
 import searchIcon from './images/search.svg';
@@ -61,12 +61,17 @@ const Icon = ({ icon }) => (
 
 export const MainPage = createReactClass({
     async componentDidMount() {
-        const token = getToken();
         const profile = this.props.tree.profile.get('info');
 
         if (_.isEmpty(profile)) {
-            await getMyProfileService(token.data.token, this.props.tree.profile.info)
+            await getMyProfileService(this.props.tree.profile.info)
         }
+    },
+
+    logout() {
+        removeToken();
+        this.props.tokenCursor.set(null);
+        this.props.tree.profile.set({});
     },
 
     checkIfSignatureHasExpired() {
@@ -76,25 +81,15 @@ export const MainPage = createReactClass({
             const error = profile.info.error;
 
             if (error.response.status === 401) {
-                logout();
-                this.props.tokenCursor.set(null);
-                return true;
+                this.logout();
             }
         }
-
-        return false;
     },
 
     render() {
         const { url } = this.props.match;
 
         this.checkIfSignatureHasExpired();
-
-        // if (this.checkIfSignatureHasExpired()) {
-        //     return <Redirect to="/login" />;
-        // }
-
-        console.log('tree', this.props.tree.get())
 
         return (
             <Flex direction="column" align="stretch" style={{ height: '100vh' }}>
@@ -128,7 +123,11 @@ export const MainPage = createReactClass({
                     <Route
                         path={`${url}/profile`}
                         render={(props) => (
-                            <ProfilePage {..._.merge(this.props, props)} tree={this.props.tree.select('profile')} />
+                            <ProfilePage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.select('profile')}
+                                logout={this.logout}
+                            />
                         )}
                     />
                 </div>

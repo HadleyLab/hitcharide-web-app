@@ -7,23 +7,12 @@ import {
     Flex, Button, List, DatePicker, WhiteSpace, Picker,
 } from 'antd-mobile';
 import { getCitiesService, addRideService, getCarListService } from 'services';
-import { validateForm, getToken } from 'components/utils';
+import { validateForm } from 'components/utils';
 import * as yup from 'yup';
 import s from './create-ride.css';
 
 import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
-
-// const data = {
-//     city_from: "city_pk",
-//     city_to: "city_pk",
-//     date: "date",
-//     priceForSeat: float,
-//     stops: [{city: ’achinsk_pk’, order: 1},{city: 'kemerovo_pk’, order:2}],
-//     number_of_sits: number,
-//     car: 'car_pk',
-//     description: "",
-// };
 
 const validationSchema = yup.object().shape({
     from: yup.mixed().required('Select a city'),
@@ -43,16 +32,12 @@ const validationSchema = yup.object().shape({
     description: yup.string().ensure().required('Add notes about this ride'),
 });
 
-const model = () => {
-    const token = getToken();
-
-    return {
-        cities: {},
-        cars: (cursor) => getCarListService(token.data.token, cursor),
-        form: {},
-        result: {},
-        errors: {},
-    };
+const model = {
+    cities: {},
+    cars: (cursor) => getCarListService(cursor),
+    form: {},
+    result: {},
+    errors: {},
 };
 
 export const CreateRidePage = schema(model)(createReactClass({
@@ -63,13 +48,12 @@ export const CreateRidePage = schema(model)(createReactClass({
     },
 
     async componentDidMount() {
-        const token = getToken();
         const cars = this.props.tree.get('cars');
 
         this.initForm();
 
         if (_.isEmpty(cars)) {
-            const result = await getCarListService(token.data.token, this.props.tree.cars);
+            const result = await getCarListService(this.props.tree.cars);
 
             if (result.status === 'Succeed' && !_.isEmpty(result.data)) {
                 const car = result.data[0];
@@ -112,8 +96,7 @@ export const CreateRidePage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const token = getToken();
-            const result = await addRideService(token.data.token, this.props.tree.result, {
+            const result = await addRideService(this.props.tree.result, {
                 cityFrom: data.from.pk,
                 cityTo: data.to.pk,
                 car: data.car.model,
@@ -264,11 +247,6 @@ export const CreateRidePage = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Car</Title>
                     {this.renderCarPicker()}
-                    {/*
-                    <Input onChange={(e) => formCursor.car.model.set(e.target.value)}>
-                        <div className={s.text}>Model</div>
-                    </Input>
-                    */}
                     <Input
                         type="number"
                         onKeyPress={(e) => {

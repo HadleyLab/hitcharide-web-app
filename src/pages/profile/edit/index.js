@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Title, Input } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
-import { validateForm, getToken } from 'components/utils';
+import { validateForm } from 'components/utils';
 import { updateProfileService } from 'services';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
 import * as yup from 'yup';
@@ -67,12 +67,7 @@ export const EditProfilePage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const token = getToken();
-            const result = await updateProfileService(
-                token.data.token,
-                this.props.tree.result,
-                data
-            );
+            const result = await updateProfileService(this.props.tree.result, data);
 
             if (result.status === 'Succeed') {
                 const profile = this.props.profileCursor.set(result);

@@ -63,8 +63,10 @@ export const LoginPage = schema(model)(createReactClass({
             }
 
             if (result.status === 'Succeed') {
-                setToken(result.data);
-                this.props.tokenCursor.set(result);
+                const { token } = result.data;
+
+                setToken(token);
+                this.props.tokenCursor.set(token);
             }
         }
     },
@@ -102,9 +104,8 @@ export const LoginPage = schema(model)(createReactClass({
 
     render() {
         const token = this.props.tokenCursor.get();
-        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
-        if (isTokenExists) {
+        if (token) {
             return <Redirect to="/app" />;
         }
 

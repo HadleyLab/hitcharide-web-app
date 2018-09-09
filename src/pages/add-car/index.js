@@ -3,7 +3,7 @@ import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
 import { Title, Input } from 'components';
-import { validateForm, getToken } from 'components/utils';
+import { validateForm } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
 import { addCarService, getCarListService } from 'services';
@@ -54,11 +54,10 @@ export const AddCarPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const token = getToken();
-            const result = await addCarService(token.data.token, this.props.tree.result, data);
+            const result = await addCarService(this.props.tree.result, data);
 
             if (result.status === 'Succeed') {
-                await getCarListService(token.data.token, this.props.carsCursor)
+                await getCarListService(this.props.carsCursor)
                 this.props.history.goBack();
             }
 

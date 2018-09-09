@@ -52,23 +52,14 @@ export function checkUnhandledFormErrors(form, errors) {
 
 /* Token */
 
-export function setToken(data) {
-    localStorage.setItem('token', data.token);
+export function setToken(token) {
+    localStorage.setItem('token', token);
 }
 
 export function getToken() {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        return null;
-    }
-
-    return {
-        data: { token },
-        status: 'Succeed',
-    };
+    return localStorage.getItem('token');
 }
 
-export function logout() {
+export function removeToken() {
     localStorage.removeItem('token');
 }

@@ -71,8 +71,10 @@ const RegistrationForm = createReactClass({
                 console.log('signInResult', signInResult);
 
                 if (signInResult.status === 'Succeed') {
-                    setToken(signInResult.data);
-                    this.props.tokenCursor.set(signInResult);
+                    const { token } = signInResult.data;
+
+                    setToken(token);
+                    this.props.tokenCursor.set(token);
                 }
             }
         }
@@ -112,9 +114,8 @@ const RegistrationForm = createReactClass({
 
     render() {
         const token = this.props.tokenCursor.get();
-        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
-        if (isTokenExists) {
+        if (token) {
             return <Redirect to="/app" />;
         }
 

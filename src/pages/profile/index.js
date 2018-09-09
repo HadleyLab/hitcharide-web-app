@@ -4,7 +4,6 @@ import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
 import { Title } from 'components';
-import { logout, getToken } from 'components/utils';
 import schema from 'libs/state';
 import { getMyProfileService, getCarListService } from 'services';
 import { AddCarPage } from 'pages';
@@ -19,12 +18,6 @@ export const ProfilePageContent = createReactClass({
 
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired, // eslint-disable-line
-        tokenCursor: BaobabPropTypes.cursor.isRequired,
-    },
-
-    logout() {
-        logout();
-        this.props.tokenCursor.set(null);
     },
 
     renderCars() {
@@ -112,7 +105,7 @@ export const ProfilePageContent = createReactClass({
                     >
                         Edit profile
                     </Link>
-                    <div className={s.logout} onClick={this.logout}>
+                    <div className={s.logout} onClick={this.props.logout}>
                         Logout
                     </div>
                 </Flex>
@@ -123,13 +116,9 @@ export const ProfilePageContent = createReactClass({
     },
 });
 
-const model = () => {
-    const token = getToken();
-
-    return {
-        info: (cursor) => getMyProfileService(token.data.token, cursor),
-        cars: (cursor) => getCarListService(token.data.token, cursor),
-    };
+const model = {
+    info: getMyProfileService,
+    cars: getCarListService,
 };
 
 export const ProfilePage = schema(model)(createReactClass({
@@ -140,16 +129,15 @@ export const ProfilePage = schema(model)(createReactClass({
     },
 
     async componentDidMount() {
-        const token = getToken();
         const profile = this.props.tree.get('info');
         const cars = this.props.tree.get('cars');
 
         if (_.isEmpty(profile)) {
-            await getMyProfileService(token.data.token, this.props.tree.info);
+            await getMyProfileService(this.props.tree.info);
         }
 
         if (_.isEmpty(cars)) {
-            await getCarListService(token.data.token, this.props.tree.cars);
+            await getCarListService(this.props.tree.cars);
         }
     },
 
@@ -162,8 +150,6 @@ export const ProfilePage = schema(model)(createReactClass({
         }
 
         const { url } = this.props.match;
-
-        console.log('url', url);
 
         return (
             <div>

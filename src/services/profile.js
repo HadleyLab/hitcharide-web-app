@@ -1,9 +1,10 @@
 import _ from 'lodash';
+import { getToken } from 'components/utils';
 import { buildGetService, buildPostService, defaultHeaders } from './base';
 
-export function getMyProfileService(token, cursor) {
+export function getMyProfileService(cursor) {
     const headers = {
-        Authorization: `JWT ${token}`,
+        Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildGetService(
@@ -23,11 +24,11 @@ function hydrateData(profile) {
     return data;
 }
 
-export function updateProfileService(token, cursor, data) {
+export function updateProfileService(cursor, data) {
     const headers = {
         // 'Content-Type': 'multipart/form-data',
         Accept: 'application/json',
-        Authorization: `JWT ${token}`,
+        Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildPostService(

@@ -18,17 +18,13 @@ import 'components/styles/styles.css';
 import 'components/fonts/fonts.css';
 import 'components/robots.txt';
 
-const model = () => {
-    const token = getToken();
-
-    return {
-        tree: {
-            token,
-            login: {},
-            registration: {},
-            app: {},
-        },
-    };
+const model = {
+    tree: {
+        token: getToken(),
+        login: {},
+        registration: {},
+        app: {},
+    },
 };
 
 const App = schema(model)(createReactClass({
@@ -36,8 +32,6 @@ const App = schema(model)(createReactClass({
 
     render() {
         const tokenCursor = this.props.tree.token;
-        const token = tokenCursor.get();
-        const isTokenExists = !_.isEmpty(token) && token.status === 'Succeed';
 
         return (
             <Router>
@@ -52,11 +46,11 @@ const App = schema(model)(createReactClass({
                     <Route
                         path="/app"
                         render={(props) => {
-                            if (isTokenExists) {
+                            if (tokenCursor.get()) {
                                 return (
                                     <MainPage
                                         tree={this.props.tree.app}
-                                        tokenCursor={this.props.tree.token}
+                                        tokenCursor={tokenCursor}
                                         {...props}
                                     />
                                 );
@@ -73,7 +67,7 @@ const App = schema(model)(createReactClass({
                         render={() => (
                             <LoginPage
                                 tree={this.props.tree.login}
-                                tokenCursor={this.props.tree.token}
+                                tokenCursor={tokenCursor}
                             />
                         )}
                     />
@@ -83,7 +77,7 @@ const App = schema(model)(createReactClass({
                         render={() => (
                             <RegistrationPage
                                 tree={this.props.tree.registration}
-                                tokenCursor={this.props.tree.token}
+                                tokenCursor={tokenCursor}
                             />
                         )}
                     />
