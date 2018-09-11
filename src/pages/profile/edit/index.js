@@ -217,9 +217,38 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
+    renderVerificationInfo() {
+        const { isPhoneValidated, phone: savedPhone } = this.props.profileCursor.get();
+
+        if (!savedPhone) {
+            return null;
+        }
+
+        if (isPhoneValidated) {
+            return (
+                <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
+            );
+        }
+
+        return (
+            <div
+                className={s.button}
+                onClick={async () => {
+                    const cursor = this.props.tree.phoneVerificationResult;
+                    const result = await verifyPhoneNumberService(cursor);
+
+                    if (result.status === 'Succeed') {
+                        this.setState({ openCodeModal: true });
+                    }
+                }}
+            >
+                Verification
+            </div>
+        );
+    },
+
     render() {
         const formCursor = this.props.tree.form;
-        const { isPhoneValidated } = this.props.profileCursor.get();
 
         return (
             <div>
@@ -266,24 +295,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                             onChange={(e) => formCursor.phone.set(e.target.value)}
                             placeholder="Phone number"
                         >
-                            {isPhoneValidated
-                                ? (
-                                    <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
-                                ) : (
-                                    <div
-                                        className={s.button}
-                                        onClick={async () => {
-                                            const cursor = this.props.tree.phoneVerificationResult;
-                                            const result = await verifyPhoneNumberService(cursor);
-
-                                            if (result.status === 'Succeed') {
-                                                this.setState({ openCodeModal: true });
-                                            }
-                                        }}
-                                    >
-                                        Verification
-                                    </div>
-                                )}
+                            {this.renderVerificationInfo()}
                         </Input>
                         <Input
                             defaultValue={formCursor.email.get()}

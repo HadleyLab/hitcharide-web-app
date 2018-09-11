@@ -104,6 +104,10 @@ export const CreateRidePage = schema(model)(createReactClass({
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
             }
+
+            if (result.status === 'Succeed') {
+                this.props.history.push('/app');
+            }
         }
     },
 
@@ -271,7 +275,7 @@ export const CreateRidePage = schema(model)(createReactClass({
                     {this.renderCarPicker()}
                     <Input
                         type="number"
-                        value={1}
+                        defaultValue={1}
                         onKeyPress={(e) => {
                             const isString = e.which < 48 || e.which > 57;
 

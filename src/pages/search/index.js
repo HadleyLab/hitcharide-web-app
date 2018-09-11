@@ -3,13 +3,15 @@ import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import { WingBlank, WhiteSpace, Flex, List, DatePicker, Picker, Button, NavBar, Accordion, Tabs } from 'antd-mobile';
 import { Search } from 'components';
-import { getCitiesService } from 'services';
+import { getCitiesService, getRidesIHaveCreatedService } from 'services';
 import schema from 'libs/state';
+import moment from 'moment';
 import s from './search.css';
 
 const model = {
     tree: {
         cities: {},
+        rides: getRidesIHaveCreatedService,
         searchForm: {
             from: null,
             to: null,
@@ -21,9 +23,15 @@ const model = {
 export const SearchPage = schema(model)(createReactClass({
     displayName: 'SearchPage',
 
+    async componentDidMount() {
+        await getRidesIHaveCreatedService(this.props.tree.rides);
+    },
+
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.searchForm;
+        const ridesData = this.props.tree.rides.get();
+        const rides = !_.isEmpty(ridesData) && ridesData.status === 'Succeed' ? ridesData.data.results : [];
 
         return (
             <div>
@@ -71,38 +79,38 @@ export const SearchPage = schema(model)(createReactClass({
                     </Flex>
                 </WingBlank>
                 <WhiteSpace />
-                <List>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                    <List.Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      From Krasnoyarsk To Novosibirsk <br />
-                      on Sunday 2.09.2018 at 4:00 p.m<br />
-                      4 seats available
-                    </List.Item>
-                </List>
+                <div>
+                    {_.map(rides, (ride, index) => {
+                        const {
+                            cityFrom, cityTo, dateTime: date, numberOfSeats, price,
+                        } = ride;
+
+                        return (
+                            <div
+                                key={`ride-${index}`}
+                                // onClick={() => {}}
+                            >
+                                <div className={s.ride}>
+                                    <div className={s.date}>
+                                        {moment(date).format('H:mm A')}<br />
+                                        <span className={s.grey}>{moment(date).format('MMM D')}</span>
+                                    </div>
+                                    <div className={s.direction}>
+                                        {`${cityFrom.name}, ${cityFrom.state.name}`}
+                                        <span className={s.grey}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
+                                    </div>
+                                    <div className={s.info}>
+                                        {parseFloat(price).toString()} $
+                                        <span className={s.grey}>
+                                            {numberOfSeats}
+                                            {numberOfSeats === 1 ? ' seat' : ' seats'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
         );
     },

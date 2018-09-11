@@ -4,4 +4,7 @@ export {
     getMyProfileService, updateProfileService,
     verifyPhoneNumberService, checkPhoneCodeService,
 } from './profile.js';
-export { addRideService, addCarService, getCarListService } from './rides.js';
+export {
+    addRideService, addCarService, getCarListService,
+    getRidesIHaveCreatedService,
+} from './rides.js';

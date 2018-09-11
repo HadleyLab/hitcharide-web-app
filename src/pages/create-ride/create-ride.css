@@ -74,11 +74,12 @@
 }
 
 .inputWithIcon {
-    padding-right: 38px;
+    padding-right: 30px;
 }
 
 .icon {
     position: absolute;
+    top: 16px;
     right: 15px;
     width: 15px;
     height: 15px;

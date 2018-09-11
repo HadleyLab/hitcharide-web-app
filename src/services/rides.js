@@ -47,3 +47,17 @@ export function getCarListService(cursor) {
 
     return service(cursor);
 }
+
+export function getRidesIHaveCreatedService(cursor) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    const service = buildGetService(
+        '/rides/ride/my',
+        _.identity,
+        _.merge({}, defaultHeaders, headers)
+    );
+
+    return service(cursor);
+}

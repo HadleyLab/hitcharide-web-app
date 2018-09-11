@@ -1,4 +1,6 @@
-import { buildGetService, defaultHeaders, dehydrateBundle, paramsToString } from './base';
+import {
+    buildGetService, defaultHeaders, dehydrateBundle, paramsToString,
+} from './base';
 
 export function getStatesService(cursor, params) {
     const _service = buildGetService(
