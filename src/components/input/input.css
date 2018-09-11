@@ -21,6 +21,10 @@
         height: 1px;
         background-color: #ddd;
     }
+
+    &._error {
+        padding-right: 45px;
+    }
 }
 
 .touchableArea {
@@ -42,4 +46,15 @@
     font: inherit;
     line-height: inherit;
     color: #888;
+}
+
+.warning {
+    position: absolute;
+    right: 15px;
+    width: 21px;
+    height: 21px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #fff;
 }

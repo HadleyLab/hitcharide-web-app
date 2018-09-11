@@ -45,8 +45,6 @@ export const AddCarPage = schema(model)(createReactClass({
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
 
-        console.log('validationResult', validationResult);
-
         if (!isDataValid) {
             this.props.tree.errors.set(errors);
 
@@ -70,8 +68,6 @@ export const AddCarPage = schema(model)(createReactClass({
     render() {
         const { editMode } = this.props;
         const formCursor = this.props.tree.form;
-
-        console.log('this.props', this.props);
 
         return (
             <div className={s.container}>

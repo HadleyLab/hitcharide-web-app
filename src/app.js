@@ -74,8 +74,9 @@ const App = schema(model)(createReactClass({
 
                     <Route
                         path="/registration"
-                        render={() => (
+                        render={(props) => (
                             <RegistrationPage
+                                {...props}
                                 tree={this.props.tree.registration}
                                 tokenCursor={tokenCursor}
                             />

@@ -7,28 +7,27 @@ import {
     Flex, Button, List, DatePicker, WhiteSpace, Picker,
 } from 'antd-mobile';
 import { getCitiesService, addRideService, getCarListService } from 'services';
-import { validateForm } from 'components/utils';
+import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
-import s from './create-ride.css';
-
 import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
+import carIcon from 'components/icons/car.svg';
+import warningIcon from 'components/icons/warning.svg';
+import s from './create-ride.css';
 
 const validationSchema = yup.object().shape({
-    from: yup.mixed().required('Select a city'),
-    to: yup.mixed().required('Select a city'),
-    date: yup.date(new Date()),
+    cityFrom: yup.mixed().required('Select a city'),
+    cityTo: yup.mixed().required('Select a city'),
+    dateTime: yup.date().min(new Date(), `Date field must be later than ${new Date()}`),
     price: yup.number()
         .typeError('Wrong format')
         .nullable()
         .required('Add price for a seat'),
-    car: yup.object().shape({
-        model: yup.number().typeError('Wrong format').nullable().required('Select a car'),
-        availableSeats: yup.number()
-            .typeError('Wrong format')
-            .nullable()
-            .required('Add number of available seats in the car'),
-    }),
+    car: yup.number().typeError('Wrong format').nullable().required('Select a car'),
+    numberOfSeats: yup.number()
+        .typeError('Wrong format')
+        .nullable()
+        .min(1, 'Add number of available seats in the car'),
     description: yup.string().ensure().required('Add notes about this ride'),
 });
 
@@ -59,22 +58,20 @@ export const CreateRidePage = schema(model)(createReactClass({
                 const car = result.data[0];
                 const formCursor = this.props.tree.form;
 
-                formCursor.car.model.set(car.pk);
+                formCursor.car.set(car.pk);
             }
         }
     },
 
     initForm() {
         const initData = {
-            from: null,
-            to: null,
-            date: new Date(),
+            cityFrom: null,
+            cityTo: null,
+            dateTime: new Date(),
             price: null,
             stops: [],
-            car: {
-                model: null,
-                availableSeats: null,
-            },
+            car: null,
+            numberOfSeats: 1,
             description: null,
         };
 
@@ -87,8 +84,6 @@ export const CreateRidePage = schema(model)(createReactClass({
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
 
-        console.log('validationResult', validationResult);
-
         if (!isDataValid) {
             this.props.tree.errors.set(errors);
 
@@ -96,27 +91,27 @@ export const CreateRidePage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await addRideService(this.props.tree.result, {
-                cityFrom: data.from.pk,
-                cityTo: data.to.pk,
-                car: data.car.model,
-                stops: _.map(data.stops, (stop, index) => ({
+            const stops = _.filter(data.stops, (stop) => !_.isEmpty(stop));
+            const result = await addRideService(this.props.tree.result, _.assign({}, data, {
+                cityFrom: data.cityFrom.pk,
+                cityTo: data.cityTo.pk,
+                stops: _.map(stops, (stop, index) => ({
                     city: stop.pk,
                     order: index,
                 })),
-                dateTime: data.date,
-                price: data.price,
-                numberOfSeats: data.car.availableSeats,
-                description: data.description,
-
-            });
-
-            console.log('result', result);
+            }));
 
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
             }
         }
+    },
+
+    checkInputError(name) {
+        const errorsCursor = this.props.tree.errors;
+        const errorProps = checkInputError(name, errorsCursor.get());
+
+        return errorProps;
     },
 
     renderCarPicker() {
@@ -136,11 +131,13 @@ export const CreateRidePage = schema(model)(createReactClass({
                         <Picker
                             data={pickerData}
                             cols={1}
-                            value={[formCursor.car.model.get()]}
-                            onChange={([v]) => formCursor.car.model.set(v)}
-                            onOk={([v]) => formCursor.car.model.set(v)}
+                            value={[formCursor.car.get()]}
+                            onChange={([v]) => formCursor.car.set(v)}
+                            onOk={([v]) => formCursor.car.set(v)}
                         >
-                            <List.Item arrow="horizontal">Car</List.Item>
+                            <List.Item arrow="horizontal">
+                                <div className={s.carIcon} style={{ backgroundImage: `url(${carIcon})` }} />
+                            </List.Item>
                         </Picker>
                     </List>
                 </div>
@@ -169,15 +166,49 @@ export const CreateRidePage = schema(model)(createReactClass({
                         onItemSelect={(v) => stopsCursor.select(index).set(v)}
                         placeholder="Select a stop"
                     >
-                        <div className={s.stopIcon} style={{ backgroundImage: `url(${minusIcon})`}} />
+                        <div
+                            className={s.stopIcon}
+                            style={{ backgroundImage: `url(${minusIcon})` }}
+                            onClick={() => stopsCursor.unset(index)}
+                        />
                     </Search>
                 ))}
                 <div
                     className={s.addStop}
                     onClick={() => formCursor.stops.push({})}
                 >
-                    <div className={s.stopIcon} style={{ backgroundImage: `url(${plusIcon})`}} />
+                    <div className={s.stopIcon} style={{ backgroundImage: `url(${plusIcon})` }} />
                     <div>Add one</div>
+                </div>
+            </div>
+        );
+    },
+
+    renderNotes() {
+        const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
+        const errorProps = this.checkInputError('description');
+
+        return (
+            <div className={s.section}>
+                <Title>Notes</Title>
+                <div className={s.notes}>
+                    <textarea
+                        placeholder="Enter text"
+                        className={s.notesInput}
+                        onChange={(e) => {
+                            formCursor.description.set(e.target.value);
+                            errorsCursor.select('description').set(null);
+                        }}
+                    />
+                    {errorProps.error
+                        ? (
+                            <div
+                                className={s.warning}
+                                style={{ backgroundImage: `url(${warningIcon})` }}
+                                onClick={errorProps.onErrorClick}
+                            />
+                        ) : null}
                 </div>
             </div>
         );
@@ -186,8 +217,7 @@ export const CreateRidePage = schema(model)(createReactClass({
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
-
-        console.log('tree', this.props.tree.get());
+        const errorsCursor = this.props.tree.errors;
 
         return (
             <div className={s.container}>
@@ -195,34 +225,67 @@ export const CreateRidePage = schema(model)(createReactClass({
                     <Title>Ride information</Title>
                     <Search
                         cursor={citiesCursor}
-                        selectedValue={formCursor.get('from')}
-                        valueCursor={formCursor.from}
+                        selectedValue={formCursor.get('cityFrom')}
+                        valueCursor={formCursor.cityFrom}
                         service={getCitiesService}
                         displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => formCursor.from.set(v)}
+                        onItemSelect={(v) => {
+                            formCursor.cityFrom.set(v);
+                            errorsCursor.select('cityFrom').set(null);
+                        }}
+                        {...this.checkInputError('cityFrom')}
                     >
                         <div className={s.text}>From</div>
                     </Search>
                     <Search
                         cursor={citiesCursor}
-                        selectedValue={formCursor.get('to')}
-                        valueCursor={formCursor.to}
+                        selectedValue={formCursor.get('cityTo')}
+                        valueCursor={formCursor.cityTo}
                         service={getCitiesService}
                         displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => formCursor.to.set(v)}
+                        onItemSelect={(v) => {
+                            formCursor.cityTo.set(v);
+                            errorsCursor.select('cityTo').set(null);
+                        }}
+                        {...this.checkInputError('cityTo')}
                     >
                         <div className={s.text}>To</div>
                     </Search>
                     <List className={s.datePicker} style={{ backgroundColor: 'white' }}>
                         <DatePicker
-                            value={new Date()}
-                            onChange={(date) => formCursor.date.set(date)}
+                            value={formCursor.dateTime.get()}
+                            onChange={(date) => formCursor.dateTime.set(date)}
                             use12Hours
                             title="When"
                         >
                             <List.Item arrow="horizontal">When</List.Item>
                         </DatePicker>
                     </List>
+                </div>
+                <div className={s.section}>
+                    <Title>Stop overs</Title>
+                    {this.renderStopOvers()}
+                </div>
+                <div className={s.section}>
+                    <Title>Car</Title>
+                    {this.renderCarPicker()}
+                    <Input
+                        type="number"
+                        value={1}
+                        onKeyPress={(e) => {
+                            const isString = e.which < 48 || e.which > 57;
+
+                            if (isString) {
+                                e.preventDefault();
+                            }
+                        }}
+                        onChange={(e) => formCursor.numberOfSeats.set(e.target.value)}
+                    >
+                        <div className={s.text}>Available seats</div>
+                    </Input>
+                </div>
+                <div className={s.section}>
+                    <Title>Price</Title>
                     <Input
                         type="number"
                         className={s.inputWithIcon}
@@ -234,41 +297,17 @@ export const CreateRidePage = schema(model)(createReactClass({
                                 e.preventDefault();
                             }
                         }}
-                        onChange={(e) => formCursor.price.set(e.target.value)}
+                        onChange={(e) => {
+                            formCursor.price.set(e.target.value);
+                            errorsCursor.select('price').set(null);
+                        }}
+                        {...this.checkInputError('price')}
                     >
                         <div className={s.text}>Price for seat</div>
                         <div className={s.icon}>$</div>
                     </Input>
                 </div>
-                <div className={s.section}>
-                    <Title>Stop overs</Title>
-                    {this.renderStopOvers()}
-                </div>
-                <div className={s.section}>
-                    <Title>Car</Title>
-                    {this.renderCarPicker()}
-                    <Input
-                        type="number"
-                        onKeyPress={(e) => {
-                            const isString = e.which < 48 || e.which > 57;
-
-                            if (isString) {
-                                e.preventDefault();
-                            }
-                        }}
-                        onChange={(e) => formCursor.car.availableSeats.set(e.target.value)}
-                    >
-                        <div className={s.text}>Available seats</div>
-                    </Input>
-                </div>
-                <div className={s.section}>
-                    <Title>Notes</Title>
-                    <textarea
-                        placeholder="Enter text"
-                        className={s.notes}
-                        onChange={(e) => formCursor.description.set(e.target.value)}
-                    />
-                </div>
+                {this.renderNotes()}
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex justify="center">

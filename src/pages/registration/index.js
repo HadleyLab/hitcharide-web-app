@@ -1,7 +1,9 @@
 import React from 'react';
 import createReactClass from 'create-react-class';
 import { Link, Redirect } from 'react-router-dom';
-import { Button, WingBlank, WhiteSpace, Flex, List, InputItem, Toast } from 'antd-mobile';
+import {
+    Button, WingBlank, WhiteSpace, Flex, List, InputItem, Toast, Modal,
+} from 'antd-mobile';
 import schema from 'libs/state';
 import * as yup from 'yup';
 import { signUpService, signInService } from 'services';
@@ -54,28 +56,19 @@ const RegistrationForm = createReactClass({
         }
 
         if (isDataValid) {
-            const signUpResult = await signUpService(this.props.tree.result, data);
+            const result = await signUpService(this.props.tree.result, data);
 
-            console.log('signUpResult', signUpResult);
-
-            if (signUpResult.status === 'Failure') {
-                this.props.tree.errors.set(signUpResult.error.data);
+            if (result.status === 'Failure') {
+                this.props.tree.errors.set(result.error.data);
             }
 
-            if (signUpResult.status === 'Succeed') {
-                const signInResult = await signInService(this.props.tree.loginResult, {
-                    username: data.email,
-                    password: data.password,
-                });
-
-                console.log('signInResult', signInResult);
-
-                if (signInResult.status === 'Succeed') {
-                    const { token } = signInResult.data;
-
-                    setToken(token);
-                    this.props.tokenCursor.set(token);
-                }
+            if (result.status === 'Succeed') {
+                Modal.alert("We've sent you the email", 'Please confirm your email address to sign in', [
+                    {
+                        text: 'Ok',
+                        onPress: () => this.props.history.push('/login'),
+                    },
+                ]);
             }
         }
     },

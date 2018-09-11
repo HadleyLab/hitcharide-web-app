@@ -190,7 +190,7 @@ export const ProfilePage = schema(model)(createReactClass({
                         <EditProfilePage
                             {...props}
                             tree={this.props.tree.select('edit')}
-                            profileCursor={this.props.tree.info}
+                            profileCursor={this.props.tree.info.data}
                             cars={this.props.tree.cars.get('data')}
                         />
                     )}

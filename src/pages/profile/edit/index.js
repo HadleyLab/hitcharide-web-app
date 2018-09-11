@@ -5,8 +5,13 @@ import { Title, Input } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm } from 'components/utils';
-import { updateProfileService } from 'services';
-import { Flex, Button, WhiteSpace } from 'antd-mobile';
+import {
+    updateProfileService, verifyPhoneNumberService,
+    checkPhoneCodeService,
+} from 'services';
+import {
+    Flex, Button, WhiteSpace, Modal,
+} from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import s from './edit.css';
@@ -14,19 +19,21 @@ import s from './edit.css';
 import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
 import arrowIcon from 'components/icons/arrow-right.svg';
+import tickIcon from 'components/icons/tick-circle.svg';
 
 const model = {
     form: {
         photo: null,
         firstName: '',
         lastName: '',
-        age: null,
-        isPhoneValidated: false,
+        // age: null,
         shortDesc: '',
         phone: '',
         email: '',
         paypal: null,
     },
+    phoneVerificationCode: null,
+    phoneVerificationResult: {},
     result: {},
     errors: {},
 };
@@ -34,31 +41,34 @@ const model = {
 const validationSchema = yup.object().shape({
     firstName: yup.string().ensure().required('Name is a required field.'),
     lastName: yup.string().ensure().required('Last name is a required field.'),
-    age: yup.number()
-        .typeError('Wrong format')
-        .nullable()
-        .required('Age is a required field.'),
+    // age: yup.number()
+    //     .typeError('Wrong format')
+    //     .nullable()
+    //     .required('Age is a required field.'),
     phone: yup.number()
         .typeError('Wrong format')
         .nullable()
-        .required('Age is a required field.'),
+        .required('Phone is a required field.'),
 });
 
 export const EditProfilePage = schema(model)(createReactClass({
+    getInitialState() {
+        return {
+            openCodeModal: false,
+        };
+    },
+
     componentDidMount() {
         const formCursor = this.props.tree.form;
-        const profile = this.props.profileCursor.get('data');
+        const profile = this.props.profileCursor.get();
 
         formCursor.set(profile);
     },
 
-    async onSubmit() {
-        const formCursor = this.props.tree.form;
-        const data = formCursor.get();
+    async validateForm() {
+        const data = this.props.tree.form.get();
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
-
-        console.log('validationResult', validationResult);
 
         if (!isDataValid) {
             this.props.tree.errors.set(errors);
@@ -67,18 +77,47 @@ export const EditProfilePage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await updateProfileService(this.props.tree.result, data);
+            this.onSubmit();
+        }
+    },
 
-            if (result.status === 'Succeed') {
-                const profile = this.props.profileCursor.set(result);
-                this.props.history.goBack();
+    updateProfileInfo(data = {}) {
+        const profile = this.props.tree.result.get();
+
+        this.props.profileCursor.set(_.merge({}, profile.data || {}, data));
+    },
+
+    onProfileSuccessfullyEdited(data) {
+        this.setState({ openCodeModal: false });
+        this.updateProfileInfo(data);
+        this.props.history.goBack();
+    },
+
+    async onSubmit() {
+        const formCursor = this.props.tree.form;
+        const data = formCursor.get();
+
+        const result = await updateProfileService(this.props.tree.result, data);
+
+        if (result.status === 'Succeed') {
+            const sendCodeResultCursor = this.props.tree.phoneVerificationResult;
+            const sendCodeResult = await verifyPhoneNumberService(sendCodeResultCursor);
+
+            if (sendCodeResult.status === 'Succeed') {
+                const oldProfileInfo = this.props.profileCursor.get();
+
+                sendCodeResultCursor.set({});
+
+                if (oldProfileInfo.phone !== data.phone) {
+                    this.setState({ openCodeModal: true });
+                } else {
+                    this.onProfileSuccessfullyEdited();
+                }
             }
+        }
 
-            console.log('result', result);
-
-            if (result.status === 'Failure') {
-                this.props.tree.errors.set(result.error.data);
-            }
+        if (result.status === 'Failure') {
+            this.props.tree.errors.set(result.error.data);
         }
     },
 
@@ -124,10 +163,63 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
+    renderPhoneCodeModal() {
+        const cursor = this.props.tree.phoneVerificationCode;
+
+        return (
+            <Modal
+                visible={this.state.openCodeModal}
+                transparent
+                maskClosable={false}
+                title="Code"
+                footer={[
+                    {
+                        text: 'OK',
+                        style: { color: "red" },
+                        onPress: async () => {
+                            const code = this.props.tree.phoneVerificationCode.get();
+                            const result = await checkPhoneCodeService(cursor, { code });
+
+                            if (result.status === 'Succeed') {
+                                this.onProfileSuccessfullyEdited({ isPhoneValidated: true });
+                            }
+                        },
+                    },
+                    {
+                        text: 'Cancel',
+                        onPress: () => {
+                            this.setState({ openCodeModal: false });
+                            this.updateProfileInfo();
+                        },
+                    },
+                ]}
+            >
+                <div>
+                    <input
+                        className={s.code}
+                        placeholder="__ __ - __ __"
+                        onKeyPress={(e) => {
+                            const isString = e.which < 48 || e.which > 57;
+                            const isFull = this.state.length === 4;
+
+                            if (isString || isFull) {
+                                e.preventDefault();
+                            }
+                        }}
+                        onChange={(e) => cursor.set(e.target.value)}
+                    />
+                    <div className={s.modalFooter}>
+                        {`I didn't receive the code. `}
+                        <span className={s.link}>Resend</span>
+                    </div>
+                </div>
+            </Modal>
+        );
+    },
+
     render() {
         const formCursor = this.props.tree.form;
-
-        console.log('edit', this.props.tree.get());
+        const { isPhoneValidated } = this.props.profileCursor.get();
 
         return (
             <div>
@@ -149,12 +241,14 @@ export const EditProfilePage = schema(model)(createReactClass({
                     >
                         <div className={s.text}>Last name</div>
                     </Input>
+                    {/*
                     <Input
                         defaultValue={formCursor.age.get()}
                         onChange={(e) => formCursor.age.set(e.target.value)}
                     >
                         <div className={s.text}>Age</div>
                     </Input>
+                    */}
                 </div>
                 <div className={s.moreInfo}>
                     <div className={s.section}>
@@ -171,12 +265,33 @@ export const EditProfilePage = schema(model)(createReactClass({
                             defaultValue={formCursor.phone.get()}
                             onChange={(e) => formCursor.phone.set(e.target.value)}
                             placeholder="Phone number"
-                        />
+                        >
+                            {isPhoneValidated
+                                ? (
+                                    <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
+                                ) : (
+                                    <div
+                                        className={s.button}
+                                        onClick={async () => {
+                                            const cursor = this.props.tree.phoneVerificationResult;
+                                            const result = await verifyPhoneNumberService(cursor);
+
+                                            if (result.status === 'Succeed') {
+                                                this.setState({ openCodeModal: true });
+                                            }
+                                        }}
+                                    >
+                                        Verification
+                                    </div>
+                                )}
+                        </Input>
                         <Input
                             defaultValue={formCursor.email.get()}
                             onChange={(e) => formCursor.email.set(e.target.value)}
                             placeholder="Email"
-                        />
+                        >
+                            <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
+                        </Input>
                     </div>
                     <div className={s.section}>
                         <Title>Car</Title>
@@ -199,7 +314,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         type="primary"
                         inline
                         style={{ width: 250 }}
-                        onClick={this.onSubmit}
+                        onClick={this.validateForm}
                     >
                         Save profile
                     </Button>
@@ -207,6 +322,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                 <WhiteSpace />
                 <WhiteSpace />
                 <WhiteSpace />
+                {this.renderPhoneCodeModal()}
             </div>
         );
     },

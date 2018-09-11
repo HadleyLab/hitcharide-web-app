@@ -115,19 +115,6 @@ export const LoginPage = schema(model)(createReactClass({
                     Hitcharide
                 </Flex>
                 <WhiteSpace />
-
-                {/*
-                <Input
-                type="number"
-                    onKeyPress={(evt) => {
-                        console.log('evt.which', evt.which);
-                        if (evt.which < 48 || evt.which > 57) {
-                            evt.preventDefault();
-                        }
-                    }}
-                />
-                */}
-
                 <WhiteSpace />
                 <WingBlank>
                     <a href="http://localhost:8000/accounts/social/login/google-oauth2/">

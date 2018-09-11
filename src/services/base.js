@@ -16,7 +16,7 @@ export const defaultHeaders = {
     'Content-Type': 'application/json',
 };
 
-export const url = 'http://localhost:8000';
+export const url = 'http://192.168.11.254:8000';
 
 export function buildGetService(
     path,
@@ -64,8 +64,6 @@ export function buildPostService(
             method,
             headers,
         };
-
-        console.log('payload', payload);
 
         try {
             let response = await fetch(`${url}${path}`, payload).then(checkStatus);
