@@ -73,12 +73,14 @@ export const ProfilePageContent = createReactClass({
                 </div>
                 <div className={s.section}>
                     <Title>Contacts</Title>
-                    <div className={s.infoField}>
-                        {phone}
-                        {isPhoneValidated ?
-                            <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
-                        : null}
-                    </div>
+                    {phone ? (
+                        <div className={s.infoField}>
+                            {phone}
+                            {isPhoneValidated ? (
+                                <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
+                            ) : null}
+                        </div>
+                    ) : null}
                     <div className={s.infoField}>
                         {email}
                         <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
