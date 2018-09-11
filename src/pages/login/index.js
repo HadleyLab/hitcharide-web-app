@@ -30,7 +30,7 @@ const model = {
         form: {
             // email: null,
             // password: null,
-            email: 'admin@bs.com',
+            email: 'user@bs.com',
             password: 'k134rf2i',
         },
         result: {},

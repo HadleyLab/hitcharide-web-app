@@ -4,8 +4,6 @@ import { buildGetService, buildPostService, defaultHeaders } from './base';
 
 export function addRideService(cursor, data) {
     const headers = {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
         Authorization: `JWT ${getToken()}`,
     };
 
@@ -22,7 +20,6 @@ export function addRideService(cursor, data) {
 
 export function addCarService(cursor, data) {
     const headers = {
-        Accept: 'application/json',
         Authorization: `JWT ${getToken()}`,
     };
 

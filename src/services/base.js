@@ -14,6 +14,7 @@ export function checkStatus(response) {
 
 export const defaultHeaders = {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
 };
 
 export const url = 'http://192.168.11.254:8000';

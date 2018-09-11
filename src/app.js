@@ -8,7 +8,8 @@ import {
 import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import {
-    LoginPage, MainPage, RegistrationPage, HomePage,
+    LoginPage, MainPage, RegistrationPage,
+    HomePage, ActivateAccountPage,
 } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
@@ -79,6 +80,16 @@ const App = schema(model)(createReactClass({
                                 {...props}
                                 tree={this.props.tree.registration}
                                 tokenCursor={tokenCursor}
+                            />
+                        )}
+                    />
+
+                    <Route
+                        path="/activate-account/:uid/:token"
+                        render={(props) => (
+                            <ActivateAccountPage
+                                {...props}
+                                tree={this.props.tree.activateAccount}
                             />
                         )}
                     />

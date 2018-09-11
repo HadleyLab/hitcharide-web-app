@@ -27,7 +27,6 @@ export function getMyProfileService(cursor) {
 export function updateProfileService(cursor, data) {
     const headers = {
         // 'Content-Type': 'multipart/form-data',
-        Accept: 'application/json',
         Authorization: `JWT ${getToken()}`,
     };
 

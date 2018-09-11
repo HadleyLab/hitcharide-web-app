@@ -8,3 +8,4 @@ export { ProfilePage } from './profile';
 export { CreateRidePage } from './create-ride';
 export { CalendarPage } from './calendar';
 export { AddCarPage } from './add-car';
+export { ActivateAccountPage } from './activate-account';
