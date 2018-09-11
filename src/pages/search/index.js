@@ -78,34 +78,28 @@ export const SearchPage = schema(model)(createReactClass({
                         <Button type="primary" size="small" inline>Search for a ride</Button>
                     </Flex>
                 </WingBlank>
-                <WhiteSpace />
-                <div>
+                <div className={s.rides}>
                     {_.map(rides, (ride, index) => {
                         const {
                             cityFrom, cityTo, dateTime: date, numberOfSeats, price,
                         } = ride;
 
                         return (
-                            <div
-                                key={`ride-${index}`}
-                                // onClick={() => {}}
-                            >
-                                <div className={s.ride}>
-                                    <div className={s.date}>
-                                        {moment(date).format('H:mm A')}<br />
-                                        <span className={s.grey}>{moment(date).format('MMM D')}</span>
-                                    </div>
-                                    <div className={s.direction}>
-                                        {`${cityFrom.name}, ${cityFrom.state.name}`}
-                                        <span className={s.grey}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
-                                    </div>
-                                    <div className={s.info}>
-                                        {parseFloat(price).toString()} $
-                                        <span className={s.grey}>
-                                            {numberOfSeats}
-                                            {numberOfSeats === 1 ? ' seat' : ' seats'}
-                                        </span>
-                                    </div>
+                            <div className={s.ride} key={`ride-${index}`}>
+                                <div className={s.date}>
+                                    {moment(date).format('H:mm A')}<br />
+                                    <span className={s.grey}>{moment(date).format('MMM D')}</span>
+                                </div>
+                                <div className={s.direction}>
+                                    {`${cityFrom.name}, ${cityFrom.state.name}`}
+                                    <span className={s.grey}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
+                                </div>
+                                <div className={s.info}>
+                                    {parseFloat(price).toString()} $
+                                    <span className={s.grey}>
+                                        {numberOfSeats}
+                                        {numberOfSeats === 1 ? ' seat' : ' seats'}
+                                    </span>
                                 </div>
                             </div>
                         );

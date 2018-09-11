@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Flex, TabBar } from 'antd-mobile';
+import { Flex, TabBar, Modal } from 'antd-mobile';
 import { TopBar } from 'components';
 import { Route, Redirect } from 'react-router-dom';
 import {
@@ -86,8 +86,35 @@ export const MainPage = createReactClass({
         }
     },
 
+    checkIfRideCreationAllowed() {
+        const profile = this.props.tree.profile.get('info');
+
+        if (!_.isEmpty(profile) && !_.isEmpty(profile.data)) {
+            const {
+                firstName, lastName, phone, isPhoneValidated,
+            } = profile.data;
+
+            if (!firstName || !lastName || !phone) {
+                return {
+                    allowed: false,
+                    message: 'Your should fill your profile to create a ride',
+                };
+            }
+
+            if (!isPhoneValidated) {
+                return {
+                    allowed: false,
+                    message: 'Your should verify your phone number to create a ride',
+                };
+            }
+        }
+
+        return { allowed: true };
+    },
+
     render() {
         const { url } = this.props.match;
+        const creationRights = this.checkIfRideCreationAllowed();
 
         this.checkIfSignatureHasExpired();
 
@@ -116,8 +143,12 @@ export const MainPage = createReactClass({
                     />
                     <Route
                         path={`${url}/create-ride`}
-                        render={() => (
-                            <CreateRidePage {...this.props} tree={this.props.tree.select('createRide')} />
+                        render={(props) => (
+                            <CreateRidePage
+                                {..._.merge(this.props, props)}
+                                creationRights={creationRights}
+                                tree={this.props.tree.select('createRide')}
+                            />
                         )}
                     />
                     <Route
@@ -144,7 +175,23 @@ export const MainPage = createReactClass({
                                 icon={(<Icon icon={tab.icon} />)}
                                 selectedIcon={(<Icon icon={tab.iconActive} selected />)}
                                 selected={this.props.location.pathname === tab.path}
-                                onPress={() => this.props.history.push(tab.path)}
+                                onPress={() => {
+                                    if (tab.path === '/app/create-ride') {
+                                        if (creationRights.allowed) {
+                                            this.props.history.push(tab.path)
+                                        } else {
+                                            Modal.alert('Create a ride', creationRights.message, [
+                                                { text: 'Cancel', onPress: () => null },
+                                                {
+                                                    text: 'Edit profile',
+                                                    onPress: () => this.props.history.push('/app/profile/edit')
+                                                },
+                                            ]);
+                                        }
+                                    } else {
+                                        this.props.history.push(tab.path)
+                                    }
+                                }}
                             />
                         ))}
                     </TabBar>

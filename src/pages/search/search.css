@@ -14,6 +14,8 @@
     color: rgba(#1A1B20, .3);
 }
 
+.rides {}
+
 .ride {
     display: flex;
     position: relative;
@@ -22,6 +24,10 @@
     font-size: 16px;
     line-height: 18px;
     margin-bottom: 5px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
 
     &:before {
         content: '';
@@ -52,8 +58,13 @@
     margin-top: 5px;
 }
 
-.date, .info {
-    width: 60px;
+.date {
+    width: 70px;
+}
+
+.info {
+    width: 50px;
+    text-align: right;
 }
 
 .direction {

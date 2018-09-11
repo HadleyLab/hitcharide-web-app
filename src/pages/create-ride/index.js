@@ -219,9 +219,29 @@ export const CreateRidePage = schema(model)(createReactClass({
     },
 
     render() {
+        const { creationRights } = this.props;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
+
+        if (!creationRights.allowed) {
+            return (
+                <div className={s.error}>
+                    <div className={s.title}>Create a ride</div>
+                    <div className={s.errorText}>{creationRights.message}</div>
+                    <Flex justify="center">
+                        <Button
+                            type="primary"
+                            inline
+                            style={{ width: 250 }}
+                            onClick={() => this.props.history.push('/app/profile/edit')}
+                        >
+                            Go to profile
+                        </Button>
+                    </Flex>
+                </div>
+            );
+        }
 
         return (
             <div className={s.container}>
