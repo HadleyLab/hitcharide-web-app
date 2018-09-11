@@ -11,6 +11,12 @@
 7. Импорт городов
     docker-compose run --rm api ./manage.py import_usa_cities
 8. В админке Mail templates -> Account activate нужно заменить url по типу
+
+Body:   <p>You're receiving this email because you need to      finish activation process on {{ site_name }}.</p>
+        <p>Please go to the following page to activate account:</p>
+        <p><a href="http://192.168.11.254:3000/#/{{ url }}">http://192.168.11.254:3000/#/{{ url }}</a></p>
+        <p>Thanks for using our site!</p>
+        <p>The {{ site_name }} team</p>
 ```
 
 ##### App:
@@ -21,7 +27,8 @@
 3. docker-compose up
 9. Пароль для удобства задала по умолчанию k134rf2i
 10. При регистрации ссылка для активации аккаунта будет в консоле где запущен api
-11. При добавлении номера телефона ссылка тоже будет в консоле где запущен api
+11. При добавлении номера телефона ссылка тоже будет в консоле где запущен api:
+'Your Hitcharide activation code is: 4414'
 ```
 
 
