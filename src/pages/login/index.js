@@ -28,10 +28,10 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            // email: null,
-            // password: null,
-            email: 'user@bs.com',
+            email: null,
             password: 'k134rf2i',
+            // email: 'user@bs.com',
+            // password: 'k134rf2i',
         },
         result: {},
         errors: {},

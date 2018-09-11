@@ -32,9 +32,12 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            email: 'user@bs.com',
+            email: null,
             password: 'k134rf2i',
             confirmPassword: 'k134rf2i',
+            // email: 'user@bs.com',
+            // password: 'k134rf2i',
+            // confirmPassword: 'k134rf2i',
         },
         result: {},
         loginResult: {},
