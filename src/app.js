@@ -8,8 +8,8 @@ import {
 import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import {
-    LoginPage, MainPage, RegistrationPage,
-    HomePage, ActivateAccountPage,
+    LoginPage, MainPage, RegistrationPage, HomePage,
+    ActivateAccountPage, SocialAuthPage, SocialAuthErrorPage,
 } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
@@ -93,6 +93,18 @@ const App = schema(model)(createReactClass({
                             />
                         )}
                     />
+
+                    <Route
+                        path="/account/my/"
+                        render={(props) => (
+                            <SocialAuthPage
+                                {...props}
+                                tokenCursor={tokenCursor}
+                            />
+                        )}
+                    />
+
+                    <Route path="/account/error" component={SocialAuthErrorPage} />
                 </div>
             </Router>
         );

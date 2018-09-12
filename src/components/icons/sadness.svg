@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="130px" height="130px" viewBox="0 0 130 130" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>sadness</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="sadness" fill="#9B9B9B" fill-rule="nonzero">
+            <path d="M65,0 C29.159,0 0,29.159 0,65 C0,100.841 29.159,130 65,130 C100.841,130 130,100.841 130,65 C130,29.159 100.841,0 65,0 Z M65,122.973 C49.0761,122.973 34.6327,116.518 24.1448,106.09 C19.9566,101.926 16.4013,97.1262 13.6331,91.8515 C9.41722,83.8191 7.02712,74.6838 7.02712,65 C7.02712,33.0336 33.0336,7.02712 65,7.02712 C80.1623,7.02712 93.9812,12.8807 104.322,22.4438 C109.684,27.4014 114.112,33.3551 117.304,40.0098 C120.936,47.5811 122.973,56.0571 122.973,65 C122.973,96.9664 96.9664,122.973 65,122.973 Z" id="Shape"></path>
+            <path d="M64.8757,101.013 C78.4706,101.013 91.4993,94.0605 98.959,82.5171 L93.0567,78.7031 C86.207,89.3031 73.6732,95.2191 61.1303,93.771 C51.3529,92.6436 42.3112,87.0105 36.9429,78.7031 L31.041,82.5171 C37.5367,92.5698 48.4841,99.3861 60.3248,100.752 C61.8448,100.927 63.3627,101.013 64.8757,101.013 Z" id="Shape" transform="translate(65.000000, 89.858050) scale(1, -1) translate(-65.000000, -89.858050) "></path>
+            <circle id="Oval" cx="43" cy="57" r="7"></circle>
+            <circle id="Oval" cx="87" cy="57" r="7"></circle>
+            <rect id="Rectangle" transform="translate(34.313708, 44.313708) rotate(-45.000000) translate(-34.313708, -44.313708) " x="21.8137085" y="40.8137085" width="25" height="7"></rect>
+            <rect id="Rectangle" transform="translate(95.313708, 44.313708) rotate(45.000000) translate(-95.313708, -44.313708) " x="82.8137085" y="40.8137085" width="25" height="7"></rect>
+        </g>
+    </g>
+</svg>

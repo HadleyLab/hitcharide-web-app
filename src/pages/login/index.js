@@ -9,9 +9,11 @@ import { signInService } from 'services';
 import schema from 'libs/state';
 import { Input } from 'components';
 import {
-    validateForm, checkInputError, checkUnhandledFormErrors, setToken
+    validateForm, checkInputError, checkUnhandledFormErrors, setToken,
 } from 'components/utils';
 import * as yup from 'yup';
+import googleIcon from 'components/icons/google.svg';
+import s from './login.css';
 
 const validationSchema = yup.object().shape({
     email: yup
@@ -116,13 +118,6 @@ export const LoginPage = schema(model)(createReactClass({
                 </Flex>
                 <WhiteSpace />
                 <WhiteSpace />
-                <WingBlank>
-                    <a href="http://localhost:8000/accounts/social/login/google-oauth2/">
-                        Sign in with Google+
-                    </a>
-                </WingBlank>
-                <WhiteSpace />
-                <WhiteSpace />
                 <List renderHeader={() => 'Sign in with email'}>
                     <InputItem {...this.getInputProps('email')}>
                         Email
@@ -131,13 +126,23 @@ export const LoginPage = schema(model)(createReactClass({
                         Password
                     </InputItem>
                 </List>
-                <WhiteSpace />
                 {this.renderError()}
-                <WingBlank>
-                    <Button onClick={this.onSubmit}>Sign in</Button>
-                    <WhiteSpace />
-                    Don't have an account? <Link to="/registration">Sign up</Link>
-                </WingBlank>
+                <div className={s.footer}>
+                    <div className={s.buttons}>
+                        <Button onClick={this.onSubmit} type="primary">Sign in</Button>
+                        <a
+                            className={s.googleButton}
+                            href="http://localhost:8000/accounts/social/login/google-oauth2/"
+                        >
+                            <img src={googleIcon} alt="Google" />
+                            Sign in with Google+
+                        </a>
+                    </div>
+                    <span className={s.inlineButton}>
+                        {`Don't have an account? `}
+                        <Link to="/registration">Sign up</Link>
+                    </span>
+                </div>
             </Flex>
         );
     },

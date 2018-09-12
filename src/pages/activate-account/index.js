@@ -1,10 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
+import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import { Link } from 'react-router-dom';
 import { activateAccountService } from 'services';
 
 export const ActivateAccountPage = createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        match: PropTypes.shape({
+            params: PropTypes.shape({
+                uid: PropTypes.string.isRequired,
+                token: PropTypes.string.isRequired,
+            }),
+        }).isRequired,
+    },
+
     async componentDidMount() {
         const { params } = this.props.match;
         await activateAccountService(this.props.tree, params);
