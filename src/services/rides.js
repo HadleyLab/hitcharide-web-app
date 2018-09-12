@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { getToken } from 'components/utils';
-import { buildGetService, buildPostService, defaultHeaders } from './base';
+import {
+    buildGetService, buildPostService, defaultHeaders, paramsToString,
+} from './base';
 
 export function addRideService(cursor, data) {
     const headers = {
@@ -41,6 +43,20 @@ export function getCarListService(cursor) {
 
     const service = buildGetService(
         '/rides/car/',
+        _.identity,
+        _.merge({}, defaultHeaders, headers)
+    );
+
+    return service(cursor);
+}
+
+export function getRidesListService(cursor, params) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    const service = buildGetService(
+        `/rides/list/${paramsToString(params)}`,
         _.identity,
         _.merge({}, defaultHeaders, headers)
     );

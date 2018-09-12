@@ -1,20 +1,23 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { WingBlank, WhiteSpace, Flex, List, DatePicker, Picker, Button, NavBar, Accordion, Tabs } from 'antd-mobile';
-import { Search } from 'components';
-import { getCitiesService, getRidesIHaveCreatedService } from 'services';
+// import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
+import { Search, Title } from 'components';
+import { getCitiesService, getRidesListService } from 'services';
 import schema from 'libs/state';
 import moment from 'moment';
+import { checkIfValueEmpty } from 'components/utils';
+import markerIcon from 'components/icons/marker.svg';
 import s from './search.css';
 
 const model = {
     tree: {
         cities: {},
-        rides: getRidesIHaveCreatedService,
+        rides: getRidesListService,
         searchForm: {
-            from: null,
-            to: null,
+            cityFrom: null,
+            cityTo: null,
             date: null,
         },
     },
@@ -23,8 +26,34 @@ const model = {
 export const SearchPage = schema(model)(createReactClass({
     displayName: 'SearchPage',
 
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+    },
+
     async componentDidMount() {
-        await getRidesIHaveCreatedService(this.props.tree.rides);
+        await getRidesListService(this.props.tree.rides);
+    },
+
+    hydrateParams(data) {
+        const params = _.chain(data)
+            .omitBy((value) => checkIfValueEmpty(value))
+            .mapValues((value, key) => {
+                if (key === 'cityFrom' || key === 'cityTo') {
+                    return value.pk;
+                }
+
+                return value;
+            })
+            .value();
+
+        return params;
+    },
+
+    async onSearchChange() {
+        const formCursor = this.props.tree.searchForm;
+        const params = this.hydrateParams(formCursor.get());
+
+        await getRidesListService(this.props.tree.rides, params);
     },
 
     render() {
@@ -34,31 +63,36 @@ export const SearchPage = schema(model)(createReactClass({
         const rides = !_.isEmpty(ridesData) && ridesData.status === 'Succeed' ? ridesData.data.results : [];
 
         return (
-            <div>
+            <div className={s.container}>
+                <Title>Search for a ride</Title>
                 <Search
                     cursor={citiesCursor}
-                    selectedValue={formCursor.get('from')}
-                    valueCursor={formCursor.from}
+                    selectedValue={formCursor.get('cityFrom')}
+                    valueCursor={formCursor.cityFrom}
                     service={getCitiesService}
                     displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => formCursor.from.set(v)}
+                    onItemSelect={(v) => {
+                        formCursor.cityFrom.set(v);
+                        this.onSearchChange();
+                    }}
+                    className={s.field}
                 >
-                    {/*
-                    <div className={s.icon} style={{ backgroundImage: `url(${locationIcon})` }} />
-                    */}
+                    <div className={s.icon} style={{ backgroundImage: `url(${markerIcon})` }} />
                     <div className={s.text}>From </div>
                 </Search>
                 <Search
                     cursor={citiesCursor}
-                    selectedValue={formCursor.get('to')}
-                    valueCursor={formCursor.to}
+                    selectedValue={formCursor.get('cityTo')}
+                    valueCursor={formCursor.cityTo}
                     service={getCitiesService}
                     displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => formCursor.to.set(v)}
+                    onItemSelect={(v) => {
+                        formCursor.cityTo.set(v);
+                        this.onSearchChange();
+                    }}
+                    className={s.field}
                 >
-                    {/*
-                    <div className={s.icon} style={{ backgroundImage: `url(${locationIcon})` }} />
-                    */}
+                    <div className={s.icon} style={{ backgroundImage: `url(${markerIcon})` }} />
                     <div className={s.text}>To </div>
                 </Search>
                 {/*
@@ -72,12 +106,6 @@ export const SearchPage = schema(model)(createReactClass({
                     </DatePicker>
                 </List>
                 */}
-                <WhiteSpace />
-                <WingBlank>
-                    <Flex justify="end">
-                        <Button type="primary" size="small" inline>Search for a ride</Button>
-                    </Flex>
-                </WingBlank>
                 <div className={s.rides}>
                     {_.map(rides, (ride, index) => {
                         const {

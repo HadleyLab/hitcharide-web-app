@@ -1,3 +1,5 @@
+.container {}
+
 .form {
     :global .am-list-content {
         color: rgba(#1A1B20, .3)!important;
@@ -9,18 +11,30 @@
     }
 }
 
-.text {
-    margin-right: 10px;
-    color: rgba(#1A1B20, .3);
+.icon {
+    width: 20px;
+    height: 20px;
+    background-position: center;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    margin-right: 15px;
+    margin-top: 2px;
 }
 
-.rides {}
+.text {
+    margin-right: 10px;
+    color: #1A1B20;
+}
+
+.rides {
+    margin-top: 15px;
+}
 
 .ride {
     display: flex;
     position: relative;
     width: 100%;
-    padding: 15px 15px 15px 30px;
+    padding: 15px;
     font-size: 16px;
     line-height: 18px;
     margin-bottom: 5px;
@@ -37,17 +51,6 @@
         height: 1px;
         bottom: 0;
         background-color: #ddd;
-    }
-
-    &:after {
-        content: '';
-        display: block;
-        position: absolute;
-        left: 10px;
-        top: 0;
-        bottom: 0;
-        width: 5px;
-        background-color: #4263CA;
     }
 }
 
@@ -70,4 +73,10 @@
 .direction {
     flex: 1;
     padding: 0 15px;
+}
+
+.field {
+    &:before {
+        left: 0;
+    }
 }

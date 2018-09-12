@@ -6,5 +6,5 @@ export {
 } from './profile.js';
 export {
     addRideService, addCarService, getCarListService,
-    getRidesIHaveCreatedService,
+    getRidesIHaveCreatedService, getRidesListService,
 } from './rides.js';

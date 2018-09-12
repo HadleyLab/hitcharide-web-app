@@ -61,6 +61,12 @@ export const Search = createReactClass({
         this.setState({ value });
         valueCursor.set(null);
 
+        if (!value) {
+            const { onItemSelect } = this.props;
+
+            onItemSelect(null);
+        }
+
         clearTimeout(this.timeout);
 
         this.timeout = setTimeout(async () => {
@@ -120,24 +126,24 @@ export const Search = createReactClass({
                 {children}
                 {showResults ? (
                     <div className={s.items}>
-                        {results.data.length > 0 ?
-                            _.map(results.data, (item, index) => (
-                                    <div
-                                        key={`search-results-${index}`}
-                                        className={classNames(s.item, itemClassName)}
-                                        onTouchStart={() => this.setState({ preventBlur: true })}
-                                        onMouseDown={() => this.setState({ preventBlur: true })}
-                                        onTouchEnd={() => this.onSelect(item)}
-                                        onMouseUp={() => this.onSelect(item)}
-                                    >
-                                        {displayItem(item)}
-                                    </div>
+                        {results.data.length > 0
+                            ? _.map(results.data, (item, index) => (
+                                <div
+                                    key={`search-results-${index}`}
+                                    className={classNames(s.item, itemClassName)}
+                                    onTouchStart={() => this.setState({ preventBlur: true })}
+                                    onMouseDown={() => this.setState({ preventBlur: true })}
+                                    onTouchEnd={() => this.onSelect(item)}
+                                    onMouseUp={() => this.onSelect(item)}
+                                >
+                                    {displayItem(item)}
+                                </div>
                             ))
-                        :
-                            <div className={s.item}>
-                                No results found
-                            </div>
-                        }
+                            : (
+                                <div className={s.item}>
+                                    No results found
+                                </div>
+                            )}
                     </div>
                 ) : null}
             </Input>

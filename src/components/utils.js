@@ -63,3 +63,20 @@ export function getToken() {
 export function removeToken() {
     localStorage.removeItem('token');
 }
+
+
+/* */
+
+export function checkIfValueEmpty(value) {
+    if (_.isArray(value) || _.isObject(value)) {
+        if (_.isEmpty(value)) {
+            return true;
+        }
+    }
+
+    if (_.isNull(value)) {
+        return true;
+    }
+
+    return false;
+}

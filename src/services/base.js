@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { checkIfValueEmpty } from 'components/utils';
 
 export function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -17,7 +18,7 @@ export const defaultHeaders = {
     Accept: 'application/json',
 };
 
-export const url = 'http://localhost:8000';
+export const url = 'http://192.168.11.254:8000';
 
 export function buildGetService(
     path,
@@ -101,7 +102,11 @@ export function dehydrateBundle(bundle) {
     return bundle.results;
 }
 
-export function paramsToString(params) {
+export function paramsToString(data) {
+    const params = _.chain(data)
+        .omitBy((value) => checkIfValueEmpty(value))
+        .mapKeys((value, key) => _.snakeCase(key))
+        .value();
     let paramsRow = '?';
 
     _.forEach(params, (value, key) => {

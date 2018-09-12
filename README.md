@@ -23,7 +23,7 @@ Body:   <p>You're receiving this email because you need to      finish activatio
 ```
 1. docker-compose build
 2. app/src/services/base.js -> localhost нужно заменить на свой хост
-    app/webpack/webpack.dev.config.js -> localhost нужно заменить на свой хост
+   app/webpack/webpack.dev.config.js -> localhost нужно заменить на свой хост
 3. docker-compose up
 9. Пароль для удобства задала по умолчанию k134rf2i
 10. При регистрации ссылка для активации аккаунта будет в консоле где запущен api
