@@ -10,3 +10,4 @@ export { CalendarPage } from './calendar';
 export { AddCarPage } from './add-car';
 export { ActivateAccountPage } from './activate-account';
 export { SocialAuthPage, SocialAuthErrorPage } from './social-auth';
+export { RideDetailsPage } from './ride-details';

@@ -1,14 +1,15 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
+import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import { Flex, TabBar, Modal } from 'antd-mobile';
 import { TopBar } from 'components';
-import { Route, Redirect } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, CreateRidePage,
-    CalendarPage, ProfilePage,
+    CalendarPage, ProfilePage, RideDetailsPage,
 } from 'pages';
-import schema from 'libs/state';
 import { removeToken } from 'components/utils';
 import { getMyProfileService } from 'services';
 
@@ -59,12 +60,28 @@ const Icon = ({ icon }) => (
     />
 );
 
+Icon.propTypes = {
+    icon: PropTypes.string.isRequired,
+};
+
 export const MainPage = createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
+        match: PropTypes.shape({
+            url: PropTypes.string.isRequired,
+        }).isRequired,
+        location: PropTypes.shape({
+            pathname: PropTypes.string.isRequired,
+        }).isRequired,
+        history: PropTypes.shape().isRequired,
+    },
+
     async componentDidMount() {
         const profile = this.props.tree.profile.get('info');
 
         if (_.isEmpty(profile)) {
-            await getMyProfileService(this.props.tree.profile.info)
+            await getMyProfileService(this.props.tree.profile.info);
         }
     },
 
@@ -78,7 +95,7 @@ export const MainPage = createReactClass({
         const profile = this.props.tree.get('profile');
 
         if (!_.isEmpty(profile) && !_.isEmpty(profile.info.error)) {
-            const error = profile.info.error;
+            const { error } = profile.info;
 
             if (error.response.status === 401) {
                 this.logout();
@@ -125,8 +142,11 @@ export const MainPage = createReactClass({
                     <Route
                         exact
                         path={url}
-                        render={() => (
-                            <SearchPage {...this.props} tree={this.props.tree.select('searchTab')} />
+                        render={(props) => (
+                            <SearchPage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.select('searchTab')}
+                            />
                         )}
                     />
                     <Route
@@ -161,6 +181,15 @@ export const MainPage = createReactClass({
                             />
                         )}
                     />
+                    <Route
+                        path={`${url}/ride/:pk`}
+                        render={(props) => (
+                            <RideDetailsPage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.select('ride')}
+                            />
+                        )}
+                    />
                 </div>
                 <div className={s.tabs}>
                     <TabBar
@@ -178,18 +207,18 @@ export const MainPage = createReactClass({
                                 onPress={() => {
                                     if (tab.path === '/app/create-ride') {
                                         if (creationRights.allowed) {
-                                            this.props.history.push(tab.path)
+                                            this.props.history.push(tab.path);
                                         } else {
                                             Modal.alert('Create a ride', creationRights.message, [
                                                 { text: 'Cancel', onPress: () => null },
                                                 {
                                                     text: 'Edit profile',
-                                                    onPress: () => this.props.history.push('/app/profile/edit')
+                                                    onPress: () => this.props.history.push('/app/profile/edit'),
                                                 },
                                             ]);
                                         }
                                     } else {
-                                        this.props.history.push(tab.path)
+                                        this.props.history.push(tab.path);
                                     }
                                 }}
                             />

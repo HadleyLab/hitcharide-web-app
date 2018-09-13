@@ -110,7 +110,11 @@ export function paramsToString(data) {
     let paramsRow = '?';
 
     _.forEach(params, (value, key) => {
-        paramsRow += `${key}=${value}`;
+        if (paramsRow === '?') {
+            paramsRow += `${key}=${value}`;
+        } else {
+            paramsRow += `&${key}=${value}`;
+        }
     });
 
     return paramsRow;

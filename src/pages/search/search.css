@@ -39,10 +39,6 @@
     line-height: 18px;
     margin-bottom: 5px;
 
-    &:last-child {
-        margin-bottom: 0;
-    }
-
     &:before {
         content: '';
         position: absolute;
@@ -52,9 +48,17 @@
         bottom: 0;
         background-color: #ddd;
     }
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    .rides._withLast &:last-child:before {
+        content: none;
+    }
 }
 
-.grey {
+.gray {
     display: block;
     color: rgba(#000, .5);
     font-size: 14px;
@@ -79,4 +83,12 @@
     &:before {
         left: 0;
     }
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px 50px;
+    min-height: 122px;
 }

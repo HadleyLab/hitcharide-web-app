@@ -1,20 +1,27 @@
 import React from 'react';
 import _ from 'lodash';
 import createReactClass from 'create-react-class';
-// import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { Search, Title } from 'components';
 import { getCitiesService, getRidesListService } from 'services';
 import schema from 'libs/state';
 import moment from 'moment';
+import { Button, Icon } from 'antd-mobile';
 import { checkIfValueEmpty } from 'components/utils';
 import markerIcon from 'components/icons/marker.svg';
 import s from './search.css';
 
+const paginationParams = {
+    limit: 20,
+    offset: 0,
+};
+
 const model = {
     tree: {
         cities: {},
-        rides: getRidesListService,
+        rides: (cursor) => getRidesListService(cursor, paginationParams),
         searchForm: {
             cityFrom: null,
             cityTo: null,
@@ -28,10 +35,11 @@ export const SearchPage = schema(model)(createReactClass({
 
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        history: PropTypes.shape().isRequired,
     },
 
-    async componentDidMount() {
-        await getRidesListService(this.props.tree.rides);
+    getInitialState() {
+        return paginationParams;
     },
 
     hydrateParams(data) {
@@ -49,18 +57,120 @@ export const SearchPage = schema(model)(createReactClass({
         return params;
     },
 
-    async onSearchChange() {
+    async loadRides(params, dehydrateParams) {
+        const cursor = this.props.tree.rides;
         const formCursor = this.props.tree.searchForm;
-        const params = this.hydrateParams(formCursor.get());
+        const searchParams = this.hydrateParams(formCursor.get());
 
-        await getRidesListService(this.props.tree.rides, params);
+        await getRidesListService(cursor, _.merge(searchParams, params), dehydrateParams);
+    },
+
+    onSearchChange() {
+        this.setState({ offset: 0 });
+        this.loadRides(paginationParams);
+    },
+
+    loadMore() {
+        const cursor = this.props.tree.rides;
+        const { limit, offset: prevOffset } = this.state;
+        const offset = prevOffset + limit;
+
+        this.setState(
+            { offset },
+            () => this.loadRides(
+                { limit, offset },
+                {
+                    toMerge: true,
+                    previousResults: cursor.data.get('results'),
+                }
+            )
+        );
+    },
+
+    renderRides() {
+        const ridesCursor = this.props.tree.rides;
+        const { data } = ridesCursor.get();
+
+        if (!data || _.isEmpty(data.results)) {
+            return null;
+        }
+
+        const { results: rides, next } = data;
+
+        return (
+            <div
+                className={classNames(s.rides, {
+                    [s._withLast]: !next,
+                })}
+            >
+                {_.map(rides, (ride, index) => {
+                    const {
+                        cityFrom, cityTo, dateTime: date, numberOfSeats, price, pk,
+                    } = ride;
+
+                    return (
+                        <div
+                            key={`ride-${index}`}
+                            className={s.ride}
+                            onClick={() => this.props.history.push(`/app/ride/${pk}`)}
+                        >
+                            <div className={s.date}>
+                                {moment(date).format('H:mm A')}<br />
+                                <span className={s.gray}>{moment(date).format('MMM D')}</span>
+                            </div>
+                            <div className={s.direction}>
+                                {`${cityFrom.name}, ${cityFrom.state.name}`}
+                                <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
+                            </div>
+                            <div className={s.info}>
+                                {parseFloat(price).toString()} $
+                                <span className={s.gray}>
+                                    {numberOfSeats}
+                                    {numberOfSeats === 1 ? ' seat' : ' seats'}
+                                </span>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    },
+
+    renderFooter() {
+        const ridesCursor = this.props.tree.rides;
+        const { data, status } = ridesCursor.get();
+
+        if (!data || status !== 'Succeed') {
+            return (
+                <div className={s.footer}>
+                    <Icon type="loading" size="md" />
+                </div>
+            );
+        }
+
+        const { next } = data;
+
+        if (next) {
+            return (
+                <div className={s.footer}>
+                    <Button
+                        type="primary"
+                        inline
+                        style={{ width: 250 }}
+                        onClick={this.loadMore}
+                    >
+                        Load more
+                    </Button>
+                </div>
+            );
+        }
+
+        return null;
     },
 
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.searchForm;
-        const ridesData = this.props.tree.rides.get();
-        const rides = !_.isEmpty(ridesData) && ridesData.status === 'Succeed' ? ridesData.data.results : [];
 
         return (
             <div className={s.container}>
@@ -106,33 +216,8 @@ export const SearchPage = schema(model)(createReactClass({
                     </DatePicker>
                 </List>
                 */}
-                <div className={s.rides}>
-                    {_.map(rides, (ride, index) => {
-                        const {
-                            cityFrom, cityTo, dateTime: date, numberOfSeats, price,
-                        } = ride;
-
-                        return (
-                            <div className={s.ride} key={`ride-${index}`}>
-                                <div className={s.date}>
-                                    {moment(date).format('H:mm A')}<br />
-                                    <span className={s.grey}>{moment(date).format('MMM D')}</span>
-                                </div>
-                                <div className={s.direction}>
-                                    {`${cityFrom.name}, ${cityFrom.state.name}`}
-                                    <span className={s.grey}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
-                                </div>
-                                <div className={s.info}>
-                                    {parseFloat(price).toString()} $
-                                    <span className={s.grey}>
-                                        {numberOfSeats}
-                                        {numberOfSeats === 1 ? ' seat' : ' seats'}
-                                    </span>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                {this.renderRides()}
+                {this.renderFooter()}
             </div>
         );
     },

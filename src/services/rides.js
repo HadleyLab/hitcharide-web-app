@@ -50,14 +50,24 @@ export function getCarListService(cursor) {
     return service(cursor);
 }
 
-export function getRidesListService(cursor, params) {
+function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
+    if (toMerge) {
+        const results = _.concat([], previousResults, data.results);
+
+        return _.assign({}, data, { results });
+    }
+
+    return data;
+}
+
+export function getRidesListService(cursor, params, dehydrateParams = {}) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildGetService(
         `/rides/list/${paramsToString(params)}`,
-        _.identity,
+        (data) => dehydrateRidesList(data, dehydrateParams),
         _.merge({}, defaultHeaders, headers)
     );
 
