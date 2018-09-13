@@ -87,3 +87,19 @@ export function getRidesIHaveCreatedService(cursor) {
 
     return service(cursor);
 }
+
+export function getRideService(cursor, pk) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    console.log('pk', pk);
+
+    const service = buildGetService(
+        `/rides/ride/${pk}`,
+        _.identity,
+        _.merge({}, defaultHeaders, headers)
+    );
+
+    return service(cursor);
+}

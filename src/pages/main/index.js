@@ -186,7 +186,7 @@ export const MainPage = createReactClass({
                         render={(props) => (
                             <RideDetailsPage
                                 {..._.merge(this.props, props)}
-                                tree={this.props.tree.select('ride')}
+                                tree={this.props.tree.select('')}
                             />
                         )}
                     />

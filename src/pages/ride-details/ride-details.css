@@ -1,0 +1,39 @@
+.row {
+    position: relative;
+    padding: 11px 15px 14px;
+    min-height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    line-height: 20px;
+    color: #1A1B20;
+
+    &:before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background-color: #ddd;
+    }
+}
+
+.rowTitle {
+    color: rgba(#1A1B20, .3);
+    padding-right: 15px;
+}
+
+.seats {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.seat {
+    width: 12px;
+    height: 18px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 12px 18px;
+}

@@ -1,6 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import { Icon } from 'antd-mobile';
+import s from './loader.css';
 
 export class Loader extends React.Component {
     render() {
@@ -11,16 +13,19 @@ export class Loader extends React.Component {
         }
 
         return (
-            <div>Loading...</div>
+            <div className={s.container}>
+                <Icon type="loading" size="md" />
+            </div>
         );
     }
 }
 
 Loader.propTypes = {
-    data: PropTypes.shape().isRequired,
+    data: PropTypes.shape(),
     children: PropTypes.node,
 };
 
 Loader.defaultProps = {
+    data: {},
     children: <div />,
 };
