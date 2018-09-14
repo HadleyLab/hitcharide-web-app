@@ -93,8 +93,6 @@ export function getRideService(cursor, pk) {
         Authorization: `JWT ${getToken()}`,
     };
 
-    console.log('pk', pk);
-
     const service = buildGetService(
         `/rides/ride/${pk}`,
         _.identity,

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
-import _ from 'lodash';
+import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
     HashRouter as Router, Route, Redirect,
@@ -30,6 +30,10 @@ const model = {
 
 const App = schema(model)(createReactClass({
     displayName: 'App',
+
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+    },
 
     render() {
         const tokenCursor = this.props.tree.token;

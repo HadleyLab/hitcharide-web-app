@@ -105,7 +105,7 @@ export const SearchPage = schema(model)(createReactClass({
             >
                 {_.map(rides, (ride, index) => {
                     const {
-                        cityFrom, cityTo, dateTime: date, numberOfSeats, price, pk,
+                        cityFrom, cityTo, dateTime: date, availableNumberOfSeats, price, pk,
                     } = ride;
 
                     return (
@@ -125,8 +125,8 @@ export const SearchPage = schema(model)(createReactClass({
                             <div className={s.info}>
                                 {parseFloat(price).toString()} $
                                 <span className={s.gray}>
-                                    {numberOfSeats}
-                                    {numberOfSeats === 1 ? ' seat' : ' seats'}
+                                    {availableNumberOfSeats}
+                                    {availableNumberOfSeats === 1 ? ' seat' : ' seats'}
                                 </span>
                             </div>
                         </div>
