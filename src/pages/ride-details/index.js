@@ -5,10 +5,12 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
 import schema from 'libs/state';
-import { Title, Loader, StepperInput } from 'components';
-import { getRideService } from 'services';
+import {
+    Title, Loader, StepperInput, Error,
+} from 'components';
+import { getRideService, bookRideService } from 'services';
 import moment from 'moment';
-import { Button } from 'antd-mobile';
+import { Button, Modal } from 'antd-mobile';
 import passengerIcon from 'components/icons/passenger.svg';
 import s from './ride-details.css';
 
@@ -18,6 +20,8 @@ const model = (props) => {
     return {
         ride: (cursor) => getRideService(cursor, pk),
         seatsToReserve: 1,
+        bookingResult: {},
+        bookingError: null,
     };
 };
 
@@ -36,6 +40,53 @@ export const RideDetailsPage = schema(model)(createReactClass({
         this.props.tree.select('seatsToReserve').set(1);
 
         await getRideService(this.props.tree.ride, pk);
+    },
+
+    bookRide() {
+        const ride = this.props.tree.ride.get();
+        const seatsToReserve = this.props.tree.seatsToReserve.get();
+        const {
+            cityFrom, cityTo, price, dateTime,
+        } = ride.data;
+
+        const message = 'You are booking a ride '
+            + `from ${cityFrom.name}, ${cityFrom.state.name} `
+            + `to ${cityTo.name}, ${cityTo.state.name} `
+            + `on ${moment(dateTime).format('MMM d YYYY')} `
+            + `at ${moment(dateTime).format('h:mm A')} `
+            + `${seatsToReserve} ${seatsToReserve === 1 ? 'seat' : 'seats'} `
+            + `priced at ${parseFloat(price * seatsToReserve).toString()}$ per seat. `
+            + 'Are you sure?';
+
+        Modal.alert('Check a ride', message, [
+            { text: 'Cancel' },
+            {
+                text: 'OK',
+                onPress: async () => {
+                    const { pk } = this.props.match.params;
+
+                    const result = await bookRideService(this.props.tree.bookingResult, { ride: pk });
+
+                    if (result.status === 'Failure') {
+                        let error = '';
+
+                        _.forEach(result.error.data, (item) => { error += item; });
+
+                        this.props.tree.bookingError.set(error);
+                    }
+
+                    if (result.status === 'Failure') {
+                        let error = '';
+
+                        _.forEach(result.error.data, (item) => { error += item; });
+
+                        this.props.tree.bookingError.set(error);
+                    } else {
+                        this.props.tree.bookingError.set(null);
+                    }
+                },
+            },
+        ]);
     },
 
     renderRideInfo() {
@@ -63,7 +114,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 },
                 {
                     title: 'Departure time',
-                    content: moment(dateTime).format('HH:mm A'),
+                    content: moment(dateTime).format('h:mm A'),
                 },
                 {
                     title: 'Free seats',
@@ -134,6 +185,11 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 <Title style={{ marginTop: '25px' }}>Number of reserved seats</Title>
                 {tree && tree.seatsToReserve && isRidesLoaded ? this.renderStepper() : null}
                 <div className={s.footer}>
+                    {tree && tree.bookingError ? (
+                        <Error>
+                            {tree.bookingError}
+                        </Error>
+                    ) : null}
                     <Button
                         type="primary"
                         inline

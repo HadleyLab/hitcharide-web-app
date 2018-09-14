@@ -101,3 +101,19 @@ export function getRideService(cursor, pk) {
 
     return service(cursor);
 }
+
+export function bookRideService(cursor, data) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    const service = buildPostService(
+        '/rides/booking/',
+        'POST',
+        JSON.stringify,
+        _.identity,
+        _.merge({}, defaultHeaders, headers)
+    );
+
+    return service(cursor, data);
+}

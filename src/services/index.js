@@ -7,5 +7,5 @@ export {
 export {
     addRideService, addCarService, getCarListService,
     getRidesIHaveCreatedService, getRidesListService,
-    getRideService,
+    getRideService, bookRideService,
 } from './rides.js';
