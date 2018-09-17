@@ -5,7 +5,7 @@ export { MainPage } from './main';
 export { SearchPage } from './search';
 export { MyRidesPage } from './my-rides';
 export { ProfilePage } from './profile';
-export { CreateRidePage } from './create-ride';
+export { NewRidePage } from './new-ride';
 export { CalendarPage } from './calendar';
 export { AddCarPage } from './add-car';
 export { ActivateAccountPage } from './activate-account';

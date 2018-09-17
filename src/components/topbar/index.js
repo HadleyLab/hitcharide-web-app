@@ -17,6 +17,8 @@ export class TopBar extends React.Component {
     constructor(props) {
         super(props);
         this.hideModal = this.hideModal.bind(this);
+        this.openModal = this.openModal.bind(this);
+        this.setUserType = this.setUserType.bind(this);
         this.state = {
             modalOpen: false,
         };
@@ -24,13 +26,27 @@ export class TopBar extends React.Component {
 
     componentDidMount() {
         window.addEventListener('click', this.hideModal, false);
+        window.addEventListener('touchend', this.hideModal, false);
     }
 
     componentWillUnmount() {
         window.removeEventListener('click', this.hideModal);
+        window.removeEventListener('touchend', this.hideModal, false);
     }
 
     hideModal() {
+        this.setState({ modalOpen: false });
+    }
+
+    openModal(e) {
+        e.stopPropagation();
+        this.setState({ modalOpen: true });
+    }
+
+    setUserType(e, type) {
+        e.stopPropagation();
+        setUserType(type);
+        this.props.userTypeCursor.set(type);
         this.setState({ modalOpen: false });
     }
 
@@ -73,10 +89,8 @@ export class TopBar extends React.Component {
         return (
             <div
                 className={s.userType}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    this.setState({ modalOpen: true });
-                }}
+                onClick={this.openModal}
+                onTouchEnd={this.openModal}
             >
                 <div className={s.userIcon}>
                     {userType === 'passenger' ? <TravelerIcon /> : <DriverIcon />}
@@ -134,12 +148,8 @@ export class TopBar extends React.Component {
                                 <div
                                     key={`user-type-${index}`}
                                     className={s.item}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setUserType(type);
-                                        this.props.userTypeCursor.set(type);
-                                        this.setState({ modalOpen: false });
-                                    }}
+                                    onClick={(e) => this.setUserType(e, type)}
+                                    onTouchEnd={(e) => this.setUserType(e, type)}
                                 >
                                     <div className={s.userIcon}>{icon}</div>
                                     {text}

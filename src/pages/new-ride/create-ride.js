@@ -1,5 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Search, Title, Input } from 'components';
 import schema from 'libs/state';
@@ -13,7 +15,7 @@ import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
 import carIcon from 'components/icons/car.svg';
 import warningIcon from 'components/icons/warning.svg';
-import s from './create-ride.css';
+import s from './new-ride.css';
 
 const validationSchema = yup.object().shape({
     cityFrom: yup.mixed().required('Select a city'),
@@ -39,11 +41,12 @@ const model = {
     errors: {},
 };
 
-export const CreateRidePage = schema(model)(createReactClass({
-    displayName: 'CreateRidePage',
-
-    getInitialState() {
-        return {};
+export const CreateRideForm = schema(model)(createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        history: PropTypes.shape({
+            push: PropTypes.func.isRequired,
+        }).isRequired,
     },
 
     async componentDidMount() {
@@ -219,29 +222,9 @@ export const CreateRidePage = schema(model)(createReactClass({
     },
 
     render() {
-        const { creationRights } = this.props;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
-
-        if (!creationRights.allowed) {
-            return (
-                <div className={s.error}>
-                    <div className={s.title}>Create a ride</div>
-                    <div className={s.errorText}>{creationRights.message}</div>
-                    <Flex justify="center">
-                        <Button
-                            type="primary"
-                            inline
-                            style={{ width: 250 }}
-                            onClick={() => this.props.history.push('/app/profile/edit')}
-                        >
-                            Go to profile
-                        </Button>
-                    </Flex>
-                </div>
-            );
-        }
 
         return (
             <div className={s.container}>

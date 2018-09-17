@@ -3,11 +3,11 @@ import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { Flex, TabBar, Modal } from 'antd-mobile';
+import { TabBar, Modal } from 'antd-mobile';
 import { TopBar } from 'components';
 import { Route } from 'react-router-dom';
 import {
-    SearchPage, MyRidesPage, CreateRidePage,
+    SearchPage, MyRidesPage, NewRidePage,
     CalendarPage, ProfilePage, RideDetailsPage,
 } from 'pages';
 import { removeToken } from 'components/utils';
@@ -105,6 +105,8 @@ export const MainPage = createReactClass({
 
     checkIfRideCreationAllowed() {
         const profile = this.props.tree.profile.get('info');
+        const userType = this.props.tree.userType.get();
+        const isDriver = userType === 'driver';
 
         if (!_.isEmpty(profile) && !_.isEmpty(profile.data)) {
             const {
@@ -124,19 +126,25 @@ export const MainPage = createReactClass({
                     message: 'Your should verify your phone number to create a ride',
                 };
             }
+
+            if (isDriver) {
+                // Check if car added
+                // Check if paypal added
+            }
         }
 
         return { allowed: true };
     },
 
     render() {
+        const userType = this.props.tree.userType.get();
         const { url } = this.props.match;
         const creationRights = this.checkIfRideCreationAllowed();
 
         this.checkIfSignatureHasExpired();
 
         return (
-            <Flex direction="column" align="stretch" style={{ height: '100vh' }}>
+            <div className={s.container}>
                 <TopBar userTypeCursor={this.props.tree.select('userType')} />
                 <div style={{ flex: 1, overflow: 'auto' }}>
                     <Route
@@ -164,10 +172,11 @@ export const MainPage = createReactClass({
                     <Route
                         path={`${url}/create-ride`}
                         render={(props) => (
-                            <CreateRidePage
+                            <NewRidePage
                                 {..._.merge(this.props, props)}
                                 creationRights={creationRights}
-                                tree={this.props.tree.select('createRide')}
+                                userType={userType}
+                                tree={this.props.tree}
                             />
                         )}
                     />
@@ -225,7 +234,7 @@ export const MainPage = createReactClass({
                         ))}
                     </TabBar>
                 </div>
-            </Flex>
+            </div>
         );
     },
 });

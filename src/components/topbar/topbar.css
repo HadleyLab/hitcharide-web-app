@@ -1,8 +1,9 @@
 .navbar {
-    :global .am-navbar {
-        position: relative;
-        z-index: 102;
-    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 101;
 }
 .icon {
     background-position: center;
@@ -61,11 +62,9 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: 0;
+    top: 45px;
     height: 100vh;
     background-color: rgba(#1A1B20, .5);
-    z-index: 101;
-    padding-top: 45px;
     padding-bottom: 50px;
     overflow: hidden;
 }

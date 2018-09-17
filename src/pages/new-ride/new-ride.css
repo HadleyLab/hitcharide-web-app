@@ -101,6 +101,7 @@
     line-height: 25px;
     resize: none;
     padding: 10px 15px;
+    -webkit-appearance: none;
 
     &::placeholder {
         color: rgba(#1A1B20, .3);
