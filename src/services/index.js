@@ -5,7 +5,7 @@ export {
     verifyPhoneNumberService, checkPhoneCodeService,
 } from './profile.js';
 export {
-    addRideService, addCarService, getCarListService,
+    createRideService, addCarService, getCarListService,
     getRidesIHaveCreatedService, getRidesListService,
-    getRideService, bookRideService,
+    getRideService, bookRideService, requestRideService,
 } from './rides.js';

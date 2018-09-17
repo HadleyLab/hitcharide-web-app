@@ -146,7 +146,7 @@ export const MainPage = createReactClass({
         return (
             <div className={s.container}>
                 <TopBar userTypeCursor={this.props.tree.select('userType')} />
-                <div style={{ flex: 1, overflow: 'auto' }}>
+                <div>
                     <Route
                         exact
                         path={url}

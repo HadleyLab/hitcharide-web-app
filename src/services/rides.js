@@ -4,13 +4,29 @@ import {
     buildGetService, buildPostService, defaultHeaders, paramsToString,
 } from './base';
 
-export function addRideService(cursor, data) {
+export function createRideService(cursor, data) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
     const service = buildPostService(
         '/rides/ride/',
+        'POST',
+        JSON.stringify,
+        _.identity,
+        _.merge({}, defaultHeaders, headers)
+    );
+
+    return service(cursor, data);
+}
+
+export function requestRideService(cursor, data) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    const service = buildPostService(
+        '/rides/request/',
         'POST',
         JSON.stringify,
         _.identity,

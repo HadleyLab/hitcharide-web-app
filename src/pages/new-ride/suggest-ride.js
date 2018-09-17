@@ -8,7 +8,7 @@ import schema from 'libs/state';
 import {
     Flex, Button, List, DatePicker, WhiteSpace,
 } from 'antd-mobile';
-import { getCitiesService, addRideService } from 'services';
+import { getCitiesService, requestRideService } from 'services';
 import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
 // import warningIcon from 'components/icons/warning.svg';
@@ -58,7 +58,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await addRideService(this.props.tree.result, _.assign({}, data, {
+            const result = await requestRideService(this.props.tree.result, _.assign({}, data, {
                 cityFrom: data.cityFrom.pk,
                 cityTo: data.cityTo.pk,
             }));
