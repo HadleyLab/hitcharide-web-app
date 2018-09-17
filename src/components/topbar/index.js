@@ -1,22 +1,45 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
+import _ from 'lodash';
 import { NavBar } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import profileIcon from 'components/icons/profile.svg';
 import logoIcon from 'components/icons/logo.svg';
-import arrowIcon from 'components/icons/arrow-back.svg';
-import PropTypes from 'prop-types';
+import arrowBackIcon from 'components/icons/arrow-back.svg';
+import arrowDownIcon from 'components/icons/arrow-down.svg';
+import { DriverIcon, TravelerIcon } from 'components/icons';
+import { setUserType } from 'components/utils';
 import s from './topbar.css';
 
 export class TopBar extends React.Component {
-    renderArrow() {
-        const { history } = this.props;
+    constructor(props) {
+        super(props);
+        this.hideModal = this.hideModal.bind(this);
+        this.state = {
+            modalOpen: false,
+        };
+    }
 
+    componentDidMount() {
+        window.addEventListener('click', this.hideModal, false);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('click', this.hideModal);
+    }
+
+    hideModal() {
+        this.setState({ modalOpen: false });
+    }
+
+    renderArrow() {
         return (
             <div className={s.wrapper}>
                 <div
                     className={classNames(s.icon, s.arrow)}
-                    style={{ backgroundImage: `url(${arrowIcon})` }}
+                    style={{ backgroundImage: `url(${arrowBackIcon})` }}
                 />
             </div>
         );
@@ -44,8 +67,44 @@ export class TopBar extends React.Component {
         );
     }
 
+    renderUserTypeSwitch() {
+        const userType = this.props.userTypeCursor.get();
+
+        return (
+            <div
+                className={s.userType}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    this.setState({ modalOpen: true });
+                }}
+            >
+                <div className={s.userIcon}>
+                    {userType === 'passenger' ? <TravelerIcon /> : <DriverIcon />}
+                </div>
+                <div
+                    className={s.userArrow}
+                    style={{ backgroundImage: `url(${arrowDownIcon})` }}
+                />
+            </div>
+        );
+    }
+
     render() {
+        const { modalOpen } = this.state;
         const { innerPage } = this.props;
+
+        const userTypes = [
+            {
+                type: 'driver',
+                text: 'I’m a driver',
+                icon: <DriverIcon />,
+            },
+            {
+                type: 'passenger',
+                text: 'I’m a passenger',
+                icon: <TravelerIcon />,
+            },
+        ];
 
         if (innerPage) {
             return (
@@ -60,17 +119,43 @@ export class TopBar extends React.Component {
         }
 
         return (
-            <NavBar
-                mode="dark"
-                leftContent={this.renderLogo()}
-                rightContent={this.renderProfile()}
-            />
+            <div className={s.navbar}>
+                <NavBar
+                    mode="dark"
+                    leftContent={this.renderUserTypeSwitch()}
+                    rightContent={this.renderProfile()}
+                >
+                    {this.renderLogo()}
+                </NavBar>
+                {modalOpen ? (
+                    <div className={s.modal}>
+                        <div className={s.list}>
+                            {_.map(userTypes, ({ type, text, icon }, index) => (
+                                <div
+                                    key={`user-type-${index}`}
+                                    className={s.item}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setUserType(type);
+                                        this.props.userTypeCursor.set(type);
+                                        this.setState({ modalOpen: false });
+                                    }}
+                                >
+                                    <div className={s.userIcon}>{icon}</div>
+                                    {text}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : null}
+            </div>
         );
     }
 }
 
 TopBar.propTypes = {
     innerPage: PropTypes.bool,
+    userTypeCursor: BaobabPropTypes.cursor.isRequired,
 };
 
 TopBar.defaultProps = {

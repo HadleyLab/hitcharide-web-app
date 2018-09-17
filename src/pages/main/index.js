@@ -137,7 +137,7 @@ export const MainPage = createReactClass({
 
         return (
             <Flex direction="column" align="stretch" style={{ height: '100vh' }}>
-                <TopBar />
+                <TopBar userTypeCursor={this.props.tree.select('userType')} />
                 <div style={{ flex: 1, overflow: 'auto' }}>
                     <Route
                         exact

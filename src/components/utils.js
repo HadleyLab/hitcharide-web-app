@@ -64,6 +64,15 @@ export function removeToken() {
     localStorage.removeItem('token');
 }
 
+/* Save/read user type to/from localStorage */
+
+export function setUserType(type) {
+    localStorage.setItem('userType', type);
+}
+
+export function getUserType() {
+    return localStorage.getItem('userType');
+}
 
 /* */
 

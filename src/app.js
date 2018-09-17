@@ -13,7 +13,7 @@ import {
 } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
-import { getToken } from 'components/utils';
+import { getToken, getUserType } from 'components/utils';
 import 'components/styles/styles.less';
 import 'components/styles/styles.css';
 import 'components/fonts/fonts.css';
@@ -24,7 +24,9 @@ const model = {
         token: getToken(),
         login: {},
         registration: {},
-        app: {},
+        app: {
+            userType: getUserType() || 'passenger',
+        },
     },
 };
 
