@@ -167,9 +167,6 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 cursor={this.props.tree.select('seatsToReserve')}
                 minValue={1}
                 maxValue={availableNumberOfSeats}
-                messageOnMaxExceeded={
-                    `Maximum number (${availableNumberOfSeats}) of available seats exceeded`
-                }
             />
         );
     },

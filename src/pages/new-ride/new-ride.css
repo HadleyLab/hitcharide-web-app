@@ -131,6 +131,10 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-color: #fff;
+
+    .departure & {
+        top: 2px;
+    }
 }
 
 .error {
@@ -155,5 +159,35 @@
     line-height: 24px;
     margin-bottom: 40px;
     max-width: 250px;
+    text-align: center;
+}
+
+.numberOfSeatsInput:before {
+    left: 15px;
+}
+
+.departure {
+    position: relative;
+
+    :global .am-list-body {
+        border: 0!important;
+    }
+
+    :global .am-list-line {
+        border-bottom: 1px solid #ddd!important;
+    }
+
+    :global .am-list-line:after,
+    :global .am-list-body:after {
+        content: none!important;
+    }
+}
+
+.formError {
+    color: #F5222D;
+    font-size: 16px;
+    line-height: 24px;
+    max-width: 250px;
+    margin: 20px auto 0;
     text-align: center;
 }

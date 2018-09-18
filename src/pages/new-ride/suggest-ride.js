@@ -5,19 +5,19 @@ import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Search, Title } from 'components';
 import schema from 'libs/state';
-import {
-    Flex, Button, List, DatePicker, WhiteSpace,
-} from 'antd-mobile';
+import moment from 'moment';
+import { Flex, Button, WhiteSpace } from 'antd-mobile';
 import { getCitiesService, requestRideService } from 'services';
-import { validateForm, checkInputError } from 'components/utils';
+import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
 import * as yup from 'yup';
-// import warningIcon from 'components/icons/warning.svg';
+import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
 
-const validationSchema = yup.object().shape({
+const validationSchema = (date) => yup.object().shape({
     cityFrom: yup.mixed().required('Select a city'),
     cityTo: yup.mixed().required('Select a city'),
-    dateTime: yup.date().min(new Date(), `Date field must be later than ${new Date()}`),
+    dateTime: yup.date().min(moment(date).toDate(),
+        `Date field must be later than ${moment(date).format('MMM D YYYY h:mm A')}`),
 });
 
 const model = {
@@ -35,20 +35,25 @@ export const SuggestRideForm = schema(model)(createReactClass({
         }).isRequired,
     },
 
+    componentDidMount() {
+        this.initForm();
+    },
+
     initForm() {
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: new Date(),
+            dateTime: moment().toDate(),
         };
 
         this.props.tree.select('form').set(initData);
     },
 
     async onSubmit() {
+        const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
-        const validationResult = await validateForm(validationSchema, data);
+        const validationResult = await validateForm(validationSchema(date), data);
         const { isDataValid, errors } = validationResult;
 
         if (!isDataValid) {
@@ -80,6 +85,22 @@ export const SuggestRideForm = schema(model)(createReactClass({
         return errorProps;
     },
 
+    renderError() {
+        const form = this.props.tree.form.get();
+        const errors = this.props.tree.errors.get();
+        const error = checkUnhandledFormErrors(form, errors);
+
+        if (error) {
+            return (
+                <div className={s.formError}>
+                    {error}
+                </div>
+            );
+        }
+
+        return null;
+    },
+
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
@@ -88,7 +109,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         return (
             <div className={s.container}>
                 <div className={s.section}>
-                    <Title>Ride information</Title>
+                    <Title>Direction</Title>
                     <Search
                         cursor={citiesCursor}
                         selectedValue={formCursor.get('cityFrom')}
@@ -117,17 +138,9 @@ export const SuggestRideForm = schema(model)(createReactClass({
                     >
                         <div className={s.text}>To</div>
                     </Search>
-                    <List className={s.datePicker} style={{ backgroundColor: 'white' }}>
-                        <DatePicker
-                            value={formCursor.dateTime.get()}
-                            onChange={(date) => formCursor.dateTime.set(date)}
-                            use12Hours
-                            title="When"
-                        >
-                            <List.Item arrow="horizontal">When</List.Item>
-                        </DatePicker>
-                    </List>
                 </div>
+                <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
+                {this.renderError()}
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex justify="center">

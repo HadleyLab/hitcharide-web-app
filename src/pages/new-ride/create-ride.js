@@ -3,24 +3,29 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Search, Title, Input } from 'components';
+import {
+    Search, Title, Input, StepperInput,
+} from 'components';
 import schema from 'libs/state';
 import {
-    Flex, Button, List, DatePicker, WhiteSpace, Picker,
+    Flex, Button, List, WhiteSpace, Picker,
 } from 'antd-mobile';
 import { getCitiesService, createRideService, getCarListService } from 'services';
-import { validateForm, checkInputError } from 'components/utils';
+import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
 import * as yup from 'yup';
+import moment from 'moment';
 import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
 import carIcon from 'components/icons/car.svg';
 import warningIcon from 'components/icons/warning.svg';
+import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
 
-const validationSchema = yup.object().shape({
+const validationSchema = (date) => yup.object().shape({
     cityFrom: yup.mixed().required('Select a city'),
     cityTo: yup.mixed().required('Select a city'),
-    dateTime: yup.date().min(new Date(), `Date field must be later than ${new Date()}`),
+    dateTime: yup.date().min(moment(date).toDate(),
+        `Date field must be later than ${moment(date).format('MMM D YYYY h:mm A')}`),
     price: yup.number()
         .typeError('Wrong format')
         .nullable()
@@ -70,7 +75,7 @@ export const CreateRideForm = schema(model)(createReactClass({
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: new Date(),
+            dateTime: moment().toDate(),
             price: null,
             stops: [],
             car: null,
@@ -82,9 +87,10 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     async onSubmit() {
+        const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
-        const validationResult = await validateForm(validationSchema, data);
+        const validationResult = await validateForm(validationSchema(date), data);
         const { isDataValid, errors } = validationResult;
 
         if (!isDataValid) {
@@ -221,6 +227,22 @@ export const CreateRideForm = schema(model)(createReactClass({
         );
     },
 
+    renderError() {
+        const form = this.props.tree.form.get();
+        const errors = this.props.tree.errors.get();
+        const error = checkUnhandledFormErrors(form, errors);
+
+        if (error) {
+            return (
+                <div className={s.formError}>
+                    {error}
+                </div>
+            );
+        }
+
+        return null;
+    },
+
     render() {
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
@@ -229,7 +251,7 @@ export const CreateRideForm = schema(model)(createReactClass({
         return (
             <div className={s.container}>
                 <div className={s.section}>
-                    <Title>Ride information</Title>
+                    <Title>Direction</Title>
                     <Search
                         cursor={citiesCursor}
                         selectedValue={formCursor.get('cityFrom')}
@@ -258,16 +280,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                     >
                         <div className={s.text}>To</div>
                     </Search>
-                    <List className={s.datePicker} style={{ backgroundColor: 'white' }}>
-                        <DatePicker
-                            value={formCursor.dateTime.get()}
-                            onChange={(date) => formCursor.dateTime.set(date)}
-                            use12Hours
-                            title="When"
-                        >
-                            <List.Item arrow="horizontal">When</List.Item>
-                        </DatePicker>
-                    </List>
+                    <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
                 </div>
                 <div className={s.section}>
                     <Title>Stop overs</Title>
@@ -276,20 +289,16 @@ export const CreateRideForm = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Car</Title>
                     {this.renderCarPicker()}
-                    <Input
-                        type="number"
-                        defaultValue={1}
-                        onKeyPress={(e) => {
-                            const isString = e.which < 48 || e.which > 57;
-
-                            if (isString) {
-                                e.preventDefault();
-                            }
-                        }}
-                        onChange={(e) => formCursor.numberOfSeats.set(e.target.value)}
-                    >
-                        <div className={s.text}>Available seats</div>
-                    </Input>
+                </div>
+                <div className={s.section}>
+                    <Title>Seats</Title>
+                    <StepperInput
+                        className={s.numberOfSeatsInput}
+                        title="Number of seats"
+                        cursor={formCursor.numberOfSeats}
+                        minValue={1}
+                        maxValue={100}
+                    />
                 </div>
                 <div className={s.section}>
                     <Title>Price</Title>
@@ -315,6 +324,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                     </Input>
                 </div>
                 {this.renderNotes()}
+                {this.renderError()}
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex justify="center">

@@ -37,12 +37,12 @@ export class StepperInput extends React.Component {
 
     render() {
         const {
-            title, cursor, minValue, maxValue,
+            title, cursor, minValue, maxValue, className,
         } = this.props;
         const value = cursor.get();
 
         return (
-            <div className={s.container}>
+            <div className={classNames(s.container, className)}>
                 <div className={s.title}>{title}</div>
                 <div className={s.content}>
                     <div
@@ -71,6 +71,9 @@ StepperInput.propTypes = {
     cursor: BaobabPropTypes.cursor.isRequired,
     minValue: PropTypes.number.isRequired,
     maxValue: PropTypes.number.isRequired,
+    className: PropTypes.string,
 };
 
-StepperInput.defaultProps = {};
+StepperInput.defaultProps = {
+    className: null,
+};
