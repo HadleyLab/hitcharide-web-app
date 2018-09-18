@@ -154,6 +154,7 @@ export const MainPage = createReactClass({
                             <SearchPage
                                 {..._.merge(this.props, props)}
                                 tree={this.props.tree.select('searchTab')}
+                                userType={userType}
                             />
                         )}
                     />

@@ -10,7 +10,7 @@ import schema from 'libs/state';
 import moment from 'moment';
 import { Button, Icon } from 'antd-mobile';
 import { checkIfValueEmpty } from 'components/utils';
-import markerIcon from 'components/icons/marker.svg';
+import { DriverIcon, TravelerIcon, MarkerIcon } from 'components/icons';
 import s from './search.css';
 
 const paginationParams = {
@@ -36,6 +36,7 @@ export const SearchPage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
+        userType: PropTypes.string.isRequired,
     },
 
     getInitialState() {
@@ -88,14 +89,23 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     renderRides() {
+        const isDriver = this.props.userType === 'driver';
         const ridesCursor = this.props.tree.rides;
-        const { data } = ridesCursor.get();
+        const { data, status } = ridesCursor.get();
 
-        if (!data || _.isEmpty(data.results)) {
+        if (!data || status !== 'Succeed') {
             return null;
         }
 
         const { results: rides, next } = data;
+
+        if (rides.length === 0) {
+            return (
+                <div className={s.noResults}>
+                    No rides found
+                </div>
+            );
+        }
 
         return (
             <div
@@ -114,16 +124,22 @@ export const SearchPage = schema(model)(createReactClass({
                             className={s.ride}
                             onClick={() => this.props.history.push(`/app/ride/${pk}`)}
                         >
+                            <div className={s.userTypeIcon}>
+                                {isDriver
+                                    ? <TravelerIcon color="#40A9FF" />
+                                    : <DriverIcon color="#40A9FF" />
+                                }
+                            </div>
                             <div className={s.date}>
-                                {moment(date).format('H:mm A')}<br />
-                                <span className={s.gray}>{moment(date).format('MMM D')}</span>
+                                <div style={{ whiteSpace: 'nowrap' }}>{moment(date).format('h:mm A')}</div>
+                                <div className={s.gray}>{moment(date).format('MMM D')}</div>
                             </div>
                             <div className={s.direction}>
                                 {`${cityFrom.name}, ${cityFrom.state.name}`}
                                 <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
                             </div>
                             <div className={s.info}>
-                                {parseFloat(price).toString()} $
+                                <span style={{ whiteSpace: 'nowrap' }}>{parseFloat(price).toString()} $</span>
                                 <span className={s.gray}>
                                     {availableNumberOfSeats}
                                     {availableNumberOfSeats === 1 ? ' seat' : ' seats'}
@@ -187,7 +203,9 @@ export const SearchPage = schema(model)(createReactClass({
                     }}
                     className={s.field}
                 >
-                    <div className={s.icon} style={{ backgroundImage: `url(${markerIcon})` }} />
+                    <div className={s.icon}>
+                        <MarkerIcon color="#6FA6F8" />
+                    </div>
                     <div className={s.text}>From </div>
                 </Search>
                 <Search
@@ -202,7 +220,9 @@ export const SearchPage = schema(model)(createReactClass({
                     }}
                     className={s.field}
                 >
-                    <div className={s.icon} style={{ backgroundImage: `url(${markerIcon})` }} />
+                    <div className={s.icon}>
+                        <MarkerIcon color="#97B725" />
+                    </div>
                     <div className={s.text}>To </div>
                 </Search>
                 {/*

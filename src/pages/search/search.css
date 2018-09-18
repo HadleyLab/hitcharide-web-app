@@ -12,13 +12,10 @@
 }
 
 .icon {
-    width: 20px;
-    height: 20px;
-    background-position: center;
-    background-size: 18px 18px;
-    background-repeat: no-repeat;
+    min-width: 18px;
+    width: 18px;
+    height: 18px;
     margin-right: 15px;
-    margin-top: 2px;
 }
 
 .text {
@@ -34,7 +31,7 @@
     display: flex;
     position: relative;
     width: 100%;
-    padding: 15px;
+    padding: 15px 15px 15px 42px;
     font-size: 16px;
     line-height: 18px;
     margin-bottom: 5px;
@@ -66,7 +63,7 @@
 }
 
 .date {
-    width: 70px;
+    width: 60px;
 }
 
 .info {
@@ -91,4 +88,20 @@
     justify-content: center;
     padding: 25px 15px 50px;
     min-height: 122px;
+}
+
+.noResults {
+    padding: 15px;
+    font-size: 16px;
+    line-height: 18px;
+}
+
+.userTypeIcon {
+    position: absolute;
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    background-position: center;
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
 }

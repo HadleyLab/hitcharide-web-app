@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export const DriverIcon = ({ color }) => (
-    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="100%" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
             d={'M17.9996 0C8.07483 0 0 8.07609 0 17.9996C0 27.9239 8.07483 36 17.9996 36C27.9239 36 36 27.9239 '
                 + '36 17.9996C36 8.07483 27.9239 0 17.9996 0ZM3.38098 13.4744C5.38741 6.97301 11.2355 2.63371 '
