@@ -3,7 +3,7 @@ import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { TabBar, Modal } from 'antd-mobile';
+import { TabBar } from 'antd-mobile';
 import { TopBar } from 'components';
 import { Route } from 'react-router-dom';
 import {
@@ -79,69 +79,33 @@ export const MainPage = createReactClass({
     contextTypes: {
         services: PropTypes.shape({
             getMyProfileService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
         }),
     },
 
     async componentDidMount() {
-        const service = this.context.services.getMyProfileService;
+        const { getMyProfileService, getCarListService } = this.context.services;
 
         this.props.tree.userType.set(getUserType() || 'passenger');
-        await service(this.props.tree.profile.info);
+        await getMyProfileService(this.props.tree.profile);
+        await getCarListService(this.props.tree.cars);
     },
 
     componentWillUnmount() {
         this.props.tree.set({});
     },
 
-    checkIfRideCreationAllowed(userType) {
-        const profile = this.props.tree.profile.get('info');
-        const isDriver = userType === 'driver';
-
-        if (!_.isEmpty(profile) && !_.isEmpty(profile.data)) {
-            const {
-                firstName, lastName, phone, isPhoneValidated, paypalAccount,
-            } = profile.data;
-
-            if (!firstName || !lastName || !phone) {
-                return {
-                    allowed: false,
-                    message: 'Your should fill your profile',
-                };
-            }
-
-            if (!isPhoneValidated) {
-                return {
-                    allowed: false,
-                    message: 'Your should verify your phone number',
-                };
-            }
-
-            if (isDriver && !paypalAccount) {
-                return {
-                    allowed: false,
-                    message: 'Your should add your paypal account number',
-                };
-            }
-
-            if (isDriver) {
-                // Check if car added
-            }
-        }
-
-        return { allowed: true };
-    },
-
     render() {
         const userType = this.props.tree.userType.get() || 'passenger';
         const { url } = this.props.match;
-        const creationRights = this.checkIfRideCreationAllowed();
 
         return (
             <div className={s.container}>
                 <TopBar
                     userTypeCursor={this.props.tree.select('userType')}
-                    checkIfRideCreationAllowed={this.checkIfRideCreationAllowed}
                     history={this.props.history}
+                    profile={this.props.tree.profile.get()}
+                    cars={this.props.tree.cars.get()}
                 />
                 <div>
                     <Route
@@ -172,7 +136,6 @@ export const MainPage = createReactClass({
                         render={(props) => (
                             <NewRidePage
                                 {..._.merge(this.props, props)}
-                                creationRights={creationRights}
                                 userType={userType}
                                 tree={this.props.tree}
                             />
@@ -183,7 +146,7 @@ export const MainPage = createReactClass({
                         render={(props) => (
                             <ProfilePage
                                 {..._.merge(this.props, props)}
-                                tree={this.props.tree.select('profile')}
+                                tree={this.props.tree}
                             />
                         )}
                     />
@@ -210,23 +173,7 @@ export const MainPage = createReactClass({
                                 icon={(<Icon icon={tab.icon} />)}
                                 selectedIcon={(<Icon icon={tab.iconActive} selected />)}
                                 selected={this.props.location.pathname === tab.path}
-                                onPress={() => {
-                                    if (tab.path === '/app/create-ride') {
-                                        if (creationRights.allowed) {
-                                            this.props.history.push(tab.path);
-                                        } else {
-                                            Modal.alert('Create a ride', creationRights.message, [
-                                                { text: 'Cancel', onPress: () => null },
-                                                {
-                                                    text: 'Edit profile',
-                                                    onPress: () => this.props.history.push('/app/profile/edit'),
-                                                },
-                                            ]);
-                                        }
-                                    } else {
-                                        this.props.history.push(tab.path);
-                                    }
-                                }}
+                                onPress={() => this.props.history.push(tab.path)}
                             />
                         ))}
                     </TabBar>

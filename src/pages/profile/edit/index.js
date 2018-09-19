@@ -93,7 +93,7 @@ export const EditProfilePage = schema(model)(createReactClass({
         }
     },
 
-    updateProfileInfo(data = {}) {
+    updateProfile(data = {}) {
         const profile = this.props.tree.result.get();
 
         this.props.profileCursor.set(_.merge({}, profile.data || {}, data));
@@ -101,7 +101,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     onProfileSuccessfullyEdited(data) {
         this.setState({ openCodeModal: false });
-        this.updateProfileInfo(data);
+        this.updateProfile(data);
         this.props.history.goBack();
     },
 
@@ -117,11 +117,11 @@ export const EditProfilePage = schema(model)(createReactClass({
             const sendCodeResult = await verifyPhoneNumberService(sendCodeResultCursor);
 
             if (sendCodeResult.status === 'Succeed') {
-                const oldProfileInfo = this.props.profileCursor.get();
+                const oldProfile = this.props.profileCursor.get();
 
                 sendCodeResultCursor.set({});
 
-                if (oldProfileInfo.phone !== data.phone) {
+                if (oldProfile.phone !== data.phone) {
                     this.setState({ openCodeModal: true });
                 } else {
                     this.onProfileSuccessfullyEdited();
@@ -203,7 +203,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         text: 'Cancel',
                         onPress: () => {
                             this.setState({ openCodeModal: false });
-                            this.updateProfileInfo();
+                            this.updateProfile();
                         },
                     },
                 ]}

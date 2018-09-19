@@ -121,31 +121,6 @@
     }
 }
 
-.error {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-.title {
-    font-size: 25px;
-    line-height: 25px;
-    color: #97B725;
-    margin-bottom: 40px;
-}
-
-.errorText {
-    color: rgba(#1A1B20, .5);
-    font-size: 16px;
-    line-height: 24px;
-    margin-bottom: 40px;
-    max-width: 250px;
-    text-align: center;
-}
-
 .numberOfSeatsInput:before {
     left: 15px;
 }

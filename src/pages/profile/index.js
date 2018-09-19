@@ -5,7 +5,6 @@ import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, WhiteSpace } from 'antd-mobile';
 import { Title } from 'components';
-import schema from 'libs/state';
 import { AddCarPage } from 'pages';
 import { Route, Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
@@ -18,13 +17,6 @@ export const ProfilePageContent = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         logout: PropTypes.func.isRequired,
-    },
-
-    contextTypes: {
-        services: PropTypes.shape({
-            getMyProfileService: PropTypes.func.isRequired,
-            getCarListService: PropTypes.func.isRequired,
-        }),
     },
 
     renderCars() {
@@ -55,8 +47,8 @@ export const ProfilePageContent = createReactClass({
     },
 
     render() {
-        const infoCursor = this.props.tree.info;
-        const profile = infoCursor.get('data');
+        const profileCursor = this.props.tree.profile;
+        const profile = profileCursor.get('data');
         const {
             firstName, lastName, phone, email, isPhoneValidated,
             paypalAccount, shortDesc, age,
@@ -124,12 +116,7 @@ export const ProfilePageContent = createReactClass({
     },
 });
 
-const model = (props, context) => ({
-    info: context.services.getMyProfileService,
-    cars: context.services.getCarListService,
-});
-
-export const ProfilePage = schema(model)(createReactClass({
+export const ProfilePage = createReactClass({
     displayName: 'ProfilePage',
 
     propTypes: {
@@ -139,30 +126,9 @@ export const ProfilePage = schema(model)(createReactClass({
         }).isRequired,
     },
 
-    contextTypes: {
-        services: PropTypes.shape({
-            getMyProfileService: PropTypes.func.isRequired,
-            getCarListService: PropTypes.func.isRequired,
-        }),
-    },
-
-    async componentDidMount() {
-        const profile = this.props.tree.get('info');
-        const cars = this.props.tree.get('cars');
-        const { getMyProfileService, getCarListService } = this.context.services;
-
-        if (_.isEmpty(profile)) {
-            await getMyProfileService(this.props.tree.info);
-        }
-
-        if (_.isEmpty(cars)) {
-            await getCarListService(this.props.tree.cars);
-        }
-    },
-
     render() {
-        const infoCursor = this.props.tree.info;
-        const status = infoCursor.get('status');
+        const profileCursor = this.props.tree.profile;
+        const status = profileCursor.get('status');
 
         if (!status || status !== 'Succeed') {
             return null;
@@ -208,8 +174,8 @@ export const ProfilePage = schema(model)(createReactClass({
                     render={(props) => (
                         <EditProfilePage
                             {...props}
-                            tree={this.props.tree.select('edit')}
-                            profileCursor={this.props.tree.info.data}
+                            tree={this.props.tree.select('editProfile')}
+                            profileCursor={this.props.tree.profile.data}
                             cars={this.props.tree.cars.get('data')}
                         />
                     )}
@@ -217,4 +183,4 @@ export const ProfilePage = schema(model)(createReactClass({
             </div>
         );
     },
-}));
+});
