@@ -1,10 +1,15 @@
 import _ from 'lodash';
 import { checkIfValueEmpty } from 'components/utils';
 
-export function checkStatus(response) {
+export function checkStatus(response, handler) {
     if (response.status >= 200 && response.status < 300) {
         return response;
     }
+
+    if (handler) {
+        handler(response);
+    }
+
     return response.json().then((data) => {
         const error = new Error(response.statusText);
         error.response = response;
@@ -25,13 +30,13 @@ export function buildGetService(
     dehydrate = _.identity,
     headers = defaultHeaders
 ) {
-    return async (cursor) => {
+    return async (handler, cursor) => {
         cursor.set('status', 'Loading');
         let result = {};
 
         try {
             let response = await fetch(`${url}${path}`,
-                { headers }).then(checkStatus);
+                { headers }).then((resp) => checkStatus(resp, handler));
             const data = await response.json();
             const dehydratedData = await dehydrate(data);
             result = {
@@ -56,7 +61,7 @@ export function buildPostService(
     dehydrate = _.identity,
     headers = defaultHeaders
 ) {
-    return async (cursor, data) => {
+    return async (handler, cursor, data) => {
         cursor.set('status', 'Loading');
         let result = {};
 
@@ -68,7 +73,8 @@ export function buildPostService(
         };
 
         try {
-            let response = await fetch(`${url}${path}`, payload).then(checkStatus);
+            let response = await fetch(`${url}${path}`, payload)
+                .then((resp) => checkStatus(resp, handler));
             let dehydratedData = cursor.get('data');
             if (response.status !== 204) {
                 const respData = await response.json();

@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { Search, Title } from 'components';
-import { getCitiesService, getRidesListService } from 'services';
 import schema from 'libs/state';
 import moment from 'moment';
 import { Button, Icon } from 'antd-mobile';
@@ -18,17 +17,17 @@ const paginationParams = {
     offset: 0,
 };
 
-const model = {
+const model = (props, context) => ({
     tree: {
         cities: {},
-        rides: (cursor) => getRidesListService(cursor, paginationParams),
+        rides: (cursor) => context.services.getRidesListService(cursor, paginationParams),
         searchForm: {
             cityFrom: null,
             cityTo: null,
             date: null,
         },
     },
-};
+});
 
 export const SearchPage = schema(model)(createReactClass({
     displayName: 'SearchPage',
@@ -37,6 +36,13 @@ export const SearchPage = schema(model)(createReactClass({
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         userType: PropTypes.string.isRequired,
+    },
+
+    contextTypes: {
+        services: PropTypes.shape({
+            getCitiesService: PropTypes.func.isRequired,
+            getRidesListService: PropTypes.func.isRequired,
+        }),
     },
 
     getInitialState() {
@@ -59,6 +65,7 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     async loadRides(params, dehydrateParams) {
+        const { getRidesListService } = this.context.services;
         const cursor = this.props.tree.rides;
         const formCursor = this.props.tree.searchForm;
         const searchParams = this.hydrateParams(formCursor.get());
@@ -185,6 +192,7 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     render() {
+        const { getCitiesService } = this.context.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.searchForm;
 

@@ -1,22 +1,44 @@
 import _ from 'lodash';
 import { buildPostService, defaultHeaders } from './base';
 
-export const signInService = buildPostService(
-    '/accounts/login/'
-);
+export function signInService(handler) {
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/login/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            defaultHeaders,
+        );
 
-export const signUpService = buildPostService(
-    '/accounts/register/'
-);
+        return service(handler, cursor, data);
+    };
+}
 
-export function activateAccountService(cursor, data) {
-    const service = buildPostService(
-        '/accounts/activate/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        defaultHeaders,
-    );
+export function signUpService(handler) {
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/register/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            defaultHeaders,
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
+}
+
+export function activateAccountService(handler) {
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/activate/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            defaultHeaders,
+        );
+
+        return service(handler, cursor, data);
+    };
 }

@@ -4,66 +4,74 @@ import {
     buildGetService, buildPostService, defaultHeaders, paramsToString,
 } from './base';
 
-export function createRideService(cursor, data) {
+export function createRideService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/rides/ride/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/ride/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }
 
-export function requestRideService(cursor, data) {
+export function requestRideService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/rides/request/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/request/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }
 
-export function addCarService(cursor, data) {
+export function addCarService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/rides/car/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/car/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }
 
-export function getCarListService(cursor) {
+export function getCarListService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildGetService(
-        '/rides/car/',
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor) => {
+        const service = buildGetService(
+            '/rides/car/',
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
 function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
@@ -76,60 +84,68 @@ function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
     return data;
 }
 
-export function getRidesListService(cursor, params, dehydrateParams = {}) {
+export function getRidesListService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildGetService(
-        `/rides/list/${paramsToString(params)}`,
-        (data) => dehydrateRidesList(data, dehydrateParams),
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, params, dehydrateParams = {}) => {
+        const service = buildGetService(
+            `/rides/list/${paramsToString(params)}`,
+            (data) => dehydrateRidesList(data, dehydrateParams),
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
-export function getRidesIHaveCreatedService(cursor) {
+export function getRidesIHaveCreatedService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildGetService(
-        '/rides/ride/my',
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor) => {
+        const service = buildGetService(
+            '/rides/ride/my',
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
-export function getRideService(cursor, pk) {
+export function getRideService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildGetService(
-        `/rides/ride/${pk}`,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, pk) => {
+        const service = buildGetService(
+            `/rides/ride/${pk}`,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
-export function bookRideService(cursor, data) {
+export function bookRideService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/rides/booking/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/booking/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }

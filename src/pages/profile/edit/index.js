@@ -1,25 +1,22 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
 import { Title, Input } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm } from 'components/utils';
 import {
-    updateProfileService, verifyPhoneNumberService,
-    checkPhoneCodeService,
-} from 'services';
-import {
     Flex, Button, WhiteSpace, Modal,
 } from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
-import s from './edit.css';
-
-import minusIcon from 'components/icons/minus-circle.svg';
+// import minusIcon from 'components/icons/minus-circle.svg';
 import plusIcon from 'components/icons/plus-circle.svg';
-import arrowIcon from 'components/icons/arrow-right.svg';
+// import arrowIcon from 'components/icons/arrow-right.svg';
 import tickIcon from 'components/icons/tick-circle.svg';
+import s from './edit.css';
 
 const model = {
     form: {
@@ -52,6 +49,19 @@ const validationSchema = yup.object().shape({
 });
 
 export const EditProfilePage = schema(model)(createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        profileCursor: BaobabPropTypes.cursor.isRequired,
+    },
+
+    contextTypes: {
+        services: PropTypes.shape({
+            updateProfileService: PropTypes.func.isRequired,
+            verifyPhoneNumberService: PropTypes.func.isRequired,
+            checkPhoneCodeService: PropTypes.func.isRequired,
+        }),
+    },
+
     getInitialState() {
         return {
             openCodeModal: false,
@@ -94,6 +104,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     async onSubmit() {
+        const { updateProfileService, verifyPhoneNumberService } = this.context.services;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
 
@@ -128,7 +139,7 @@ export const EditProfilePage = schema(model)(createReactClass({
             <div className={s.cars}>
                 {_.map(cars, (car, index) => {
                     const {
-                        brand, model: carModel, color, numberOfSeats, licensePlate, pk,
+                        brand, model: carModel, color, numberOfSeats, licensePlate,
                     } = car;
 
                     // return (
@@ -164,6 +175,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     renderPhoneCodeModal() {
+        const { checkPhoneCodeService } = this.context.services;
         const cursor = this.props.tree.phoneVerificationCode;
 
         return (
@@ -175,7 +187,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                 footer={[
                     {
                         text: 'OK',
-                        style: { color: "red" },
+                        style: { color: 'red' },
                         onPress: async () => {
                             const code = this.props.tree.phoneVerificationCode.get();
                             const result = await checkPhoneCodeService(cursor, { code });
@@ -209,7 +221,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         onChange={(e) => cursor.set(e.target.value)}
                     />
                     <div className={s.modalFooter}>
-                        {`I didn't receive the code. `}
+                        {"I didn't receive the code. "}
                         <span className={s.link}>Resend</span>
                     </div>
                 </div>
@@ -219,6 +231,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     renderVerificationInfo() {
         const { isPhoneValidated, phone: savedPhone } = this.props.profileCursor.get();
+        const { verifyPhoneNumberService } = this.context.services;
 
         if (!savedPhone) {
             return null;

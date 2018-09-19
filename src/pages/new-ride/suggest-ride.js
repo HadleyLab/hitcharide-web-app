@@ -7,7 +7,6 @@ import { Search, Title } from 'components';
 import schema from 'libs/state';
 import moment from 'moment';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
-import { getCitiesService, requestRideService } from 'services';
 import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
 import * as yup from 'yup';
 import { DateTimePickers } from './date-time-pickers';
@@ -35,6 +34,13 @@ export const SuggestRideForm = schema(model)(createReactClass({
         }).isRequired,
     },
 
+    contextTypes: {
+        services: PropTypes.shape({
+            getCitiesService: PropTypes.func.isRequired,
+            requestRideService: PropTypes.func.isRequired,
+        }),
+    },
+
     componentDidMount() {
         this.initForm();
     },
@@ -50,6 +56,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
     },
 
     async onSubmit() {
+        const { requestRideService } = this.context.services;
         const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -102,6 +109,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
     },
 
     render() {
+        const { getCitiesService } = this.context.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;

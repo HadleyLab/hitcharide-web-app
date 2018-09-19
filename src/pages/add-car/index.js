@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
@@ -6,7 +7,6 @@ import { Title, Input } from 'components';
 import { validateForm } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
-import { addCarService, getCarListService } from 'services';
 import s from './add-car.css';
 
 const model = {
@@ -36,10 +36,18 @@ export const AddCarPage = schema(model)(createReactClass({
     displayName: 'AddCarPage',
 
     propTypes: {
-        tree: BaobabPropTypes.cursor.isRequired, // eslint-disable-line
+        tree: BaobabPropTypes.cursor.isRequired,
+    },
+
+    contextTypes: {
+        services: PropTypes.shape({
+            addCarService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
+        }),
     },
 
     async onSubmit() {
+        const { addCarService, getCarListService } = this.context.services;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
         const validationResult = await validateForm(validationSchema, data);

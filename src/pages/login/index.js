@@ -1,11 +1,11 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Redirect, Link } from 'react-router-dom';
 import {
     Button, WingBlank, WhiteSpace, Flex, List, InputItem
 } from 'antd-mobile';
-import { signInService } from 'services';
 import schema from 'libs/state';
 import { Input } from 'components';
 import {
@@ -30,9 +30,9 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            email: null,
+            // email: null,
             password: 'k134rf2i',
-            // email: 'user@bs.com',
+            email: 'user@bs.com',
             // password: 'k134rf2i',
         },
         result: {},
@@ -41,6 +41,12 @@ const model = {
 };
 
 export const LoginPage = schema(model)(createReactClass({
+    contextTypes: {
+        services: PropTypes.shape({
+            signInService: PropTypes.func.isRequired,
+        }),
+    },
+
     async onSubmit() {
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -55,7 +61,8 @@ export const LoginPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await signInService(this.props.tree.result, {
+            const service = this.context.services.signInService;
+            const result = await service(this.props.tree.result, {
                 username: data.email,
                 password: data.password,
             });

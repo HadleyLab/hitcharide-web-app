@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Link, Redirect } from 'react-router-dom';
 import {
@@ -6,7 +7,6 @@ import {
 } from 'antd-mobile';
 import schema from 'libs/state';
 import * as yup from 'yup';
-import { signUpService, signInService } from 'services';
 import {
     validateForm, checkInputError, checkUnhandledFormErrors, setToken,
 } from 'components/utils';
@@ -46,6 +46,12 @@ const model = {
 };
 
 const RegistrationForm = createReactClass({
+    contextTypes: {
+        services: PropTypes.shape({
+            signUpService: PropTypes.func.isRequired,
+        }),
+    },
+
     async onSubmit() {
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -59,7 +65,8 @@ const RegistrationForm = createReactClass({
         }
 
         if (isDataValid) {
-            const result = await signUpService(this.props.tree.result, data);
+            const service = this.context.services.signUpService;
+            const result = await service(this.props.tree.result, data);
 
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);

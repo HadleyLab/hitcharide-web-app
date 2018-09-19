@@ -1,23 +1,30 @@
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Flex, Button, WhiteSpace } from 'antd-mobile';
+import { Flex, WhiteSpace } from 'antd-mobile';
 import { Title } from 'components';
 import schema from 'libs/state';
-import { getMyProfileService, getCarListService } from 'services';
 import { AddCarPage } from 'pages';
 import { Route, Link } from 'react-router-dom';
+import tickIcon from 'components/icons/tick-circle.svg';
 import { EditProfilePage } from './edit';
 import s from './profile.css';
-
-import tickIcon from 'components/icons/tick-circle.svg';
 
 export const ProfilePageContent = createReactClass({
     displayName: 'ProfilePageContent',
 
     propTypes: {
-        tree: BaobabPropTypes.cursor.isRequired, // eslint-disable-line
+        tree: BaobabPropTypes.cursor.isRequired,
+        logout: PropTypes.func.isRequired,
+    },
+
+    contextTypes: {
+        services: PropTypes.shape({
+            getMyProfileService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
+        }),
     },
 
     renderCars() {
@@ -54,7 +61,6 @@ export const ProfilePageContent = createReactClass({
             firstName, lastName, phone, email, isPhoneValidated,
             paypal = '1234567890', shortDesc, age,
         } = profile;
-        const { url } = this.props.match;
 
         return (
             <div>
@@ -118,21 +124,32 @@ export const ProfilePageContent = createReactClass({
     },
 });
 
-const model = {
-    info: getMyProfileService,
-    cars: getCarListService,
-};
+const model = (props, context) => ({
+    info: context.services.getMyProfileService,
+    cars: context.services.getCarListService,
+});
 
 export const ProfilePage = schema(model)(createReactClass({
     displayName: 'ProfilePage',
 
     propTypes: {
-        tree: BaobabPropTypes.cursor.isRequired, // eslint-disable-line
+        tree: BaobabPropTypes.cursor.isRequired,
+        match: PropTypes.shape({
+            url: PropTypes.string.isRequired,
+        }).isRequired,
+    },
+
+    contextTypes: {
+        services: PropTypes.shape({
+            getMyProfileService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
+        }),
     },
 
     async componentDidMount() {
         const profile = this.props.tree.get('info');
         const cars = this.props.tree.get('cars');
+        const { getMyProfileService, getCarListService } = this.context.services;
 
         if (_.isEmpty(profile)) {
             await getMyProfileService(this.props.tree.info);
@@ -158,7 +175,7 @@ export const ProfilePage = schema(model)(createReactClass({
                 <Route
                     exact
                     path={url}
-                    render={(props) => (
+                    render={() => (
                         <ProfilePageContent {...this.props} tree={this.props.tree} />
                     )}
                 />

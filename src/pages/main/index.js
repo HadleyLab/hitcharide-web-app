@@ -10,8 +10,7 @@ import {
     SearchPage, MyRidesPage, NewRidePage,
     CalendarPage, ProfilePage, RideDetailsPage,
 } from 'pages';
-import { removeToken } from 'components/utils';
-import { getMyProfileService } from 'services';
+import { getUserType } from 'components/utils';
 
 import searchIcon from './images/search.svg';
 import routeIcon from './images/route.svg';
@@ -77,30 +76,25 @@ export const MainPage = createReactClass({
         history: PropTypes.shape().isRequired,
     },
 
+    contextTypes: {
+        services: PropTypes.shape({
+            getMyProfileService: PropTypes.func.isRequired,
+        }),
+    },
+
     async componentDidMount() {
         const profile = this.props.tree.profile.get('info');
+        const service = this.context.services.getMyProfileService;
+
+        this.props.tree.userType.set(getUserType() || 'passenger');
 
         if (_.isEmpty(profile)) {
-            await getMyProfileService(this.props.tree.profile.info);
+            await service(this.props.tree.profile.info);
         }
     },
 
-    logout() {
-        removeToken();
-        this.props.tokenCursor.set(null);
-        this.props.tree.profile.set({});
-    },
-
-    checkIfSignatureHasExpired() {
-        const profile = this.props.tree.get('profile');
-
-        if (!_.isEmpty(profile) && !_.isEmpty(profile.info.error)) {
-            const { error } = profile.info;
-
-            if (error.response.status === 401) {
-                this.logout();
-            }
-        }
+    componentWillUnmount() {
+        this.props.tree.set({});
     },
 
     checkIfRideCreationAllowed() {
@@ -137,11 +131,9 @@ export const MainPage = createReactClass({
     },
 
     render() {
-        const userType = this.props.tree.userType.get();
+        const userType = this.props.tree.userType.get() || 'passenger';
         const { url } = this.props.match;
         const creationRights = this.checkIfRideCreationAllowed();
-
-        this.checkIfSignatureHasExpired();
 
         return (
             <div className={s.container}>
@@ -187,7 +179,6 @@ export const MainPage = createReactClass({
                             <ProfilePage
                                 {..._.merge(this.props, props)}
                                 tree={this.props.tree.select('profile')}
-                                logout={this.logout}
                             />
                         )}
                     />

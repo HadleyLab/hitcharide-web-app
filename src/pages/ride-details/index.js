@@ -8,14 +8,14 @@ import schema from 'libs/state';
 import {
     Title, Loader, StepperInput, Error,
 } from 'components';
-import { getRideService, bookRideService } from 'services';
 import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import passengerIcon from 'components/icons/passenger.svg';
 import s from './ride-details.css';
 
-const model = (props) => {
+const model = (props, context) => {
     const { pk } = props.match.params;
+    const { getRideService } = context.services;
 
     return {
         ride: (cursor) => getRideService(cursor, pk),
@@ -35,7 +35,15 @@ export const RideDetailsPage = schema(model)(createReactClass({
         }).isRequired,
     },
 
+    contextTypes: {
+        services: PropTypes.shape({
+            getRideService: PropTypes.func.isRequired,
+            bookRideService: PropTypes.func.isRequired,
+        }),
+    },
+
     async componentDidMount() {
+        const { getRideService } = this.context.services;
         const { pk } = this.props.match.params;
         this.props.tree.select('seatsToReserve').set(1);
 
@@ -64,6 +72,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 text: 'OK',
                 onPress: async () => {
                     const { pk } = this.props.match.params;
+                    const { bookRideService } = this.context.services;
 
                     const result = await bookRideService(this.props.tree.bookingResult, { ride: pk });
 
@@ -196,6 +205,32 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         Book it
                     </Button>
                 </div>
+                {/*
+                <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+                    <input type="hidden" name="cmd" value="_xclick" />
+                    <input type="hidden" name="charset" value="utf-8" />
+                    <input type="hidden" name="currency_code" value="USD" />
+                    <input type="hidden" name="no_shipping" value="1" />
+                    <input type="hidden" name="business" value="**SELLER_EMAIL_FROM_CONFIG**" />
+                    <input type="hidden" name="amount" value="**RIDE.PRICE_WITH_FEE**" />
+                    <input type="hidden" name="item_name" value="ride_booking" />
+                    <input type="hidden" name="item_number" value="**RIDE_BOOKING_ID**" />
+                    <input type="hidden" name="notify_url" value="http://localhost:8000/paypal/" />
+                    <input type="hidden" name="return" value="http://localhost:8000/#/ridebooking-paypal-return-url" />
+                    <input
+                        type="hidden"
+                        name="cancel_return"
+                        value="http://localhost:8000/#/ridebooking-paypal-return-url"
+                    />
+                    <input
+                        type="image"
+                        src="https://www.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif"
+                        border="0"
+                        name="submit"
+                        alt="Buy it Now"
+                    />
+                </form>
+                */}
             </Loader>
         );
     },

@@ -10,7 +10,6 @@ import schema from 'libs/state';
 import {
     Flex, Button, List, WhiteSpace, Picker,
 } from 'antd-mobile';
-import { getCitiesService, createRideService, getCarListService } from 'services';
 import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
 import * as yup from 'yup';
 import moment from 'moment';
@@ -38,13 +37,13 @@ const validationSchema = (date) => yup.object().shape({
     description: yup.string().ensure().required('Add notes about this ride'),
 });
 
-const model = {
+const model = (props, context) => ({
     cities: {},
-    cars: (cursor) => getCarListService(cursor),
+    cars: (cursor) => context.services.getCarListService(cursor),
     form: {},
     result: {},
     errors: {},
-};
+});
 
 export const CreateRideForm = schema(model)(createReactClass({
     propTypes: {
@@ -54,7 +53,16 @@ export const CreateRideForm = schema(model)(createReactClass({
         }).isRequired,
     },
 
+    contextTypes: {
+        services: PropTypes.shape({
+            getCitiesService: PropTypes.func.isRequired,
+            createRideService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
+        }),
+    },
+
     async componentDidMount() {
+        const { getCarListService } = this.context.services;
         const cars = this.props.tree.get('cars');
 
         this.initForm();
@@ -87,6 +95,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     async onSubmit() {
+        const { createRideService } = this.context.services;
         const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -161,6 +170,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     renderStopOvers() {
+        const { getCitiesService } = this.context.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const stopsCursor = formCursor.stops;
@@ -244,6 +254,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     render() {
+        const { getCitiesService } = this.context.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;

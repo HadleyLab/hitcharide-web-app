@@ -4,7 +4,6 @@ import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { Link } from 'react-router-dom';
-import { activateAccountService } from 'services';
 
 export const ActivateAccountPage = createReactClass({
     propTypes: {
@@ -17,9 +16,17 @@ export const ActivateAccountPage = createReactClass({
         }).isRequired,
     },
 
+    contextTypes: {
+        services: PropTypes.shape({
+            activateAccountService: PropTypes.func.isRequired,
+        }),
+    },
+
     async componentDidMount() {
         const { params } = this.props.match;
-        await activateAccountService(this.props.tree, params);
+        const service = this.context.services.activateAccountService;
+
+        await service(this.props.tree, params);
     },
 
     render() {

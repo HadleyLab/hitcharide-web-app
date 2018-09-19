@@ -2,18 +2,20 @@ import _ from 'lodash';
 import { getToken } from 'components/utils';
 import { buildGetService, buildPostService, defaultHeaders } from './base';
 
-export function getMyProfileService(cursor) {
+export function getMyProfileService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildGetService(
-        '/accounts/my/',
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor) => {
+        const service = buildGetService(
+            '/accounts/my/',
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
 // function hydrateData(profile) {
@@ -24,51 +26,57 @@ export function getMyProfileService(cursor) {
 //     return data;
 // }
 
-export function updateProfileService(cursor, data) {
+export function updateProfileService(handler) {
     const headers = {
         // 'Content-Type': 'multipart/form-data',
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/accounts/my/',
-        'PUT',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/my/',
+            'PUT',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }
 
-export function verifyPhoneNumberService(cursor) {
+export function verifyPhoneNumberService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/accounts/send_phone_validation_code/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor) => {
+        const service = buildPostService(
+            '/accounts/send_phone_validation_code/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor);
+        return service(handler, cursor);
+    };
 }
 
-export function checkPhoneCodeService(cursor, data) {
+export function checkPhoneCodeService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
 
-    const service = buildPostService(
-        '/accounts/validate_phone/',
-        'POST',
-        JSON.stringify,
-        _.identity,
-        _.merge({}, defaultHeaders, headers)
-    );
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/validate_phone/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
 
-    return service(cursor, data);
+        return service(handler, cursor, data);
+    };
 }
