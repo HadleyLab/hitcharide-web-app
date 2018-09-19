@@ -146,7 +146,7 @@ export const SearchPage = schema(model)(createReactClass({
                                 <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
                             </div>
                             <div className={s.info}>
-                                <span style={{ whiteSpace: 'nowrap' }}>{parseFloat(price).toString()} $</span>
+                                <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
                                 <span className={s.gray}>
                                     {availableNumberOfSeats}
                                     {availableNumberOfSeats === 1 ? ' seat' : ' seats'}

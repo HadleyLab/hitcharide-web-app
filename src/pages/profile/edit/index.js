@@ -27,7 +27,7 @@ const model = {
         shortDesc: '',
         phone: '',
         email: '',
-        paypal: null,
+        paypalAccount: null,
     },
     phoneVerificationCode: null,
     phoneVerificationResult: {},
@@ -46,6 +46,8 @@ const validationSchema = yup.object().shape({
         .typeError('Wrong format')
         .nullable()
         .required('Phone is a required field.'),
+    paypalAccount: yup.number()
+        .typeError('Wrong format of a PayPal account number'),
 });
 
 export const EditProfilePage = schema(model)(createReactClass({
@@ -325,8 +327,8 @@ export const EditProfilePage = schema(model)(createReactClass({
                     <div className={s.section}>
                         <Title>PayPal</Title>
                         <Input
-                            defaultValue={formCursor.paypal.get()}
-                            onChange={(e) => formCursor.paypal.set(e.target.value)}
+                            defaultValue={formCursor.paypalAccount.get()}
+                            onChange={(e) => formCursor.paypalAccount.set(e.target.value)}
                             placeholder="PayPal"
                         />
                     </div>

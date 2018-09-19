@@ -315,7 +315,6 @@ export const CreateRideForm = schema(model)(createReactClass({
                     <Title>Price</Title>
                     <Input
                         type="number"
-                        className={s.inputWithIcon}
                         onKeyPress={(e) => {
                             const isString = e.which < 48 || e.which > 57;
                             const isDot = e.which === 46;
@@ -330,8 +329,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                         }}
                         {...this.checkInputError('price')}
                     >
-                        <div className={s.text}>Price for seat</div>
-                        <div className={s.icon}>$</div>
+                        <div className={s.text}>Price for seat, $</div>
                     </Input>
                 </div>
                 {this.renderNotes()}

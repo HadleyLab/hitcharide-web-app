@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import _ from 'lodash';
-import { NavBar } from 'antd-mobile';
+import { NavBar, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
 import profileIcon from 'components/icons/profile.svg';
@@ -43,8 +43,28 @@ export class TopBar extends React.Component {
         this.setState({ modalOpen: true });
     }
 
+    showMessage(creationRights) {
+        Modal.alert("I'm a driver", creationRights.message, [
+            { text: 'Cancel', onPress: () => null },
+            {
+                text: 'Edit profile',
+                onPress: () => this.props.history.push('/app/profile/edit'),
+            },
+        ]);
+    }
+
     setUserType(e, type) {
         e.stopPropagation();
+        const { checkIfRideCreationAllowed } = this.props;
+        const creationRights = checkIfRideCreationAllowed(type);
+        const isDriver = type === 'driver';
+
+        if (isDriver && !creationRights.allowed) {
+            this.showMessage(creationRights);
+
+            return;
+        }
+
         setUserType(type);
         this.props.userTypeCursor.set(type);
         this.setState({ modalOpen: false });
@@ -166,6 +186,8 @@ export class TopBar extends React.Component {
 TopBar.propTypes = {
     innerPage: PropTypes.bool,
     userTypeCursor: BaobabPropTypes.cursor.isRequired,
+    checkIfRideCreationAllowed: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
 };
 
 TopBar.defaultProps = {

@@ -73,22 +73,6 @@
     z-index: 1;
 }
 
-.inputWithIcon {
-    padding-right: 30px;
-}
-
-.icon {
-    position: absolute;
-    top: 16px;
-    right: 15px;
-    width: 15px;
-    height: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #bdbdbd;
-}
-
 .notesInput {
     width: 100%;
     height: 85px;

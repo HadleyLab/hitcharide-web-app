@@ -83,47 +83,48 @@ export const MainPage = createReactClass({
     },
 
     async componentDidMount() {
-        const profile = this.props.tree.profile.get('info');
         const service = this.context.services.getMyProfileService;
 
         this.props.tree.userType.set(getUserType() || 'passenger');
-
-        if (_.isEmpty(profile)) {
-            await service(this.props.tree.profile.info);
-        }
+        await service(this.props.tree.profile.info);
     },
 
     componentWillUnmount() {
         this.props.tree.set({});
     },
 
-    checkIfRideCreationAllowed() {
+    checkIfRideCreationAllowed(userType) {
         const profile = this.props.tree.profile.get('info');
-        const userType = this.props.tree.userType.get();
         const isDriver = userType === 'driver';
 
         if (!_.isEmpty(profile) && !_.isEmpty(profile.data)) {
             const {
-                firstName, lastName, phone, isPhoneValidated,
+                firstName, lastName, phone, isPhoneValidated, paypalAccount,
             } = profile.data;
 
             if (!firstName || !lastName || !phone) {
                 return {
                     allowed: false,
-                    message: 'Your should fill your profile to create a ride',
+                    message: 'Your should fill your profile',
                 };
             }
 
             if (!isPhoneValidated) {
                 return {
                     allowed: false,
-                    message: 'Your should verify your phone number to create a ride',
+                    message: 'Your should verify your phone number',
+                };
+            }
+
+            if (isDriver && !paypalAccount) {
+                return {
+                    allowed: false,
+                    message: 'Your should add your paypal account number',
                 };
             }
 
             if (isDriver) {
                 // Check if car added
-                // Check if paypal added
             }
         }
 
@@ -137,7 +138,11 @@ export const MainPage = createReactClass({
 
         return (
             <div className={s.container}>
-                <TopBar userTypeCursor={this.props.tree.select('userType')} />
+                <TopBar
+                    userTypeCursor={this.props.tree.select('userType')}
+                    checkIfRideCreationAllowed={this.checkIfRideCreationAllowed}
+                    history={this.props.history}
+                />
                 <div>
                     <Route
                         exact

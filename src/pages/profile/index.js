@@ -59,7 +59,7 @@ export const ProfilePageContent = createReactClass({
         const profile = infoCursor.get('data');
         const {
             firstName, lastName, phone, email, isPhoneValidated,
-            paypal = '1234567890', shortDesc, age,
+            paypalAccount, shortDesc, age,
         } = profile;
 
         return (
@@ -99,7 +99,7 @@ export const ProfilePageContent = createReactClass({
                 <div className={s.section}>
                     <Title>PayPal</Title>
                     <div className={s.infoField}>
-                        {paypal}
+                        {paypalAccount}
                     </div>
                 </div>
                 <WhiteSpace />
