@@ -26,7 +26,7 @@ const model = {
         // age: null,
         shortDesc: '',
         phone: '',
-        email: '',
+        // email: '',
         paypalAccount: null,
     },
     phoneVerificationCode: null,
@@ -54,6 +54,10 @@ export const EditProfilePage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         profileCursor: BaobabPropTypes.cursor.isRequired,
+        cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+        history: PropTypes.shape({
+            goBack: PropTypes.func.isRequired,
+        }).isRequired,
     },
 
     contextTypes: {
@@ -152,7 +156,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                     //     >
                     //         <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
                     //         <div>{licensePlate}</div>
-                    //         <div className={classNames(s.icon, s._arrow)} style={{ backgroundImage: `url(${arrowIcon})` }} />
+                    //         <div
+                    //             className={classNames(s.icon, s._arrow)}
+                    //             style={{ backgroundImage: `url(${arrowIcon})` }}
+                    //         />
                     //     </Link>
                     // );
                     return (
@@ -312,6 +319,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         >
                             {this.renderVerificationInfo()}
                         </Input>
+                        {/*
                         <Input
                             defaultValue={formCursor.email.get()}
                             onChange={(e) => formCursor.email.set(e.target.value)}
@@ -319,6 +327,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         >
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
                         </Input>
+                        */}
                     </div>
                     <div className={s.section}>
                         <Title>Car</Title>

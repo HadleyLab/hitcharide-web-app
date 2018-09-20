@@ -37,13 +37,12 @@ const validationSchema = (date) => yup.object().shape({
     description: yup.string().ensure().required('Add notes about this ride'),
 });
 
-const model = (props, context) => ({
+const model = {
     cities: {},
-    cars: (cursor) => context.services.getCarListService(cursor),
     form: {},
     result: {},
     errors: {},
-});
+};
 
 export const CreateRideForm = schema(model)(createReactClass({
     propTypes: {
@@ -51,42 +50,30 @@ export const CreateRideForm = schema(model)(createReactClass({
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
+        cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     },
 
     contextTypes: {
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
             createRideService: PropTypes.func.isRequired,
-            getCarListService: PropTypes.func.isRequired,
         }),
     },
 
-    async componentDidMount() {
-        const { getCarListService } = this.context.services;
-        const cars = this.props.tree.get('cars');
-
+    componentDidMount() {
         this.initForm();
-
-        if (_.isEmpty(cars)) {
-            const result = await getCarListService(this.props.tree.cars);
-
-            if (result.status === 'Succeed' && !_.isEmpty(result.data)) {
-                const car = result.data[0];
-                const formCursor = this.props.tree.form;
-
-                formCursor.car.set(car.pk);
-            }
-        }
     },
 
     initForm() {
+        const car = this.props.cars[0];
+
         const initData = {
             cityFrom: null,
             cityTo: null,
             dateTime: moment().toDate(),
             price: null,
             stops: [],
-            car: null,
+            car: car.pk,
             numberOfSeats: 1,
             description: null,
         };
@@ -137,36 +124,32 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     renderCarPicker() {
-        const cars = this.props.tree.cars.get();
+        const { cars } = this.props;
         const formCursor = this.props.tree.form;
         let pickerData = [];
 
-        if (!_.isEmpty(cars) && cars.status === 'Succeed' && !_.isEmpty(cars.data)) {
-            _.forEach(cars.data, (car) => pickerData.push({
-                value: car.pk,
-                label: `${car.brand} ${car.model} (Black)`,
-            }));
+        _.forEach(cars, (car) => pickerData.push({
+            value: car.pk,
+            label: `${car.brand} ${car.model} (Black)`,
+        }));
 
-            return (
-                <div className={s.carPicker}>
-                    <List>
-                        <Picker
-                            data={pickerData}
-                            cols={1}
-                            value={[formCursor.car.get()]}
-                            onChange={([v]) => formCursor.car.set(v)}
-                            onOk={([v]) => formCursor.car.set(v)}
-                        >
-                            <List.Item arrow="horizontal">
-                                <div className={s.carIcon} style={{ backgroundImage: `url(${carIcon})` }} />
-                            </List.Item>
-                        </Picker>
-                    </List>
-                </div>
-            );
-        }
-
-        return null;
+        return (
+            <div className={s.carPicker}>
+                <List>
+                    <Picker
+                        data={pickerData}
+                        cols={1}
+                        value={[formCursor.car.get()]}
+                        onChange={([v]) => formCursor.car.set(v)}
+                        onOk={([v]) => formCursor.car.set(v)}
+                    >
+                        <List.Item arrow="horizontal">
+                            <div className={s.carIcon} style={{ backgroundImage: `url(${carIcon})` }} />
+                        </List.Item>
+                    </Picker>
+                </List>
+            </div>
+        );
     },
 
     renderStopOvers() {

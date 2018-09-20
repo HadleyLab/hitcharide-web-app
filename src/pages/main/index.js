@@ -222,8 +222,9 @@ export const MainPage = createReactClass({
                                 render={(props) => (
                                     <NewRidePage
                                         {..._.merge(this.props, props)}
-                                        userType={userType}
                                         tree={this.props.tree}
+                                        userType={userType}
+                                        cars={cars.data}
                                     />
                                 )}
                             />
