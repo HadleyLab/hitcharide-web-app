@@ -19,7 +19,7 @@ const model = (props, context) => {
 
     return {
         ride: (cursor) => getRideService(cursor, pk),
-        seatsToReserve: 1,
+        seatsCount: 1,
         bookingResult: {},
         bookingError: null,
     };
@@ -45,14 +45,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
     async componentDidMount() {
         const { getRideService } = this.context.services;
         const { pk } = this.props.match.params;
-        this.props.tree.select('seatsToReserve').set(1);
+        this.props.tree.select('seatsCount').set(1);
 
         await getRideService(this.props.tree.ride, pk);
     },
 
     bookRide() {
         const ride = this.props.tree.ride.get();
-        const seatsToReserve = this.props.tree.seatsToReserve.get();
+        const seatsCount = this.props.tree.seatsCount.get();
         const {
             cityFrom, cityTo, price, dateTime,
         } = ride.data;
@@ -62,8 +62,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
             + `to ${cityTo.name}, ${cityTo.state.name} `
             + `on ${moment(dateTime).format('MMM d YYYY')} `
             + `at ${moment(dateTime).format('h:mm A')} `
-            + `${seatsToReserve} ${seatsToReserve === 1 ? 'seat' : 'seats'} `
-            + `priced at ${parseFloat(price * seatsToReserve).toString()}$ per seat. `
+            + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
+            + `priced at ${parseFloat(price * seatsCount).toString()}$ per seat. `
             + 'Are you sure?';
 
         Modal.alert('Check a ride', message, [
@@ -72,9 +72,12 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 text: 'OK',
                 onPress: async () => {
                     const { pk } = this.props.match.params;
-                    const { bookRideService } = this.context.services;
+                    const service = this.context.services.bookRideService;
 
-                    const result = await bookRideService(this.props.tree.bookingResult, { ride: pk });
+                    const result = await service(this.props.tree.bookingResult, {
+                        ride: pk,
+                        seatsCount,
+                    });
 
                     if (result.status === 'Failure') {
                         let error = '';
@@ -220,7 +223,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         return (
             <StepperInput
                 title="Number of seats"
-                cursor={this.props.tree.select('seatsToReserve')}
+                cursor={this.props.tree.select('seatsCount')}
                 minValue={1}
                 maxValue={availableNumberOfSeats}
             />
@@ -232,7 +235,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const isRideLoaded = tree && tree.ride && tree.ride.status === 'Succeed';
 
         return (
-            <Loader data={this.props.tree.ride.get()}>
+            <Loader isLoaded={isRideLoaded}>
                 {isRideLoaded ? (
                     <div className={s.container}>
                         <Title className={s.title}>Trip information</Title>
@@ -244,7 +247,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         <Title className={s.title}>Passengers</Title>
                         {this.renderBookings()}
                         <Title className={s.title}>Number of reserved seats</Title>
-                        {tree && tree.seatsToReserve ? this.renderNumberOfSeats() : null}
+                        {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
                         <div className={s.footer}>
                             {tree && tree.bookingError ? (
                                 <Error>

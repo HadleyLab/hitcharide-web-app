@@ -43,48 +43,6 @@ export class TopBar extends React.Component {
         this.setState({ modalOpen: true });
     }
 
-    checkIfRideCreationAllowed(userType) {
-        const { profile, cars } = this.props;
-        const isDriver = userType === 'driver';
-
-        if (!_.isEmpty(profile) && profile.status === 'Succeed'
-                && !_.isEmpty(cars) && cars.status === 'Succeed') {
-            const {
-                firstName, lastName, phone, isPhoneValidated, paypalAccount,
-            } = profile.data;
-
-            if (!firstName || !lastName || !phone) {
-                return {
-                    allowed: false,
-                    message: 'You should fill your profile',
-                };
-            }
-
-            if (!isPhoneValidated) {
-                return {
-                    allowed: false,
-                    message: 'You should verify your phone number',
-                };
-            }
-
-            if (isDriver && !paypalAccount) {
-                return {
-                    allowed: false,
-                    message: 'You should add your paypal account number',
-                };
-            }
-
-            if (isDriver && !cars.data.length) {
-                return {
-                    allowed: false,
-                    message: 'You should add a car to your profile',
-                };
-            }
-        }
-
-        return { allowed: true };
-    }
-
     showMessage(creationRights) {
         Modal.alert("I'm a driver", creationRights.message, [
             { text: 'Cancel', onPress: () => null },
@@ -97,7 +55,7 @@ export class TopBar extends React.Component {
 
     setUserType(e, type) {
         e.stopPropagation();
-        const creationRights = this.checkIfRideCreationAllowed(type);
+        const creationRights = this.props.checkUserRights(type);
         const isDriver = type === 'driver';
 
         if (isDriver && !creationRights.allowed) {
@@ -228,12 +186,9 @@ TopBar.propTypes = {
     innerPage: PropTypes.bool,
     userTypeCursor: BaobabPropTypes.cursor.isRequired,
     history: PropTypes.shape().isRequired,
-    profile: PropTypes.shape(),
-    cars: PropTypes.shape(),
+    checkUserRights: PropTypes.func.isRequired,
 };
 
 TopBar.defaultProps = {
     innerPage: false,
-    profile: {},
-    cars: {},
 };

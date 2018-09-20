@@ -1,14 +1,13 @@
 import React from 'react';
-import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { Icon } from 'antd-mobile';
 import s from './loader.css';
 
 export class Loader extends React.Component {
     render() {
-        const { data, children } = this.props;
+        const { isLoaded, children } = this.props;
 
-        if (!_.isEmpty(data) && data.status === 'Succeed') {
+        if (isLoaded) {
             return children;
         }
 
@@ -21,11 +20,11 @@ export class Loader extends React.Component {
 }
 
 Loader.propTypes = {
-    data: PropTypes.shape(),
+    isLoaded: PropTypes.bool,
     children: PropTypes.node,
 };
 
 Loader.defaultProps = {
-    data: {},
+    isLoaded: false,
     children: <div />,
 };
