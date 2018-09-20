@@ -1,3 +1,11 @@
+.title {
+    margin-top: 25px;
+
+    &:first-of-type {
+        margin-top: 12px;
+    }
+}
+
 .row {
     position: relative;
     padding: 11px 15px 14px;
@@ -12,17 +20,27 @@
     &:before {
         content: '';
         position: absolute;
-        left: 0;
+        left: 15px;
         right: 0;
         bottom: 0;
         height: 1px;
         background-color: #ddd;
+    }
+
+    &._notes {
+        color: rgba(#1A1B20, .3);
+
+        &:before {
+            left: 0;
+        }
     }
 }
 
 .rowTitle {
     color: rgba(#1A1B20, .3);
     padding-right: 15px;
+    white-space: nowrap;
+    min-width: 100px;
 }
 
 .rowContent {

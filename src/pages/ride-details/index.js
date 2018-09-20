@@ -100,73 +100,120 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
     renderRideInfo() {
         const ride = this.props.tree.ride.get();
-        const isRidesLoaded = ride && ride.status === 'Succeed';
+        const {
+            cityFrom, cityTo, price, dateTime, stops,
+            numberOfSeats, availableNumberOfSeats,
+        } = ride.data;
 
-        if (isRidesLoaded) {
-            const {
-                cityFrom, cityTo, price, dateTime, numberOfSeats,
-                availableNumberOfSeats, car,
-            } = ride.data;
+        const rows = [
+            {
+                title: 'From',
+                content: `${cityFrom.name}, ${cityFrom.state.name}`,
+            },
+            ..._.map(stops, ({ city }) => ({
+                title: 'Stop over',
+                content: `${city.name}, ${city.state.name}`,
+            })),
+            {
+                title: 'To',
+                content: `${cityTo.name}, ${cityTo.state.name}`,
+            },
+            {
+                title: 'Departure date',
+                content: moment(dateTime).format('MMM d YYYY'),
+            },
+            {
+                title: 'Departure time',
+                content: moment(dateTime).format('h:mm A'),
+            },
+            {
+                title: 'Free seats',
+                content: (
+                    <div className={s.seats}>
+                        {_.map(_.range(0, numberOfSeats), (seat, index) => (
+                            <div
+                                key={`seat-${index}`}
+                                style={{ backgroundImage: `url(${passengerIcon})` }}
+                                className={classNames(s.seat, {
+                                    [s._reserved]: (index + 1) > availableNumberOfSeats,
+                                })}
+                            />
+                        ))}
+                    </div>
+                ),
+            },
+            {
+                title: 'Price for seat',
+                content: `$ ${parseFloat(price).toString()}`,
+            },
+        ];
 
-            const rows = [
-                {
-                    title: 'From',
-                    content: `${cityFrom.name}, ${cityFrom.state.name}`,
-                },
-                {
-                    title: 'To',
-                    content: `${cityTo.name}, ${cityTo.state.name}`,
-                },
-                {
-                    title: 'Departure date',
-                    content: moment(dateTime).format('MMM d YYYY'),
-                },
-                {
-                    title: 'Departure time',
-                    content: moment(dateTime).format('h:mm A'),
-                },
-                {
-                    title: 'Free seats',
-                    content: (
-                        <div className={s.seats}>
-                            {_.map(_.range(0, numberOfSeats), (seat, index) => (
-                                <div
-                                    key={`seat-${index}`}
-                                    style={{ backgroundImage: `url(${passengerIcon})` }}
-                                    className={classNames(s.seat, {
-                                        [s._reserved]: (index + 1) > availableNumberOfSeats,
-                                    })}
-                                />
-                            ))}
-                        </div>
-                    ),
-                },
-                {
-                    title: 'Price for seat',
-                    content: `$ ${parseFloat(price).toString()}`,
-                },
-                {
-                    title: 'Car',
-                    content: `${car.brand} ${car.model} (${car.color})`,
-                },
-            ];
+        return _.map(rows, (row, index) => (
+            <div className={s.row} key={`ride-row-${index}`}>
+                <span className={s.rowTitle}>{row.title}</span>
+                <span className={s.rowContent}>{row.content}</span>
+            </div>
+        ));
+    },
 
+    renderNotes() {
+        const ride = this.props.tree.ride.get();
+        const { description } = ride.data;
+
+        return (
+            <div className={classNames(s.row, s._notes)}>
+                {description}
+            </div>
+        );
+    },
+
+    renderDriverInfo() {
+        const ride = this.props.tree.ride.get();
+        const { car } = ride.data;
+
+        const rows = [
+            {
+                title: 'Car',
+                content: `${car.brand} ${car.model} (${car.color})`,
+            },
+            {
+                title: 'Driver',
+                content: `${car.owner.firstName} ${car.owner.lastName}`,
+            },
+        ];
+
+        return _.map(rows, (row, index) => (
+            <div className={s.row} key={`ride-row-driver-${index}`}>
+                <span className={s.rowTitle}>{row.title}</span>
+                <span className={s.rowContent}>{row.content}</span>
+            </div>
+        ));
+    },
+
+    renderBookings() {
+        const ride = this.props.tree.ride.get();
+        const { bookings } = ride.data;
+
+        if (!bookings.length) {
             return (
-                <div className={s.ride}>
-                    {_.map(rows, (row, index) => (
-                        <div className={s.row} key={`ride-row-${index}`}>
-                            <span className={s.rowTitle}>{row.title}</span>
-                            <span className={s.rowContent}>{row.content}</span>
-                        </div>
-                    ))}
+                <div className={classNames(s.row, s._notes)}>
+                    No passengers yet
                 </div>
             );
         }
 
-        return <div />;
+        return _.map(bookings, ({ client, seatsCount }, index) => (
+            <div className={s.row} key={`ride-row-booking-${index}`}>
+                <span className={s.rowTitle}>Passenger</span>
+                <span className={s.rowContent}>
+                    {`${client.firstName} ${client.lastName}`}
+                    {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
+                </span>
+            </div>
+        ));
     },
 
-    renderStepper() {
+    renderNumberOfSeats() {
         const tree = this.props.tree.get();
         const { availableNumberOfSeats } = tree.ride.data;
 
@@ -182,55 +229,39 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
     render() {
         const tree = this.props.tree.get();
-        const isRidesLoaded = tree && tree.ride && tree.ride.status === 'Succeed';
+        const isRideLoaded = tree && tree.ride && tree.ride.status === 'Succeed';
 
         return (
             <Loader data={this.props.tree.ride.get()}>
-                <Title>Trip information</Title>
-                {this.renderRideInfo()}
-                <Title style={{ marginTop: '25px' }}>Number of reserved seats</Title>
-                {tree && tree.seatsToReserve && isRidesLoaded ? this.renderStepper() : null}
-                <div className={s.footer}>
-                    {tree && tree.bookingError ? (
-                        <Error>
-                            {tree.bookingError}
-                        </Error>
-                    ) : null}
-                    <Button
-                        type="primary"
-                        inline
-                        style={{ width: 250 }}
-                        onClick={this.bookRide}
-                    >
-                        Book it
-                    </Button>
-                </div>
-                {/*
-                <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
-                    <input type="hidden" name="cmd" value="_xclick" />
-                    <input type="hidden" name="charset" value="utf-8" />
-                    <input type="hidden" name="currency_code" value="USD" />
-                    <input type="hidden" name="no_shipping" value="1" />
-                    <input type="hidden" name="business" value="**SELLER_EMAIL_FROM_CONFIG**" />
-                    <input type="hidden" name="amount" value="**RIDE.PRICE_WITH_FEE**" />
-                    <input type="hidden" name="item_name" value="ride_booking" />
-                    <input type="hidden" name="item_number" value="**RIDE_BOOKING_ID**" />
-                    <input type="hidden" name="notify_url" value="http://localhost:8000/paypal/" />
-                    <input type="hidden" name="return" value="http://localhost:8000/#/ridebooking-paypal-return-url" />
-                    <input
-                        type="hidden"
-                        name="cancel_return"
-                        value="http://localhost:8000/#/ridebooking-paypal-return-url"
-                    />
-                    <input
-                        type="image"
-                        src="https://www.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif"
-                        border="0"
-                        name="submit"
-                        alt="Buy it Now"
-                    />
-                </form>
-                */}
+                {isRideLoaded ? (
+                    <div className={s.container}>
+                        <Title className={s.title}>Trip information</Title>
+                        {this.renderRideInfo()}
+                        <Title className={s.title}>Notes</Title>
+                        {this.renderNotes()}
+                        <Title className={s.title}>Driver information</Title>
+                        {this.renderDriverInfo()}
+                        <Title className={s.title}>Passengers</Title>
+                        {this.renderBookings()}
+                        <Title className={s.title}>Number of reserved seats</Title>
+                        {tree && tree.seatsToReserve ? this.renderNumberOfSeats() : null}
+                        <div className={s.footer}>
+                            {tree && tree.bookingError ? (
+                                <Error>
+                                    {tree.bookingError}
+                                </Error>
+                            ) : null}
+                            <Button
+                                type="primary"
+                                inline
+                                style={{ width: 250 }}
+                                onClick={this.bookRide}
+                            >
+                                Book it
+                            </Button>
+                        </div>
+                    </div>
+                ) : null}
             </Loader>
         );
     },
