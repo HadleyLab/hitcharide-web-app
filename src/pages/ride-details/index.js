@@ -72,9 +72,9 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 text: 'OK',
                 onPress: async () => {
                     const { pk } = this.props.match.params;
-                    const service = this.context.services.bookRideService;
+                    const { bookRideService, getRideService } = this.context.services;
 
-                    const result = await service(this.props.tree.bookingResult, {
+                    const result = await bookRideService(this.props.tree.bookingResult, {
                         ride: pk,
                         seatsCount,
                     });
@@ -85,16 +85,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         _.forEach(result.error.data, (item) => { error += item; });
 
                         this.props.tree.bookingError.set(error);
-                    }
-
-                    if (result.status === 'Failure') {
-                        let error = '';
-
-                        _.forEach(result.error.data, (item) => { error += item; });
-
-                        this.props.tree.bookingError.set(error);
                     } else {
                         this.props.tree.bookingError.set(null);
+                    }
+
+                    if (result.status === 'Succeed') {
+                        this.props.tree.bookingError.set(null);
+
+                        await getRideService(this.props.tree.ride, pk);
                     }
                 },
             },
