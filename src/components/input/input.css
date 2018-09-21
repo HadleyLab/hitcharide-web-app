@@ -48,6 +48,10 @@
     color: #888;
 }
 
+.container._disabled input {
+    color: rgba(#888, .3);
+}
+
 .warning {
     position: absolute;
     right: 15px;

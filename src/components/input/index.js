@@ -11,28 +11,32 @@ export const Input = createReactClass({
 
     propTypes: {
         className: PropTypes.string,
+        children: PropTypes.node,
         error: PropTypes.bool,
         onErrorClick: PropTypes.func,
-        children: PropTypes.any, // eslint-disable-line
+        disabled: PropTypes.bool,
     },
 
     getDefaultProps() {
         return {
             className: null,
+            children: '',
             error: false,
             onErrorClick: () => null,
+            disabled: false,
         };
     },
 
     render() {
         const {
-            className, children, error, onErrorClick,
+            className, children, error, onErrorClick, disabled,
         } = this.props;
 
         return (
             <div
                 className={classNames(s.container, className, {
                     [s._error]: error,
+                    [s._disabled]: disabled,
                 })}
             >
                 {children}

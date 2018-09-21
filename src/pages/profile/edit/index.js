@@ -78,7 +78,9 @@ export const EditProfilePage = schema(model)(createReactClass({
         const formCursor = this.props.tree.form;
         const profile = this.props.profileCursor.get();
 
-        formCursor.set(profile);
+        if (_.isEmpty(formCursor.get())) {
+            formCursor.set(profile);
+        }
     },
 
     async validateForm() {
@@ -319,15 +321,14 @@ export const EditProfilePage = schema(model)(createReactClass({
                         >
                             {this.renderVerificationInfo()}
                         </Input>
-                        {/*
                         <Input
+                            disabled
                             defaultValue={formCursor.email.get()}
                             onChange={(e) => formCursor.email.set(e.target.value)}
                             placeholder="Email"
                         >
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
                         </Input>
-                        */}
                     </div>
                     <div className={s.section}>
                         <Title>Car</Title>
