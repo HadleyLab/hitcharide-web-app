@@ -104,6 +104,17 @@
     }
 }
 
+.modal._disabled {
+    background-color: red;
+    :global .am-modal-button {
+        color: rgba(#1A1B20, .3)!important;
+    }
+}
+
+.codeInputWrapper {
+    position: relative;
+}
+
 .code {
     height: 36px;
     width: 100%;
@@ -113,6 +124,27 @@
     font-size: 14px;
     line-height: 14px;
     font-family: inherit;
+
+    &._error {
+        border-color: #F5222D;
+    }
+}
+
+.errorText {
+    position: absolute;
+    color: #F5222D;
+    font-size: 8px;
+    line-height: 8px;
+    bottom: -2px;
+    right: 2px;
+    transform: translateY(100%);
+}
+
+.modalHeader {
+    font-size: 14px;
+    line-height: 18px;
+    color: #888;
+    margin-bottom: 16px;
 }
 
 .modalFooter {

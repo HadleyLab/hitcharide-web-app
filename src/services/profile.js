@@ -45,7 +45,7 @@ export function updateProfileService(handler) {
     };
 }
 
-export function verifyPhoneNumberService(handler) {
+export function sendPhoneVerificationCodeService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };
@@ -63,7 +63,7 @@ export function verifyPhoneNumberService(handler) {
     };
 }
 
-export function checkPhoneCodeService(handler) {
+export function checkPhoneVerificationCodeService(handler) {
     const headers = {
         Authorization: `JWT ${getToken()}`,
     };

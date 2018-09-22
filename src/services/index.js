@@ -2,7 +2,7 @@ import { signUpService, signInService, activateAccountService } from './auth.js'
 import { getStatesService, getCitiesService } from './cities.js';
 import {
     getMyProfileService, updateProfileService,
-    verifyPhoneNumberService, checkPhoneCodeService,
+    sendPhoneVerificationCodeService, checkPhoneVerificationCodeService,
 } from './profile.js';
 import {
     createRideService, addCarService, getCarListService,
@@ -18,8 +18,8 @@ export default {
     getCitiesService,
     getMyProfileService,
     updateProfileService,
-    verifyPhoneNumberService,
-    checkPhoneCodeService,
+    sendPhoneVerificationCodeService,
+    checkPhoneVerificationCodeService,
     createRideService,
     addCarService,
     getCarListService,
