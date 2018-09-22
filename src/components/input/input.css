@@ -46,10 +46,13 @@
     font: inherit;
     line-height: inherit;
     color: #888;
+    -webkit-appearance: none;
 }
 
 .container._disabled input {
-    color: rgba(#888, .3);
+    -webkit-text-fill-color: rgba(#888, .5);
+    -webkit-opacity: 1;
+    color: rgba(#888, .5);
 }
 
 .warning {

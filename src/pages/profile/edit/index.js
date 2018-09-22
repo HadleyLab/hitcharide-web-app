@@ -3,10 +3,10 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
-import { Title, Input } from 'components';
+import { Title, Input, Error } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
-import { validateForm } from 'components/utils';
+import { validateForm, checkInputError } from 'components/utils';
 import {
     Flex, Button, WhiteSpace, Modal, Toast,
 } from 'antd-mobile';
@@ -141,6 +141,26 @@ export const EditProfilePage = schema(model)(createReactClass({
         if (result.status === 'Failure') {
             this.props.tree.errors.set(result.error.data);
         }
+    },
+
+    checkInputError(name) {
+        const errorsCursor = this.props.tree.errors;
+        const errorProps = checkInputError(name, errorsCursor.get());
+
+        return errorProps;
+    },
+
+    getInputProps(name) {
+        const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
+
+        return _.merge({
+            defaultValue: formCursor.select(name).get(),
+            onChange: (e) => {
+                formCursor.select(name).set(e.target.value);
+                errorsCursor.select(name).set(null);
+            },
+        }, this.checkInputError(name));
     },
 
     renderCarsList() {
@@ -315,8 +335,6 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     render() {
-        const formCursor = this.props.tree.form;
-
         return (
             <div>
                 <div className={s.photoPicker}>
@@ -325,16 +343,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                 </div>
                 <div className={classNames(s.section, s.general)}>
                     <Title>General</Title>
-                    <Input
-                        defaultValue={formCursor.firstName.get()}
-                        onChange={(e) => formCursor.firstName.set(e.target.value)}
-                    >
+                    <Input {...this.getInputProps('firstName')}>
                         <div className={s.text}>Name</div>
                     </Input>
-                    <Input
-                        defaultValue={formCursor.lastName.get()}
-                        onChange={(e) => formCursor.lastName.set(e.target.value)}
-                    >
+                    <Input {...this.getInputProps('lastName')}>
                         <div className={s.text}>Last name</div>
                     </Input>
                 </div>
@@ -342,24 +354,21 @@ export const EditProfilePage = schema(model)(createReactClass({
                     <div className={s.section}>
                         <Title>About you</Title>
                         <Input
-                            defaultValue={formCursor.shortDesc.get()}
-                            onChange={(e) => formCursor.shortDesc.set(e.target.value)}
+                            {...this.getInputProps('shortDesc')}
                             placeholder="A few words about myself"
                         />
                     </div>
                     <div className={s.section}>
                         <Title>Contacts</Title>
                         <Input
-                            defaultValue={formCursor.phone.get()}
-                            onChange={(e) => formCursor.phone.set(e.target.value)}
+                            {...this.getInputProps('phone')}
                             placeholder="Phone number"
                         >
                             {this.renderVerificationInfo()}
                         </Input>
                         <Input
+                            {...this.getInputProps('email')}
                             disabled
-                            defaultValue={formCursor.email.get()}
-                            onChange={(e) => formCursor.email.set(e.target.value)}
                             placeholder="Email"
                         >
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
@@ -372,13 +381,15 @@ export const EditProfilePage = schema(model)(createReactClass({
                     <div className={s.section}>
                         <Title>PayPal</Title>
                         <Input
-                            defaultValue={formCursor.paypalAccount.get()}
-                            onChange={(e) => formCursor.paypalAccount.set(e.target.value)}
+                            {...this.getInputProps('paypalAccount')}
                             placeholder="PayPal"
                         />
                     </div>
                 </div>
-                <WhiteSpace />
+                <Error
+                    form={this.props.tree.form.get()}
+                    errors={this.props.tree.errors.get()}
+                />
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex direction="column" justify="center">
@@ -391,7 +402,6 @@ export const EditProfilePage = schema(model)(createReactClass({
                         Save profile
                     </Button>
                 </Flex>
-                <WhiteSpace />
                 <WhiteSpace />
                 <WhiteSpace />
                 {this.renderPhoneCodeModal()}
