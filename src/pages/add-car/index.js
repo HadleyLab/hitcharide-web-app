@@ -1,22 +1,17 @@
 import React from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
-import { Title, Input } from 'components';
-import { validateForm } from 'components/utils';
+import { Title, Input, Error } from 'components';
+import { validateForm, checkInputError } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
 import s from './add-car.css';
 
 const model = {
-    form: {
-        brand: '',
-        model: '',
-        color: '',
-        numberOfSeats: null,
-        licensePlate: '',
-    },
+    form: {},
     result: {},
     errors: {},
 };
@@ -29,7 +24,6 @@ const validationSchema = yup.object().shape({
         .typeError('Wrong format')
         .nullable()
         .required('Number of seats is a required field.'),
-    licensePlate: yup.string().ensure().required('Car license plate is a required field.'),
 });
 
 export const AddCarPage = schema(model)(createReactClass({
@@ -37,6 +31,11 @@ export const AddCarPage = schema(model)(createReactClass({
 
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        carsCursor: BaobabPropTypes.cursor.isRequired,
+        history: PropTypes.shape({
+            goBack: PropTypes.func.isRequired,
+        }).isRequired,
+        editMode: PropTypes.bool,
     },
 
     contextTypes: {
@@ -44,6 +43,28 @@ export const AddCarPage = schema(model)(createReactClass({
             addCarService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
         }),
+    },
+
+    getDefaultProps() {
+        return {
+            editMode: false,
+        };
+    },
+
+    componentDidMount() {
+        this.initForm();
+    },
+
+    initForm() {
+        const initData = {
+            brand: '',
+            model: '',
+            color: '',
+            numberOfSeats: null,
+            licensePlate: '',
+        };
+
+        this.props.tree.select('form').set(initData);
     },
 
     async onSubmit() {
@@ -63,7 +84,8 @@ export const AddCarPage = schema(model)(createReactClass({
             const result = await addCarService(this.props.tree.result, data);
 
             if (result.status === 'Succeed') {
-                await getCarListService(this.props.carsCursor)
+                await getCarListService(this.props.carsCursor);
+
                 this.props.history.goBack();
             }
 
@@ -73,20 +95,38 @@ export const AddCarPage = schema(model)(createReactClass({
         }
     },
 
+    checkInputError(name) {
+        const errorsCursor = this.props.tree.errors;
+        const errorProps = checkInputError(name, errorsCursor.get());
+
+        return errorProps;
+    },
+
+    getInputProps(name) {
+        const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
+
+        return _.merge({
+            onChange: (e) => {
+                formCursor.select(name).set(e.target.value);
+                errorsCursor.select(name).set(null);
+            },
+        }, this.checkInputError(name));
+    },
+
     render() {
         const { editMode } = this.props;
-        const formCursor = this.props.tree.form;
 
         return (
             <div className={s.container}>
                 <Title>Car information</Title>
-                <Input onChange={(e) => formCursor.brand.set(e.target.value)}>
+                <Input {...this.getInputProps('brand')}>
                     <div className={s.text}>Brand</div>
                 </Input>
-                <Input onChange={(e) => formCursor.model.set(e.target.value)}>
+                <Input {...this.getInputProps('model')}>
                     <div className={s.text}>Model</div>
                 </Input>
-                <Input onChange={(e) => formCursor.color.set(e.target.value)}>
+                <Input {...this.getInputProps('color')}>
                     <div className={s.text}>Color</div>
                 </Input>
                 <Input
@@ -98,15 +138,17 @@ export const AddCarPage = schema(model)(createReactClass({
                             e.preventDefault();
                         }
                     }}
-                    onChange={(e) => formCursor.numberOfSeats.set(e.target.value)}
+                    {...this.getInputProps('numberOfSeats')}
                 >
                     <div className={s.text}>Number of seats</div>
                 </Input>
-                <Input onChange={(e) => formCursor.licensePlate.set(e.target.value)}>
+                <Input {...this.getInputProps('licensePlate')}>
                     <div className={s.text}>License plate</div>
                 </Input>
-                <WhiteSpace />
-                <WhiteSpace />
+                <Error
+                    form={this.props.tree.form.get()}
+                    errors={this.props.tree.errors.get()}
+                />
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex justify="center">

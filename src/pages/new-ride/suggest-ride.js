@@ -3,11 +3,11 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Search, Title } from 'components';
+import { Search, Title, Error } from 'components';
 import schema from 'libs/state';
 import moment from 'moment';
 import { Flex, Button, WhiteSpace } from 'antd-mobile';
-import { validateForm, checkInputError, checkUnhandledFormErrors } from 'components/utils';
+import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
 import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
@@ -92,22 +92,6 @@ export const SuggestRideForm = schema(model)(createReactClass({
         return errorProps;
     },
 
-    renderError() {
-        const form = this.props.tree.form.get();
-        const errors = this.props.tree.errors.get();
-        const error = checkUnhandledFormErrors(form, errors);
-
-        if (error) {
-            return (
-                <div className={s.formError}>
-                    {error}
-                </div>
-            );
-        }
-
-        return null;
-    },
-
     render() {
         const { getCitiesService } = this.context.services;
         const citiesCursor = this.props.tree.cities;
@@ -148,7 +132,10 @@ export const SuggestRideForm = schema(model)(createReactClass({
                     </Search>
                 </div>
                 <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
-                {this.renderError()}
+                <Error
+                    form={this.props.tree.form.get()}
+                    errors={this.props.tree.errors.get()}
+                />
                 <WhiteSpace />
                 <WhiteSpace />
                 <Flex justify="center">

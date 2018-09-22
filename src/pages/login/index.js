@@ -4,13 +4,11 @@ import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Redirect, Link } from 'react-router-dom';
 import {
-    Button, WingBlank, WhiteSpace, Flex, List, InputItem
+    Button, WhiteSpace, Flex, List, InputItem
 } from 'antd-mobile';
 import schema from 'libs/state';
-import { Input } from 'components';
-import {
-    validateForm, checkInputError, checkUnhandledFormErrors, setToken,
-} from 'components/utils';
+import { Input, Error } from 'components';
+import { validateForm, checkInputError, setToken } from 'components/utils';
 import * as yup from 'yup';
 import googleIcon from 'components/icons/google.svg';
 import s from './login.css';
@@ -94,23 +92,6 @@ export const LoginPage = schema(model)(createReactClass({
         }, errorProps);
     },
 
-    renderError() {
-        const form = this.props.tree.form.get();
-        const errors = this.props.tree.errors.get();
-        const error = checkUnhandledFormErrors(form, errors);
-
-        if (error) {
-            return (
-                <WingBlank>
-                    {error}
-                    <WhiteSpace />
-                </WingBlank>
-            );
-        }
-
-        return null;
-    },
-
     render() {
         const token = this.props.tokenCursor.get();
 
@@ -133,7 +114,10 @@ export const LoginPage = schema(model)(createReactClass({
                         Password
                     </InputItem>
                 </List>
-                {this.renderError()}
+                <Error
+                    form={this.props.tree.form.get()}
+                    errors={this.props.tree.errors.get()}
+                />
                 <div className={s.footer}>
                     <div className={s.buttons}>
                         <Button onClick={this.onSubmit} type="primary">Sign in</Button>

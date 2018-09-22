@@ -1,8 +1,8 @@
 .error {
-    width: 250px;
-    font-size: 17px;
-    line-height: 20px;
-    margin-bottom: 25px;
     color: #F5222D;
+    font-size: 16px;
+    line-height: 24px;
+    max-width: 250px;
+    margin: 20px auto 0;
     text-align: center;
 }

@@ -3,13 +3,12 @@ import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Link, Redirect } from 'react-router-dom';
 import {
-    Button, WingBlank, WhiteSpace, Flex, List, InputItem, Toast, Modal,
+    Button, WingBlank, WhiteSpace, Flex, List, InputItem, Modal,
 } from 'antd-mobile';
 import schema from 'libs/state';
 import * as yup from 'yup';
-import {
-    validateForm, checkInputError, checkUnhandledFormErrors, setToken,
-} from 'components/utils';
+import { validateForm, checkInputError } from 'components/utils';
+import { Error } from 'components';
 
 const validationSchema = yup.object().shape({
     email: yup
@@ -98,23 +97,6 @@ const RegistrationForm = createReactClass({
         }, errorProps);
     },
 
-    renderError() {
-        const form = this.props.tree.form.get();
-        const errors = this.props.tree.errors.get();
-        const error = checkUnhandledFormErrors(form, errors);
-
-        if (error) {
-            return (
-                <WingBlank>
-                    {error}
-                    <WhiteSpace />
-                </WingBlank>
-            );
-        }
-
-        return null;
-    },
-
     render() {
         const token = this.props.tokenCursor.get();
 
@@ -142,7 +124,10 @@ const RegistrationForm = createReactClass({
                         </InputItem>
                     </List>
                     <WhiteSpace />
-                    {this.renderError()}
+                    <Error
+                        form={this.props.tree.form.get()}
+                        errors={this.props.tree.errors.get()}
+                    />
                     <WingBlank>
                         <Button onClick={this.onSubmit}>Sign up</Button>
                         <WhiteSpace />
