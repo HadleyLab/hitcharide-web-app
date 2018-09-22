@@ -3,7 +3,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Flex, WhiteSpace } from 'antd-mobile';
+import { Flex, WhiteSpace, Button } from 'antd-mobile';
 import { Title } from 'components';
 import { AddCarPage } from 'pages';
 import { Route, Link } from 'react-router-dom';
@@ -105,8 +105,14 @@ export const ProfilePageContent = createReactClass({
                     >
                         Edit profile
                     </Link>
-                    <div className={s.logout} onClick={this.props.logout}>
-                        Logout
+                    <div className={s.logout}>
+                        <Button
+                            inline
+                            style={{ width: 250 }}
+                            onClick={this.props.logout}
+                        >
+                            Logout
+                        </Button>
                     </div>
                 </Flex>
                 <WhiteSpace />
