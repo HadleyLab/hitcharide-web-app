@@ -1,7 +1,7 @@
 import { signUpService, signInService, activateAccountService } from './auth.js';
 import { getStatesService, getCitiesService } from './cities.js';
 import {
-    getMyProfileService, updateProfileService,
+    getMyProfileService, updateProfileService, getUserProfileService,
     sendPhoneVerificationCodeService, checkPhoneVerificationCodeService,
 } from './profile.js';
 import {
@@ -16,6 +16,7 @@ export default {
     activateAccountService,
     getStatesService,
     getCitiesService,
+    getUserProfileService,
     getMyProfileService,
     updateProfileService,
     sendPhoneVerificationCodeService,

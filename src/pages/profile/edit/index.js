@@ -14,6 +14,7 @@ import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import plusIcon from 'components/icons/plus-circle.svg';
 import tickIcon from 'components/icons/tick-circle.svg';
+import { HappinessIcon } from 'components/icons';
 import s from './edit.css';
 
 const model = {
@@ -338,7 +339,9 @@ export const EditProfilePage = schema(model)(createReactClass({
         return (
             <div>
                 <div className={s.photoPicker}>
-                    <div className={s.photo}>Photo</div>
+                    <div className={s.photo}>
+                        <HappinessIcon />
+                    </div>
                     Change photo
                 </div>
                 <div className={classNames(s.section, s.general)}>

@@ -304,8 +304,11 @@ export const CreateRideForm = schema(model)(createReactClass({
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <WhiteSpace />
-                <WhiteSpace />
+                <div className={s.warningText}>
+                    You can delete this trip
+                    <br />
+                    up to 24 hours before
+                </div>
                 <Flex justify="center">
                     <Button
                         type="primary"

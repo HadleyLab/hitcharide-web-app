@@ -7,8 +7,8 @@ import { TabBar, Modal } from 'antd-mobile';
 import { TopBar, Loader } from 'components';
 import { Route } from 'react-router-dom';
 import {
-    SearchPage, MyRidesPage, NewRidePage,
-    CalendarPage, ProfilePage, RideDetailsPage,
+    SearchPage, MyRidesPage, NewRidePage, CalendarPage,
+    YourProfilePage, RideDetailsPage, UserProfilePage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 
@@ -231,7 +231,7 @@ export const MainPage = createReactClass({
                             <Route
                                 path={`${url}/profile`}
                                 render={(props) => (
-                                    <ProfilePage
+                                    <YourProfilePage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree}
                                     />
@@ -242,7 +242,16 @@ export const MainPage = createReactClass({
                                 render={(props) => (
                                     <RideDetailsPage
                                         {..._.merge(this.props, props)}
-                                        tree={this.props.tree.select('')}
+                                        tree={this.props.tree.select('ride')}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/user/:pk`}
+                                render={(props) => (
+                                    <UserProfilePage
+                                        {..._.merge(this.props, props)}
+                                        tree={this.props.tree.select('user')}
                                     />
                                 )}
                             />

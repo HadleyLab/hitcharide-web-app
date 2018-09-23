@@ -10,6 +10,7 @@ import {
 } from 'components';
 import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
+import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
 import s from './ride-details.css';
 
@@ -179,7 +180,11 @@ export const RideDetailsPage = schema(model)(createReactClass({
             },
             {
                 title: 'Driver',
-                content: `${car.owner.firstName} ${car.owner.lastName}`,
+                content: (
+                    <Link to={`/app/user/${car.owner.pk}`}>
+                        {`${car.owner.firstName} ${car.owner.lastName}`}
+                    </Link>
+                ),
             },
         ];
 

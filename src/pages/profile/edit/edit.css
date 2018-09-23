@@ -12,14 +12,17 @@
 .photo {
     width: 90px;
     height: 90px;
+    padding: 25px;
     border-radius: 50%;
     background-color: #CADEF3;
+    color: #4263CA;
     font-size: 12px;
     line-height: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
+    opacity: .5;
 }
 
 .section {

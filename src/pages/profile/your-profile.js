@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, WhiteSpace, Button } from 'antd-mobile';
-import { Title } from 'components';
+import { Title, Loader } from 'components';
 import { AddCarPage } from 'pages';
 import { Route, Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
 import { EditProfilePage } from './edit';
+import { ProfileContent } from './profile-content';
 import s from './profile.css';
 
 export const ProfilePageContent = createReactClass({
@@ -122,9 +123,7 @@ export const ProfilePageContent = createReactClass({
     },
 });
 
-export const ProfilePage = createReactClass({
-    displayName: 'ProfilePage',
-
+export const YourProfilePage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         match: PropTypes.shape({
@@ -133,60 +132,67 @@ export const ProfilePage = createReactClass({
     },
 
     render() {
-        const profileCursor = this.props.tree.profile;
-        const status = profileCursor.get('status');
-
-        if (!status || status !== 'Succeed') {
-            return null;
-        }
-
+        const profile = this.props.tree.profile.get();
+        const cars = this.props.tree.cars.get();
+        const isProfileLoaded = profile && profile.status === 'Succeed';
+        const isCarsLoaded = cars && cars.status === 'Succeed';
+        const isPageReady = isProfileLoaded && isCarsLoaded;
         const { url } = this.props.match;
 
         return (
-            <div>
-                <Route
-                    exact
-                    path={url}
-                    render={() => (
-                        <ProfilePageContent {...this.props} tree={this.props.tree} />
-                    )}
-                />
-                <Route
-                    exact
-                    path={`${url}/car/add`}
-                    render={(props) => (
-                        <AddCarPage
-                            {...props}
-                            tree={this.props.tree.select('addCar')}
-                            carsCursor={this.props.tree.cars}
+            <Loader isLoaded={isPageReady}>
+                {isPageReady ? (
+                    <div>
+                        <Route
+                            exact
+                            path={url}
+                            render={() => (
+                                <ProfileContent
+                                    {...this.props}
+                                    profile={profile.data}
+                                    cars={cars.data}
+                                    isYourProfile
+                                />
+                            )}
                         />
-                    )}
-                />
-                <Route
-                    exact
-                    path={`${url}/car/:pk/edit`}
-                    render={(props) => (
-                        <AddCarPage
-                            {...props}
-                            editMode
-                            tree={this.props.tree.select('addCar')}
-                            carsCursor={this.props.tree.cars}
+                        <Route
+                            exact
+                            path={`${url}/car/add`}
+                            render={(props) => (
+                                <AddCarPage
+                                    {...props}
+                                    tree={this.props.tree.select('addCar')}
+                                    carsCursor={this.props.tree.cars}
+                                />
+                            )}
                         />
-                    )}
-                />
-                <Route
-                    exact
-                    path={`${url}/edit`}
-                    render={(props) => (
-                        <EditProfilePage
-                            {...props}
-                            tree={this.props.tree.select('editProfile')}
-                            profileCursor={this.props.tree.profile.data}
-                            cars={this.props.tree.cars.get('data')}
+                        <Route
+                            exact
+                            path={`${url}/car/:pk/edit`}
+                            render={(props) => (
+                                <AddCarPage
+                                    {...props}
+                                    editMode
+                                    tree={this.props.tree.select('addCar')}
+                                    carsCursor={this.props.tree.cars}
+                                />
+                            )}
                         />
-                    )}
-                />
-            </div>
+                        <Route
+                            exact
+                            path={`${url}/edit`}
+                            render={(props) => (
+                                <EditProfilePage
+                                    {...props}
+                                    tree={this.props.tree.select('editProfile')}
+                                    profileCursor={this.props.tree.profile.data}
+                                    cars={this.props.tree.cars.get('data')}
+                                />
+                            )}
+                        />
+                    </div>
+                ) : null}
+            </Loader>
         );
     },
 });

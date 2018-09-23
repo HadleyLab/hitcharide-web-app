@@ -17,17 +17,17 @@ const paginationParams = {
     offset: 0,
 };
 
-const model = (props, context) => ({
+const model = {
     tree: {
         cities: {},
-        rides: (cursor) => context.services.getRidesListService(cursor, paginationParams),
+        rides: {},
         searchForm: {
             cityFrom: null,
             cityTo: null,
             date: null,
         },
     },
-});
+};
 
 export const SearchPage = schema(model)(createReactClass({
     displayName: 'SearchPage',
@@ -49,6 +49,21 @@ export const SearchPage = schema(model)(createReactClass({
         return paginationParams;
     },
 
+    componentDidMount() {
+        const rides = this.props.tree.rides.get();
+
+        if (!rides || _.isEmpty(rides)) {
+            this.loadRides(paginationParams);
+        }
+    },
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.userType !== this.props.userType) {
+            this.props.tree.rides.set({});
+            this.loadRides(paginationParams);
+        }
+    },
+
     hydrateParams(data) {
         const params = _.chain(data)
             .omitBy((value) => checkIfValueEmpty(value))
@@ -65,10 +80,15 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     async loadRides(params, dehydrateParams) {
+        const isDriver = this.props.userType === 'driver';
         const { getRidesListService } = this.context.services;
         const cursor = this.props.tree.rides;
         const formCursor = this.props.tree.searchForm;
         const searchParams = this.hydrateParams(formCursor.get());
+
+        if (isDriver) {
+            return;
+        }
 
         await getRidesListService(cursor, _.merge(searchParams, params), dehydrateParams);
     },
@@ -97,10 +117,10 @@ export const SearchPage = schema(model)(createReactClass({
 
     renderRides() {
         const isDriver = this.props.userType === 'driver';
-        const ridesCursor = this.props.tree.rides;
-        const { data, status } = ridesCursor.get();
+        const ridesData = this.props.tree.rides.get() || {};
+        const { data, status } = ridesData;
 
-        if (!data || status !== 'Succeed') {
+        if (_.isEmpty(ridesData) || !data || status !== 'Succeed') {
             return null;
         }
 
@@ -160,8 +180,13 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     renderFooter() {
-        const ridesCursor = this.props.tree.rides;
-        const { data, status } = ridesCursor.get();
+        const ridesData = this.props.tree.rides.get() || {};
+
+        if (_.isEmpty(ridesData)) {
+            return null;
+        }
+
+        const { data, status } = ridesData;
 
         if (!data || status !== 'Succeed') {
             return (

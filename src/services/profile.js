@@ -18,6 +18,22 @@ export function getMyProfileService(handler) {
     };
 }
 
+export function getUserProfileService(handler) {
+    const headers = {
+        Authorization: `JWT ${getToken()}`,
+    };
+
+    return (cursor, pk) => {
+        const service = buildGetService(
+            `/accounts/${pk}/`,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
+    };
+}
+
 // function hydrateData(profile) {
 //     let data = new FormData();
 //
