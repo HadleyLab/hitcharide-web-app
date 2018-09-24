@@ -17,12 +17,12 @@ export const SocialAuthPage = createReactClass({
         }).isRequired,
     },
 
-    componentDidMount() {
+    async componentDidMount() {
         const { search } = this.props.location;
         const token = _.replace(search, '?token=', '');
 
-        this.props.tokenCursor.set(token);
-        setToken(token);
+        await setToken(token);
+        await this.props.tokenCursor.set(token);
     },
 
     render() {
