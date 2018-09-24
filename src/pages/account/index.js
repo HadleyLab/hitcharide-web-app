@@ -110,7 +110,7 @@ export const AccountPage = createReactClass({
 
                 <Route
                     path={`${url}/social-auth-error`}
-                    component={SocialAuthErrorPage}
+                    render={(props) => <SocialAuthErrorPage {...props} />}
                 />
             </div>
         );

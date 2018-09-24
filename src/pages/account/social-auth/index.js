@@ -1,13 +1,12 @@
 import React from 'react';
 import _ from 'lodash';
-import classNames from 'classnames';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { setToken } from 'components/utils';
-import sadnessIcon from 'components/icons/sadness.svg';
-import s from './social-auth.css';
+import { Button } from 'antd-mobile';
+import s from '../account.css';
 
 export const SocialAuthPage = createReactClass({
     propTypes: {
@@ -31,17 +30,30 @@ export const SocialAuthPage = createReactClass({
 });
 
 export const SocialAuthErrorPage = createReactClass({
+    propTypes: {
+        history: PropTypes.shape({
+            push: PropTypes.func.isRequired,
+        }).isRequired,
+    },
+
     render() {
+        const { history } = this.props;
+
         return (
-            <div className={s.container}>
-                <img src={sadnessIcon} alt="Sadness" />
-                Something went wrong
-                <Link
-                    to="/account/login"
-                    className={classNames('am-button', 'am-button-primary', s.button)}
-                >
-                    Back to sign in
-                </Link>
+            <div className={s.content}>
+                <div className={s.description}>
+                    {'Something went wrong.'}
+                </div>
+                <div className={s.footer}>
+                    <div className={s.buttons}>
+                        <Button
+                            type="primary"
+                            onClick={() => history.push('/account/login')}
+                        >
+                            Back to sign in
+                        </Button>
+                    </div>
+                </div>
             </div>
         );
     },

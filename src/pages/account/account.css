@@ -89,3 +89,20 @@
         color: #1A1B20;
     }
 }
+
+.description {
+    color: rgba(#1A1B20, .5);
+    font-size: 16px;
+    line-height: 24px;
+    max-width: 250px;
+    margin: 40px auto 20px;
+    text-align: center;
+}
+
+.link {
+    color: #4263CA;
+}
+
+.error {
+    color: #F5222D;
+}
