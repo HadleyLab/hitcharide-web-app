@@ -2,6 +2,7 @@ export { LoginPage } from './account/login';
 export { RegistrationPage } from './account/registration';
 export { ActivateAccountPage } from './account/activate';
 export { SocialAuthPage, SocialAuthErrorPage } from './account/social-auth';
+export { ResetPasswordPage } from './account/reset-password';
 export { HomePage } from './home';
 export { MainPage } from './main';
 export { AccountPage } from './account';

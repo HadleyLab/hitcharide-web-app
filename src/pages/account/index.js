@@ -5,7 +5,7 @@ import createReactClass from 'create-react-class';
 import { Route, Link, Redirect } from 'react-router-dom';
 import {
     LoginPage, RegistrationPage, ActivateAccountPage,
-    SocialAuthPage, SocialAuthErrorPage,
+    SocialAuthPage, SocialAuthErrorPage, ResetPasswordPage,
 } from 'pages';
 import themeImage from 'components/images/theme.png';
 import logoIcon from 'components/icons/logo.svg';
@@ -39,9 +39,19 @@ export const AccountPage = createReactClass({
         match: PropTypes.shape({
             url: PropTypes.string.isRequired,
         }).isRequired,
+        location: PropTypes.shape({
+            pathname: PropTypes.string.isRequired,
+        }).isRequired,
     },
 
     renderLogo() {
+        const { location } = this.props;
+        const isResetPassword = location.pathname === '/account/reset-password';
+
+        if (isResetPassword) {
+            return null;
+        }
+
         return (
             <div className={s.logoWrapper}>
                 <Link to="/">
@@ -84,6 +94,16 @@ export const AccountPage = createReactClass({
                             {...props}
                             tree={this.props.tree.registration}
                             tokenCursor={tokenCursor}
+                        />
+                    )}
+                />
+
+                <Route
+                    path={`${url}/reset-password`}
+                    render={(props) => (
+                        <ResetPasswordPage
+                            {...props}
+                            tree={this.props.tree.resetPassword}
                         />
                     )}
                 />

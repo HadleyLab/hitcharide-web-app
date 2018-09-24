@@ -42,3 +42,17 @@ export function activateAccountService(handler) {
         return service(handler, cursor, data);
     };
 }
+
+export function resetPasswordService(handler) {
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/password/reset/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            defaultHeaders,
+        );
+
+        return service(handler, cursor, data);
+    };
+}
