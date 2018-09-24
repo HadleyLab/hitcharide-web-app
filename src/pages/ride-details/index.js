@@ -14,16 +14,11 @@ import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
 import s from './ride-details.css';
 
-const model = (props, context) => {
-    const { pk } = props.match.params;
-    const { getRideService } = context.services;
-
-    return {
-        ride: (cursor) => getRideService(cursor, pk),
-        seatsCount: 1,
-        bookingResult: {},
-        bookingError: null,
-    };
+const model = {
+    ride: {},
+    seatsCount: 1,
+    bookingResult: {},
+    bookingError: null,
 };
 
 export const RideDetailsPage = schema(model)(createReactClass({
@@ -34,6 +29,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 pk: PropTypes.string.isRequired,
             }),
         }).isRequired,
+        profile: PropTypes.shape().isRequired,
     },
 
     contextTypes: {
@@ -170,6 +166,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     renderDriverInfo() {
+        const { profile } = this.props;
         const ride = this.props.tree.ride.get();
         const { car } = ride.data;
 
@@ -181,9 +178,12 @@ export const RideDetailsPage = schema(model)(createReactClass({
             {
                 title: 'Driver',
                 content: (
-                    <Link to={`/app/user/${car.owner.pk}`}>
-                        {`${car.owner.firstName} ${car.owner.lastName}`}
-                    </Link>
+                    <div>
+                        <span className={s.you}>{profile.pk === car.owner.pk ? '(You) ' : null}</span>
+                        <Link to={`/app/user/${car.owner.pk}`} className={s.link}>
+                            {`${car.owner.firstName} ${car.owner.lastName}`}
+                        </Link>
+                    </div>
                 ),
             },
         ];
@@ -197,6 +197,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     renderBookings() {
+        const { profile } = this.props;
         const ride = this.props.tree.ride.get();
         const { bookings } = ride.data;
 
@@ -212,8 +213,11 @@ export const RideDetailsPage = schema(model)(createReactClass({
             <div className={s.row} key={`ride-row-booking-${index}`}>
                 <span className={s.rowTitle}>Passenger</span>
                 <span className={s.rowContent}>
-                    {`${client.firstName} ${client.lastName}`}
-                    {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
+                    <span className={s.you}>{profile.pk === client.pk ? '(You) ' : null}</span>
+                    <Link to={`/app/user/${client.pk}`} className={s.link}>
+                        {`${client.firstName} ${client.lastName}`}
+                        {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
+                    </Link>
                 </span>
             </div>
         ));

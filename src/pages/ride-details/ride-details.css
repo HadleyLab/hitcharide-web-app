@@ -72,3 +72,11 @@
     justify-content: center;
     padding: 25px 15px 50px;
 }
+
+.you {
+    color: rgba(#1A1B20, .3);
+}
+
+.link {
+    color: #4263CA;
+}

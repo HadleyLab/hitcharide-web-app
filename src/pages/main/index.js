@@ -243,6 +243,7 @@ export const MainPage = createReactClass({
                                     <RideDetailsPage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('ride')}
+                                        profile={profile.data}
                                     />
                                 )}
                             />
