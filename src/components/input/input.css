@@ -47,6 +47,11 @@
     line-height: inherit;
     color: #888;
     -webkit-appearance: none;
+    background: none;
+
+    &::placeholder {
+        color: rgba(#1A1B20, .3);
+    }
 }
 
 .container._disabled input {
@@ -55,13 +60,13 @@
     color: rgba(#888, .5);
 }
 
-.warning {
+.icon {
     position: absolute;
-    right: 15px;
-    width: 21px;
-    height: 21px;
+    right: 0;
+    width: 50px;
+    height: 40px;
     background-position: center;
-    background-size: contain;
     background-repeat: no-repeat;
+    background-size: 20px 20px;
     background-color: #fff;
 }

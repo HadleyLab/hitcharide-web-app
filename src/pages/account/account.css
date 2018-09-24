@@ -1,9 +1,41 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-color: #2444AB;
+    background-position: center;
+    background-size: cover;
+    background-blend-mode: overlay;
+    z-index: 1;
+}
+
+.logoWrapper {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    width: 245px;
+    height: 62px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 245px 62px;
+}
+
+.content {
+    background-color: #fff;
+}
+
 .footer {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 25px 15px 15px;
+    padding: 25px 15px 25px;
 }
 
 .buttons {
@@ -46,5 +78,14 @@
     img {
         width: 20px;
         height: 20px;
+    }
+}
+
+.input {
+    margin-top: 10px;
+
+    input {
+        text-align: left;
+        color: #1A1B20;
     }
 }

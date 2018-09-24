@@ -41,14 +41,8 @@
     }
 }
 
-.moreInfo {
-    input {
-        text-align: left;
-
-        &::placeholder {
-            color: rgba(#1A1B20, .3);
-        }
-    }
+.moreInfo input {
+    text-align: left;
 }
 
 .cars {

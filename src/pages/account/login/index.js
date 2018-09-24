@@ -1,17 +1,16 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Redirect, Link } from 'react-router-dom';
-import {
-    Button, WhiteSpace, Flex, List, InputItem
-} from 'antd-mobile';
+import { Button } from 'antd-mobile';
 import schema from 'libs/state';
 import { Input, Error } from 'components';
 import { validateForm, checkInputError, setToken } from 'components/utils';
 import * as yup from 'yup';
 import googleIcon from 'components/icons/google.svg';
-import s from './login.css';
+import s from '../account.css';
 
 const validationSchema = yup.object().shape({
     email: yup
@@ -28,9 +27,9 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            // email: null,
-            password: 'k134rf2i',
-            email: 'user@bs.com',
+            email: null,
+            password: null,
+            // email: 'user@bs.com',
             // password: 'k134rf2i',
         },
         result: {},
@@ -39,6 +38,11 @@ const model = {
 };
 
 export const LoginPage = schema(model)(createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
+    },
+
     contextTypes: {
         services: PropTypes.shape({
             signInService: PropTypes.func.isRequired,
@@ -84,8 +88,9 @@ export const LoginPage = schema(model)(createReactClass({
         const errorProps = checkInputError(name, errorsCursor.get());
 
         return _.merge({
-            onChange: (v) => {
-                formCursor.select(name).set(v);
+            className: s.input,
+            onChange: (e) => {
+                formCursor.select(name).set(e.target.value);
                 errorsCursor.select(name).set(null);
             },
             defaultValue: formCursor.get(name),
@@ -100,20 +105,18 @@ export const LoginPage = schema(model)(createReactClass({
         }
 
         return (
-            <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
-                <Flex align="center" justify="center">
-                    Hitcharide
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
-                <List renderHeader={() => 'Sign in with email'}>
-                    <InputItem {...this.getInputProps('email')}>
-                        Email
-                    </InputItem>
-                    <InputItem type="password" {...this.getInputProps('password')}>
-                        Password
-                    </InputItem>
-                </List>
+            <div className={s.content}>
+                <form className={s.form}>
+                    <Input
+                        {...this.getInputProps('email')}
+                        placeholder="E-mail"
+                    />
+                    <Input
+                        {...this.getInputProps('password')}
+                        type="password"
+                        placeholder="Password"
+                    />
+                </form>
                 <Error
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
@@ -130,11 +133,11 @@ export const LoginPage = schema(model)(createReactClass({
                         </a>
                     </div>
                     <span className={s.inlineButton}>
-                        {`Don't have an account? `}
-                        <Link to="/registration">Sign up</Link>
+                        {"Don't have an account? "}
+                        <Link to="/account/registration">Sign up</Link>
                     </span>
                 </div>
-            </Flex>
+            </div>
         );
     },
 }));

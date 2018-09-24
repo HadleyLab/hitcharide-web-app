@@ -37,7 +37,7 @@ export const SocialAuthErrorPage = createReactClass({
                 <img src={sadnessIcon} alt="Sadness" />
                 Something went wrong
                 <Link
-                    to="/login"
+                    to="/account/login"
                     className={classNames('am-button', 'am-button-primary', s.button)}
                 >
                     Back to sign in

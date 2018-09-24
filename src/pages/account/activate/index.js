@@ -40,8 +40,8 @@ export const ActivateAccountPage = createReactClass({
             return (
                 <div>
                     Your account has been successfully activated<br /><br />
-                    <Link to="/login">Sign In</Link><br /><br />
-                    <Link to="/registration">Sign Up</Link><br /><br />
+                    <Link to="/account/login">Sign In</Link><br /><br />
+                    <Link to="/account/registration">Sign Up</Link><br /><br />
                 </div>
             );
         }

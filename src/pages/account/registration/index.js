@@ -1,14 +1,15 @@
 import React from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
+import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Link, Redirect } from 'react-router-dom';
-import {
-    Button, WingBlank, WhiteSpace, Flex, List, InputItem, Modal,
-} from 'antd-mobile';
+import { Button, Modal } from 'antd-mobile';
 import schema from 'libs/state';
 import * as yup from 'yup';
 import { validateForm, checkInputError } from 'components/utils';
-import { Error } from 'components';
+import { Input, Error } from 'components';
+import s from '../account.css';
 
 const validationSchema = yup.object().shape({
     email: yup
@@ -25,26 +26,33 @@ const validationSchema = yup.object().shape({
         .string()
         .oneOf([yup.ref('password'), null], "Passwords don't match")
         .ensure()
-        .required('Password confirmation is a required field'),
+        .required('Confirm password is a required field'),
 });
 
 const model = {
     tree: {
         form: {
             email: null,
-            password: 'k134rf2i',
-            confirmPassword: 'k134rf2i',
+            password: null,
+            confirmPassword: null,
             // email: 'user@bs.com',
             // password: 'k134rf2i',
             // confirmPassword: 'k134rf2i',
         },
         result: {},
-        loginResult: {},
         errors: {},
     },
 };
 
-const RegistrationForm = createReactClass({
+export const RegistrationPage = schema(model)(createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
+        history: PropTypes.shape({
+            push: PropTypes.func.isRequired,
+        }).isRequired,
+    },
+
     contextTypes: {
         services: PropTypes.shape({
             signUpService: PropTypes.func.isRequired,
@@ -75,7 +83,7 @@ const RegistrationForm = createReactClass({
                 Modal.alert("We've sent you the email", 'Please confirm your email address to sign in', [
                     {
                         text: 'Ok',
-                        onPress: () => this.props.history.push('/login'),
+                        onPress: () => this.props.history.push('/account/login'),
                     },
                 ]);
             }
@@ -88,9 +96,9 @@ const RegistrationForm = createReactClass({
         const errorProps = checkInputError(name, errorsCursor.get());
 
         return _.merge({
-            labelNumber: 7,
-            onChange: (v) => {
-                formCursor.select(name).set(v);
+            className: s.input,
+            onChange: (e) => {
+                formCursor.select(name).set(e.target.value);
                 errorsCursor.select(name).set(null);
             },
             defaultValue: formCursor.get(name),
@@ -105,38 +113,37 @@ const RegistrationForm = createReactClass({
         }
 
         return (
-            <Flex direction="column" align="stretch" justify="center" style={{ height: '100%' }}>
-                <Flex align="center" justify="center">
-                    Hitcharide
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
-                <form>
-                    <List renderHeader={() => 'Sign up with email'}>
-                        <InputItem {...this.getInputProps('email')}>
-                            Email
-                        </InputItem>
-                        <InputItem type="password" {...this.getInputProps('password')}>
-                            Password
-                        </InputItem>
-                        <InputItem type="password" {...this.getInputProps('confirmPassword')}>
-                            Confirm password
-                        </InputItem>
-                    </List>
-                    <WhiteSpace />
-                    <Error
-                        form={this.props.tree.form.get()}
-                        errors={this.props.tree.errors.get()}
+            <div className={s.content}>
+                <form className={s.form}>
+                    <Input
+                        {...this.getInputProps('email')}
+                        placeholder="E-mail"
                     />
-                    <WingBlank>
-                        <Button onClick={this.onSubmit}>Sign up</Button>
-                        <WhiteSpace />
-                        Already a member? <Link to="/login">Sign in</Link>
-                    </WingBlank>
+                    <Input
+                        {...this.getInputProps('password')}
+                        type="password"
+                        placeholder="Password"
+                    />
+                    <Input
+                        {...this.getInputProps('confirmPassword')}
+                        type="password"
+                        placeholder="Confirm password"
+                    />
                 </form>
-            </Flex>
+                <Error
+                    form={this.props.tree.form.get()}
+                    errors={this.props.tree.errors.get()}
+                />
+                <div className={s.footer}>
+                    <div className={s.buttons}>
+                        <Button onClick={this.onSubmit} type="primary">Sign up</Button>
+                    </div>
+                    <span className={s.inlineButton}>
+                        {'Already a member? '}
+                        <Link to="/account/login">Sign in</Link>
+                    </span>
+                </div>
+            </div>
         );
     },
-});
-
-export const RegistrationPage = schema(model)(RegistrationForm);
+}));

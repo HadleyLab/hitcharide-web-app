@@ -9,10 +9,7 @@ import {
 } from 'react-router-dom';
 import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
-import {
-    LoginPage, MainPage, RegistrationPage, HomePage,
-    ActivateAccountPage, SocialAuthPage, SocialAuthErrorPage,
-} from 'pages';
+import { MainPage, HomePage, AccountPage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
 import { getToken, removeToken } from 'components/utils';
@@ -86,6 +83,7 @@ const App = schema(model)(createReactClass({
                             <HomePage />
                         )}
                     />
+
                     <Route
                         path="/app"
                         render={(props) => {
@@ -101,53 +99,21 @@ const App = schema(model)(createReactClass({
                             }
 
                             return (
-                                <Redirect to="/login" />
+                                <Redirect to="/account/login" />
                             );
                         }}
                     />
 
                     <Route
-                        path="/login"
-                        render={() => (
-                            <LoginPage
-                                tree={this.props.tree.login}
+                        path="/account"
+                        render={(props) => (
+                            <AccountPage
+                                {...props}
+                                tree={this.props.tree}
                                 tokenCursor={tokenCursor}
                             />
                         )}
                     />
-
-                    <Route
-                        path="/registration"
-                        render={(props) => (
-                            <RegistrationPage
-                                {...props}
-                                tree={this.props.tree.registration}
-                                tokenCursor={tokenCursor}
-                            />
-                        )}
-                    />
-
-                    <Route
-                        path="/activate-account/:uid/:token"
-                        render={(props) => (
-                            <ActivateAccountPage
-                                {...props}
-                                tree={this.props.tree.activateAccount}
-                            />
-                        )}
-                    />
-
-                    <Route
-                        path="/account/my/"
-                        render={(props) => (
-                            <SocialAuthPage
-                                {...props}
-                                tokenCursor={tokenCursor}
-                            />
-                        )}
-                    />
-
-                    <Route path="/account/error" component={SocialAuthErrorPage} />
                 </div>
             </Router>
         );
