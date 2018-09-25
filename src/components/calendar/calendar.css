@@ -1,0 +1,106 @@
+.calendar {
+    font-size: 15px;
+    line-height: 15px;
+}
+
+.month {
+    position: relative;
+    font-size: 18px;
+    line-height: 18px;
+    font-weight: 500;
+    text-align: center;
+    padding: 11px 0 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.arrow {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    background-repeat: no-repeat;
+    background-size: 16px 30px;
+
+    &._active {
+        background-color: rgba(#CADEF3, .3);
+    }
+
+    &._prev {
+        left: 0;
+        background-position: 15px center;
+        background-image: url(./images/arrow-prev.svg);
+    }
+
+    &._next {
+        right: 0;
+        background-position: right 15px center;
+        background-image: url(./images/arrow-next.svg);
+    }
+}
+
+.weekdays {
+    height: 42px;
+    background-color: rgba(#CADEF3, .3);
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.week {
+    margin-top: 5px;
+    height: 42px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-around;
+}
+
+.weekday {
+    position: relative;
+    flex: 7;
+    min-width: 40px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+
+    &._otherMonth {
+        &:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: -1px;
+            background-color: rgba(#fff, .7);
+            z-index: 2;
+        }
+    }
+
+    &:after {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        top: 50%;
+        left: 50%;
+        margin-top: -11px;
+        margin-left: -11px;
+        border-radius: 2px;
+        z-index: -1;
+    }
+
+    &._today:after {
+        content: '';
+        background-color: rgba(#97B725, .3);
+    }
+
+    &._active {
+        color: #fff;
+
+        &:after {
+            content: '';
+            background-color: #4263CA;
+        }
+    }
+}

@@ -1,34 +1,29 @@
 import React from 'react';
-import _ from 'lodash';
 import createReactClass from 'create-react-class';
-import { Button, Tabs } from 'antd-mobile';
+import { Tabs } from 'antd-mobile';
+import { Calendar } from 'components';
+import s from './my-rides.css';
 
 const tabs = [
-    { title: 'Suggested', sub: '1' },
-    { title: 'Booked', sub: '2' },
-    { title: 'History', sub: '3' },
+    { title: 'List', sub: '0' },
+    { title: 'Calendar', sub: '1' },
 ];
 
 export const MyRidesPage = createReactClass({
     render() {
         return (
-            <div>
-                <Tabs
-                    tabs={tabs}
-                    initialPage={0}
-                    renderTab={tab => <span>{tab.title}</span>}
-                >
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150px', backgroundColor: '#fff' }}>
-                        Content of first tab
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150px', backgroundColor: '#fff' }}>
-                        Content of second tab
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '150px', backgroundColor: '#fff' }}>
-                        Content of third tab
-                    </div>
-                </Tabs>
-            </div>
+            <Tabs
+                tabs={tabs}
+                initialPage={0}
+                renderTab={(tab) => <span>{tab.title}</span>}
+            >
+                <div className={s.tab}>
+                    List of my rides
+                </div>
+                <div className={s.tab}>
+                    <Calendar />
+                </div>
+            </Tabs>
         );
     },
 });

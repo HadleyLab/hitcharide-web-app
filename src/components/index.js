@@ -5,3 +5,4 @@ export { Error } from './error';
 export { TopBar } from './topbar';
 export { Loader } from './loader';
 export { StepperInput } from './stepper-input';
+export { Calendar } from './calendar';

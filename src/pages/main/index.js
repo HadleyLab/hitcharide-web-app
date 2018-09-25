@@ -162,7 +162,7 @@ export const MainPage = createReactClass({
                             history={this.props.history}
                             checkUserRights={this.checkIfUserCanBeDriver}
                         />
-                        <div>
+                        <div className={s.content}>
                             <Route
                                 exact
                                 path={url}
