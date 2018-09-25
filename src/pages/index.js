@@ -11,6 +11,5 @@ export { MyRidesPage } from './my-rides';
 export { YourProfilePage } from './profile/your-profile';
 export { UserProfilePage } from './profile/user-profile';
 export { NewRidePage } from './new-ride';
-export { CalendarPage } from './calendar';
 export { AddCarPage } from './add-car';
 export { RideDetailsPage } from './ride-details';

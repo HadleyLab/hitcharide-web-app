@@ -7,61 +7,30 @@ import { TabBar, Modal } from 'antd-mobile';
 import { TopBar, Loader } from 'components';
 import { Route } from 'react-router-dom';
 import {
-    SearchPage, MyRidesPage, NewRidePage, CalendarPage,
+    SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
-
-import searchIcon from './images/search.svg';
-import routeIcon from './images/route.svg';
-import addIcon from './images/plus.svg';
-import calendarIcon from './images/calendar.svg';
-import searchIconActive from './images/search-active.svg';
-import routeIconActive from './images/route-active.svg';
-import addIconActive from './images/plus-active.svg';
-import calendarIconActive from './images/calendar-active.svg';
+import { AddIcon, RouteIcon, SearchIcon } from './images';
 import s from './main.css';
 
 const tabs = [
     {
         title: 'Search a ride',
         path: '/app',
-        icon: searchIcon,
-        iconActive: searchIconActive,
+        icon: SearchIcon,
     },
     {
         title: 'My rides',
         path: '/app/my-rides',
-        icon: routeIcon,
-        iconActive: routeIconActive,
-    },
-    {
-        title: 'Calendar',
-        path: '/app/calendar',
-        icon: calendarIcon,
-        iconActive: calendarIconActive,
+        icon: RouteIcon,
     },
     {
         title: 'Create a ride',
         path: '/app/create-ride',
-        icon: addIcon,
-        iconActive: addIconActive,
+        icon: AddIcon,
     },
 ];
-
-const Icon = ({ icon }) => (
-    <div
-        style={{
-            width: '22px',
-            height: '22px',
-            background: `url(${icon}) center center / 21px 21px no-repeat`,
-        }}
-    />
-);
-
-Icon.propTypes = {
-    icon: PropTypes.string.isRequired,
-};
 
 export const MainPage = createReactClass({
     propTypes: {
@@ -212,12 +181,6 @@ export const MainPage = createReactClass({
                                 )}
                             />
                             <Route
-                                path={`${url}/calendar`}
-                                render={() => (
-                                    <CalendarPage {...this.props} />
-                                )}
-                            />
-                            <Route
                                 path={`${url}/create-ride`}
                                 render={(props) => (
                                     <NewRidePage
@@ -267,8 +230,16 @@ export const MainPage = createReactClass({
                                     <TabBar.Item
                                         title={tab.title}
                                         key={`tab-${index}`}
-                                        icon={(<Icon icon={tab.icon} />)}
-                                        selectedIcon={(<Icon icon={tab.iconActive} selected />)}
+                                        icon={(
+                                            <div className={s.icon}>
+                                                <tab.icon />
+                                            </div>
+                                        )}
+                                        selectedIcon={(
+                                            <div className={s.icon}>
+                                                <tab.icon color="#4263CA" />
+                                            </div>
+                                        )}
                                         selected={this.props.location.pathname === tab.path}
                                         onPress={() => {
                                             const userRights = this.checkIfUserCanBeDriver(userType);

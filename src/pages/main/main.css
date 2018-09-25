@@ -11,3 +11,8 @@
     background-color: #fff;
     z-index: 100;
 }
+
+.icon {
+    width: 22px;
+    height: 22px;
+}
