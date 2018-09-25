@@ -36,6 +36,7 @@ export const MainPage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
+        accountCursor: BaobabPropTypes.cursor.isRequired,
         match: PropTypes.shape({
             url: PropTypes.string.isRequired,
         }).isRequired,
@@ -56,6 +57,7 @@ export const MainPage = createReactClass({
         const { getMyProfileService, getCarListService } = this.context.services;
 
         this.props.tree.userType.set(getUserType() || 'passenger');
+        this.props.accountCursor.set({});
         await getMyProfileService(this.props.tree.profile);
         await getCarListService(this.props.tree.cars);
         const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();

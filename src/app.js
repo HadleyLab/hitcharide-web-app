@@ -22,9 +22,8 @@ import 'components/robots.txt';
 const model = {
     tree: {
         token: getToken(),
-        login: {},
-        registration: {},
         app: {},
+        account: {},
     },
 };
 
@@ -92,6 +91,7 @@ const App = schema(model)(createReactClass({
                                     <MainPage
                                         tree={this.props.tree.app}
                                         tokenCursor={tokenCursor}
+                                        accountCursor={this.props.tree.account}
                                         logout={this.logout}
                                         {...props}
                                     />
@@ -109,7 +109,7 @@ const App = schema(model)(createReactClass({
                         render={(props) => (
                             <AccountPage
                                 {...props}
-                                tree={this.props.tree}
+                                tree={this.props.tree.account}
                                 tokenCursor={tokenCursor}
                             />
                         )}

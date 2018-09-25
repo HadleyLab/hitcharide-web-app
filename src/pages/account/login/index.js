@@ -132,11 +132,9 @@ export const LoginPage = schema(model)(createReactClass({
                             Sign in with Google+
                         </a>
                     </div>
-                    {/*
                     <span className={s.inlineButton}>
                         <Link to="/account/reset-password">Forgot password?</Link>
                     </span>
-                    */}
                     <span className={s.inlineButton}>
                         {"Don't have an account? "}
                         <Link to="/account/registration">Sign up</Link>

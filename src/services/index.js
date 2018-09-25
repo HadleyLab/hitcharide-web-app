@@ -1,5 +1,5 @@
 import {
-    signUpService, signInService,
+    signUpService, signInService, setNewPasswordService,
     activateAccountService, resetPasswordService,
 } from './auth.js';
 import { getStatesService, getCitiesService } from './cities.js';
@@ -18,6 +18,7 @@ export default {
     signInService,
     activateAccountService,
     resetPasswordService,
+    setNewPasswordService,
     getStatesService,
     getCitiesService,
     getUserProfileService,

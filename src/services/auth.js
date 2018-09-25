@@ -56,3 +56,17 @@ export function resetPasswordService(handler) {
         return service(handler, cursor, data);
     };
 }
+
+export function setNewPasswordService(handler) {
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/accounts/password/reset/confirm/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            defaultHeaders,
+        );
+
+        return service(handler, cursor, data);
+    };
+}

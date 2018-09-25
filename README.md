@@ -10,7 +10,12 @@
 6. Миграции и суперюзер
 7. Импорт городов
     docker-compose run --rm api ./manage.py import_usa_cities
-8. В админке Mail templates -> Account activate нужно заменить url по типу
+8. В админке
+
+Mail templates -> Account activate
+Mail templates -> Password reset
+
+нужно заменить url по типу
 
 Body:   <p>You're receiving this email because you need to      finish activation process on {{ site_name }}.</p>
         <p>Please go to the following page to activate account:</p>

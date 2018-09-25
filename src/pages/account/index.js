@@ -5,7 +5,8 @@ import createReactClass from 'create-react-class';
 import { Route, Link, Redirect } from 'react-router-dom';
 import {
     LoginPage, RegistrationPage, ActivateAccountPage,
-    SocialAuthPage, SocialAuthErrorPage, ResetPasswordPage,
+    SocialAuthPage, SocialAuthErrorPage,
+    ResetPasswordPage, SetNewPasswordPage,
 } from 'pages';
 import themeImage from 'components/images/theme.png';
 import logoIcon from 'components/icons/logo.svg';
@@ -104,6 +105,16 @@ export const AccountPage = createReactClass({
                         <ResetPasswordPage
                             {...props}
                             tree={this.props.tree.resetPassword}
+                        />
+                    )}
+                />
+
+                <Route
+                    path={`${url}/new-password/:uid/:token`}
+                    render={(props) => (
+                        <SetNewPasswordPage
+                            {...props}
+                            tree={this.props.tree.newPassword}
                         />
                     )}
                 />

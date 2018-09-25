@@ -1,46 +1,56 @@
 import React from 'react';
-import classNames from 'classnames';
+import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { Link } from 'react-router-dom';
 import { Button, Modal } from 'antd-mobile';
 import { Input, Error } from 'components';
 import { validateForm, checkInputError } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
-import { HappinessIcon } from 'components/icons';
 import s from '../account.css';
 
 const validationSchema = yup.object().shape({
-    email: yup
+    newPassword: yup
         .string()
         .ensure()
-        .required('Email is a required field')
-        .email(),
+        .required('Password is a required field')
+        .min(3, 'Password must be at least 3 characters'),
+    newPasswordConfirm: yup
+        .string()
+        .oneOf([yup.ref('newPassword'), null], "Passwords don't match")
+        .ensure()
+        .required('Confirm password is a required field'),
 });
 
 const model = {
     tree: {
         form: {
-            email: null,
+            newPassword: null,
+            newPasswordConfirm: null,
         },
         result: {},
         errors: {},
     },
 };
 
-export const ResetPasswordPage = schema(model)(createReactClass({
+export const SetNewPasswordPage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
+        match: PropTypes.shape({
+            params: PropTypes.shape({
+                uid: PropTypes.string.isRequired,
+                token: PropTypes.string.isRequired,
+            }),
+        }).isRequired,
     },
 
     contextTypes: {
         services: PropTypes.shape({
-            resetPasswordService: PropTypes.func.isRequired,
+            setNewPasswordService: PropTypes.func.isRequired,
         }),
     },
 
@@ -58,15 +68,17 @@ export const ResetPasswordPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const service = this.context.services.resetPasswordService;
-            const result = await service(this.props.tree.result, data);
+            const { params } = this.props.match;
+            const service = this.context.services.setNewPasswordService;
+            const result = await service(this.props.tree.result,
+                _.merge({}, params, _.pick(data, 'newPassword')));
 
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
             }
 
             if (result.status === 'Succeed') {
-                Modal.alert("We've sent you the email", 'Please check your mailbox.', [
+                Modal.alert('Reset password', 'Your password successfully changed', [
                     {
                         text: 'Ok',
                         onPress: () => this.props.history.push('/account/login'),
@@ -76,36 +88,34 @@ export const ResetPasswordPage = schema(model)(createReactClass({
         }
     },
 
-    render() {
+    getInputProps(name) {
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
-        const errorProps = checkInputError('email', errorsCursor.get());
+        const errorProps = checkInputError(name, errorsCursor.get());
 
+        return _.merge({
+            className: s.input,
+            onChange: (e) => {
+                formCursor.select(name).set(e.target.value);
+                errorsCursor.select(name).set(null);
+            },
+            defaultValue: formCursor.get(name),
+        }, errorProps);
+    },
+
+    render() {
         return (
-            <div className={classNames(s.content, s._fullScreen)}>
-                <div className={s.header}>
-                    <div className={s.smiley}>
-                        <HappinessIcon color="#97B725" />
-                    </div>
-                    <div className={s.title}>
-                        Don’t worry
-                    </div>
-                    <div className={s.description}>
-                        Just enter your email address.
-                        <br />
-                        We will send you a reset password link.
-                    </div>
-                </div>
+            <div className={s.content}>
                 <form className={s.form}>
                     <Input
-                        className={s.input}
-                        onChange={(e) => {
-                            formCursor.select('email').set(e.target.value);
-                            errorsCursor.select('email').set(null);
-                        }}
-                        placeholder="E-mail"
-                        defaultValue={formCursor.get('email')}
-                        {...errorProps}
+                        {...this.getInputProps('newPassword')}
+                        type="password"
+                        placeholder="New password"
+                    />
+                    <Input
+                        {...this.getInputProps('newPasswordConfirm')}
+                        type="password"
+                        placeholder="Confirm new password"
                     />
                 </form>
                 <Error
@@ -114,17 +124,10 @@ export const ResetPasswordPage = schema(model)(createReactClass({
                 />
                 <div className={s.footer}>
                     <div className={s.buttons}>
-                        <Button
-                            type="primary"
-                            onClick={this.onSubmit}
-                        >
-                            Get a reset link
+                        <Button onClick={this.onSubmit} type="primary">
+                            Sumbit new password
                         </Button>
                     </div>
-                    <span className={s.inlineButton}>
-                        {'Just kidding. '}
-                        <Link to="/account/login">I remembered</Link>
-                    </span>
                 </div>
             </div>
         );
