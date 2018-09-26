@@ -184,7 +184,13 @@
         color: transparent;
     }
 
-    &._focused {
-        color: red;
+    &._focused input {
+        padding-left: 12px;
     }
+}
+
+.plus {
+    position: absolute;
+    left: 15px;
+    color: #888;
 }

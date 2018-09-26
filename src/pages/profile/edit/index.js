@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import plusIcon from 'components/icons/plus-circle.svg';
 import tickIcon from 'components/icons/tick-circle.svg';
 import { HappinessIcon } from 'components/icons';
+import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
 const model = {
@@ -44,55 +45,6 @@ const validationSchema = yup.object().shape({
         .string()
         .email('Wrong format of a PayPal email account'),
 });
-
-class PhoneInput extends React.Component {
-    constructor(props) {
-        super(props);
-        this.onFocus = this.onFocus.bind(this);
-        this.onBlur = this.onBlur.bind(this);
-        this.state = {
-            focused: false,
-        };
-    }
-
-    onFocus(e) {
-        const { onFocus } = this.props;
-
-        if (onFocus) {
-            onFocus(e);
-        }
-
-        this.setState({
-            focused: true,
-        });
-    }
-
-    onBlur(e) {
-        const { onBlur } = this.props;
-
-        if (onBlur) {
-            onBlur(e);
-        }
-
-        this.setState({
-            focused: false,
-        });
-    }
-
-    render() {
-        const { focused } = this.state;
-        const { className } = this.props;
-
-        return (
-            <Input
-                {...this.props}
-                className={classNames(className, {
-                    [s._focused]: focused,
-                })}
-            />
-        );
-    }
-}
 
 export const EditProfilePage = schema(model)(createReactClass({
     propTypes: {
@@ -414,9 +366,8 @@ export const EditProfilePage = schema(model)(createReactClass({
                     </div>
                     <div className={s.section}>
                         <Title>Contacts</Title>
-                        <Input
+                        <PhoneInput
                             {...this.getInputProps('phone')}
-                            className={s.phoneInput}
                             onKeyPress={(e) => {
                                 const isString = e.which < 48 || e.which > 57;
                                 const isFull = phone && phone.length >= 11;
@@ -426,9 +377,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                                 }
                             }}
                             placeholder="Phone number"
+                            phoneValue={phone}
                         >
                             {this.renderVerificationInfo()}
-                        </Input>
+                        </PhoneInput>
                         <Input
                             {...this.getInputProps('email')}
                             disabled
