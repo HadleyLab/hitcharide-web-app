@@ -45,6 +45,55 @@ const validationSchema = yup.object().shape({
         .email('Wrong format of a PayPal email account'),
 });
 
+class PhoneInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.onFocus = this.onFocus.bind(this);
+        this.onBlur = this.onBlur.bind(this);
+        this.state = {
+            focused: false,
+        };
+    }
+
+    onFocus(e) {
+        const { onFocus } = this.props;
+
+        if (onFocus) {
+            onFocus(e);
+        }
+
+        this.setState({
+            focused: true,
+        });
+    }
+
+    onBlur(e) {
+        const { onBlur } = this.props;
+
+        if (onBlur) {
+            onBlur(e);
+        }
+
+        this.setState({
+            focused: false,
+        });
+    }
+
+    render() {
+        const { focused } = this.state;
+        const { className } = this.props;
+
+        return (
+            <Input
+                {...this.props}
+                className={classNames(className, {
+                    [s._focused]: focused,
+                })}
+            />
+        );
+    }
+}
+
 export const EditProfilePage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
@@ -336,6 +385,8 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     render() {
+        const { phone } = this.props.tree.form.get() || '';
+
         return (
             <div>
                 <div className={s.photoPicker}>
@@ -365,6 +416,15 @@ export const EditProfilePage = schema(model)(createReactClass({
                         <Title>Contacts</Title>
                         <Input
                             {...this.getInputProps('phone')}
+                            className={s.phoneInput}
+                            onKeyPress={(e) => {
+                                const isString = e.which < 48 || e.which > 57;
+                                const isFull = phone && phone.length >= 11;
+
+                                if (isString || isFull) {
+                                    e.preventDefault();
+                                }
+                            }}
                             placeholder="Phone number"
                         >
                             {this.renderVerificationInfo()}

@@ -78,6 +78,8 @@ export const Input = createReactClass({
                     {..._.omit(this.props, ['className', 'children', 'error', 'onErrorClick'])}
                     type={type}
                     onChange={this.onChange}
+                    onFocus={this.onFocus}
+                    onBlur={this.onBlur}
                     ref={(ref) => { this.input = ref; }}
                 />
                 {isPassword && value ? (

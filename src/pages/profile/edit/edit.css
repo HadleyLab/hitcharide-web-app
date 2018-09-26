@@ -178,3 +178,13 @@
     font-size: 13px;
     line-height: 13px;
 }
+
+.phoneInput {
+    input:focus::placeholder {
+        color: transparent;
+    }
+
+    &._focused {
+        color: red;
+    }
+}

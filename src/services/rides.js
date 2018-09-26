@@ -91,7 +91,7 @@ export function getRidesListService(handler) {
 
     return (cursor, params, dehydrateParams = {}) => {
         const service = buildGetService(
-            `/rides/list/${paramsToString(params)}`,
+            `/rides/ride/${paramsToString(params)}`,
             (data) => dehydrateRidesList(data, dehydrateParams),
             _.merge({}, defaultHeaders, headers)
         );
