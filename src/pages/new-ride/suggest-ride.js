@@ -80,7 +80,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
             }
 
             if (result.status === 'Succeed') {
-                this.props.history.push('/app');
+                this.props.history.push('/app/my-rides');
             }
         }
     },

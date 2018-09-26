@@ -4,12 +4,13 @@ import createReactClass from 'create-react-class';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { Search, Title } from 'components';
+import {
+    Search, Title, RideItem, RideRequestItem,
+} from 'components';
 import schema from 'libs/state';
-import moment from 'moment';
 import { Button, Icon } from 'antd-mobile';
 import { checkIfValueEmpty } from 'components/utils';
-import { DriverIcon, TravelerIcon, MarkerIcon } from 'components/icons';
+import { MarkerIcon } from 'components/icons';
 import s from './search.css';
 
 const paginationParams = {
@@ -133,65 +134,6 @@ export const SearchPage = schema(model)(createReactClass({
         );
     },
 
-    renderRide(ride, index) {
-        const {
-            cityFrom, cityTo, dateTime: date, availableNumberOfSeats, price, pk,
-        } = ride;
-
-        return (
-            <div
-                key={`ride-${index}`}
-                className={s.ride}
-                onClick={() => this.props.history.push(`/app/ride/${pk}`)}
-            >
-                <div className={s.userTypeIcon}>
-                    <DriverIcon color="#40A9FF" />
-                </div>
-                <div className={s.date}>
-                    <div style={{ whiteSpace: 'nowrap' }}>{moment(date).format('h:mm A')}</div>
-                    <div className={s.gray}>{moment(date).format('MMM D')}</div>
-                </div>
-                <div className={s.direction}>
-                    {`${cityFrom.name}, ${cityFrom.state.name}`}
-                    <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
-                </div>
-                <div className={s.info}>
-                    <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
-                    <span className={s.gray}>
-                        {availableNumberOfSeats}
-                        {availableNumberOfSeats === 1 ? ' seat' : ' seats'}
-                    </span>
-                </div>
-            </div>
-        );
-    },
-
-    renderRideRequest(ride, index) {
-        const {
-            cityFrom, cityTo, dateTime: date, pk,
-        } = ride;
-
-        return (
-            <div
-                key={`ride-${index}`}
-                className={s.ride}
-                onClick={() => this.props.history.push(`/app/request/${pk}`)}
-            >
-                <div className={s.userTypeIcon}>
-                    <TravelerIcon color="#40A9FF" />
-                </div>
-                <div className={s.date}>
-                    <div style={{ whiteSpace: 'nowrap' }}>{moment(date).format('h:mm A')}</div>
-                    <div className={s.gray}>{moment(date).format('MMM D')}</div>
-                </div>
-                <div className={s.direction}>
-                    {`${cityFrom.name}, ${cityFrom.state.name}`}
-                    <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
-                </div>
-            </div>
-        );
-    },
-
     renderRides() {
         const isDriver = this.props.userType === 'driver';
         const cursor = isDriver ? this.props.tree.rideRequests : this.props.tree.rides;
@@ -220,10 +162,22 @@ export const SearchPage = schema(model)(createReactClass({
             >
                 {_.map(rides, (ride, index) => {
                     if (isDriver) {
-                        return this.renderRideRequest(ride, index);
+                        return (
+                            <RideRequestItem
+                                key={`ride-${index}`}
+                                data={ride}
+                                history={this.props.history}
+                            />
+                        );
                     }
 
-                    return this.renderRide(ride, index);
+                    return (
+                        <RideItem
+                            key={`ride-request-${index}`}
+                            data={ride}
+                            history={this.props.history}
+                        />
+                    );
                 })}
             </div>
         );

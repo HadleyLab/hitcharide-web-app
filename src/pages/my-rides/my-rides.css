@@ -1,3 +1,56 @@
 .tab {
     min-height: 300px;
 }
+
+.container {}
+
+.form {
+    :global .am-list-content {
+        color: rgba(#1A1B20, .3)!important;
+    }
+
+    :global .am-list-extra {
+        overflow: visible!important;
+        text-overflow: unset!important;
+    }
+}
+
+.icon {
+    min-width: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 15px;
+}
+
+.text {
+    margin-right: 10px;
+    color: #1A1B20;
+}
+
+.rides {
+    margin-top: 15px;
+
+    &._withLast div:last-child:before {
+        content: none;
+    }
+}
+
+.field {
+    &:before {
+        left: 0;
+    }
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px 50px;
+    min-height: 122px;
+}
+
+.noResults {
+    padding: 15px;
+    font-size: 16px;
+    line-height: 18px;
+}

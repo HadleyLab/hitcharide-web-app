@@ -169,6 +169,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
         const { car } = ride.data;
+        const isMe = profile.pk === car.owner.pk;
 
         const rows = [
             {
@@ -179,7 +180,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 title: 'Driver',
                 content: (
                     <div>
-                        <span className={s.you}>{profile.pk === car.owner.pk ? '(You) ' : null}</span>
+                        <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${car.owner.pk}`} className={s.link}>
                             {`${car.owner.firstName} ${car.owner.lastName}`}
                         </Link>
@@ -237,6 +238,42 @@ export const RideDetailsPage = schema(model)(createReactClass({
         );
     },
 
+    renderFooter() {
+        const tree = this.props.tree.get();
+        const { profile } = this.props;
+        const ride = this.props.tree.ride.get();
+        const { car } = ride.data;
+        const amIDriver = profile.pk === car.owner.pk;
+        const { bookings } = ride.data;
+        const amIClient = _.findIndex(bookings, ({ client }) => client.pk === profile.pk) !== -1;
+
+        if (amIDriver || amIClient) {
+            return null;
+        }
+
+        return (
+            <div>
+                <Title className={s.title}>Number of reserved seats</Title>
+                {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
+                <div className={s.footer}>
+                    {tree && tree.bookingError ? (
+                        <Error>
+                            {tree.bookingError}
+                        </Error>
+                    ) : null}
+                    <Button
+                        type="primary"
+                        inline
+                        style={{ width: 250 }}
+                        onClick={this.bookRide}
+                    >
+                        Book it
+                    </Button>
+                </div>
+            </div>
+        );
+    },
+
     render() {
         const tree = this.props.tree.get();
         const isRideLoaded = tree && tree.ride && tree.ride.status === 'Succeed';
@@ -253,23 +290,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         {this.renderDriverInfo()}
                         <Title className={s.title}>Passengers</Title>
                         {this.renderBookings()}
-                        <Title className={s.title}>Number of reserved seats</Title>
-                        {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
-                        <div className={s.footer}>
-                            {tree && tree.bookingError ? (
-                                <Error>
-                                    {tree.bookingError}
-                                </Error>
-                            ) : null}
-                            <Button
-                                type="primary"
-                                inline
-                                style={{ width: 250 }}
-                                onClick={this.bookRide}
-                            >
-                                Book it
-                            </Button>
-                        </div>
+                        {this.renderFooter()}
                     </div>
                 ) : null}
             </Loader>

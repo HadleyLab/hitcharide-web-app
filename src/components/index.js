@@ -6,3 +6,4 @@ export { TopBar } from './topbar';
 export { Loader } from './loader';
 export { StepperInput } from './stepper-input';
 export { Calendar } from './calendar';
+export { RideItem, RideRequestItem } from './ride';

@@ -179,8 +179,12 @@ export const MainPage = createReactClass({
                             />
                             <Route
                                 path={`${url}/my-rides`}
-                                render={() => (
-                                    <MyRidesPage {...this.props} />
+                                render={(props) => (
+                                    <MyRidesPage
+                                        {..._.merge(this.props, props)}
+                                        tree={this.props.tree.select('myRides')}
+                                        userType={userType}
+                                    />
                                 )}
                             />
                             <Route
