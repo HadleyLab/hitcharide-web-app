@@ -9,8 +9,10 @@ import {
 } from './profile.js';
 import {
     createRideService, addCarService, getCarListService,
-    getRidesIHaveCreatedService, getRidesListService,
+    getMyRidesListService, getRidesListService,
     getRideService, bookRideService, requestRideService,
+    getRideRequestsListService, getMyRideRequestsListService,
+    getMyBookingsListService, getRideRequestService,
 } from './rides.js';
 
 export default {
@@ -29,9 +31,13 @@ export default {
     createRideService,
     addCarService,
     getCarListService,
-    getRidesIHaveCreatedService,
+    getMyRidesListService,
+    getMyRideRequestsListService,
+    getMyBookingsListService,
     getRidesListService,
+    getRideRequestsListService,
     getRideService,
+    getRideRequestService,
     bookRideService,
     requestRideService,
 };

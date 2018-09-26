@@ -9,6 +9,7 @@ import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
+    RideRequestDetailsPage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from './images';
@@ -209,6 +210,15 @@ export const MainPage = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('ride')}
                                         profile={profile.data}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/request/:pk`}
+                                render={(props) => (
+                                    <RideRequestDetailsPage
+                                        {..._.merge(this.props, props)}
+                                        tree={this.props.tree.select('rideRequest')}
                                     />
                                 )}
                             />
