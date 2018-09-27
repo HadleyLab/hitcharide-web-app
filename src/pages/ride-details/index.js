@@ -57,7 +57,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const message = 'You are booking a ride '
             + `from ${cityFrom.name}, ${cityFrom.state.name} `
             + `to ${cityTo.name}, ${cityTo.state.name} `
-            + `on ${moment(dateTime).format('MMM d YYYY')} `
+            + `on ${moment(dateTime).format('MMM D YYYY')} `
             + `at ${moment(dateTime).format('h:mm A')} `
             + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
             + `priced at ${parseFloat(price * seatsCount).toString()}$ per seat. `
@@ -118,7 +118,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             },
             {
                 title: 'Departure date',
-                content: moment(dateTime).format('MMM d YYYY'),
+                content: moment(dateTime).format('MMM D YYYY'),
             },
             {
                 title: 'Departure time',

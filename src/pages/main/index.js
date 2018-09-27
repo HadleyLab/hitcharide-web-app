@@ -12,7 +12,7 @@ import {
     RideRequestDetailsPage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
-import { AddIcon, RouteIcon, SearchIcon } from './images';
+import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
 import s from './main.css';
 
 const tabs = [
@@ -174,6 +174,17 @@ export const MainPage = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('searchTab')}
                                         userType={userType}
+                                        onCreateRide={() => {
+                                            const userRights = this.checkIfUserCanBeDriver(userType);
+
+                                            if (!userRights.allowed) {
+                                                this.showMessage(userRights);
+
+                                                return;
+                                            }
+
+                                            this.props.history.push('/app/create-ride');
+                                        }}
                                     />
                                 )}
                             />

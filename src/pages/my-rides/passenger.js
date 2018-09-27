@@ -51,9 +51,7 @@ export const MyBookingsList = schema(model)(createReactClass({
         const { getMyBookingsListService } = this.context.services;
 
         const cursor = this.props.tree.bookings;
-        const result = await getMyBookingsListService(cursor, params, dehydrateParams);
-
-        console.log('result', result);
+        await getMyBookingsListService(cursor, params, dehydrateParams);
     },
 
     async loadMore() {

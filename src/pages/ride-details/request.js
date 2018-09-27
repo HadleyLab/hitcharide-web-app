@@ -46,7 +46,7 @@ export const RideRequestDetailsPage = createReactClass({
             },
             {
                 title: 'Departure date',
-                content: moment(dateTime).format('MMM d YYYY'),
+                content: moment(dateTime).format('MMM D YYYY'),
             },
             {
                 title: 'Departure time',

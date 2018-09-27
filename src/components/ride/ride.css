@@ -10,8 +10,8 @@
     &:before {
         content: '';
         position: absolute;
-        left: 15px;
-        right: 15px;
+        left: 0;
+        right: 0;
         height: 1px;
         bottom: 0;
         background-color: #ddd;

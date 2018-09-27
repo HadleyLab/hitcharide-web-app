@@ -8,9 +8,11 @@ import {
     Search, Title, RideItem, RideRequestItem,
 } from 'components';
 import schema from 'libs/state';
-import { Button, Icon } from 'antd-mobile';
-import { checkIfValueEmpty } from 'components/utils';
-import { MarkerIcon } from 'components/icons';
+import {
+    Button, Icon, List, DatePicker,
+} from 'antd-mobile';
+import { MarkerIcon, ClockIcon, AddIcon } from 'components/icons';
+import moment from 'moment';
 import s from './search.css';
 
 const paginationParams = {
@@ -26,7 +28,7 @@ const model = {
         searchForm: {
             cityFrom: null,
             cityTo: null,
-            date: null,
+            dateTime: null,
         },
         params: paginationParams,
     },
@@ -39,6 +41,7 @@ export const SearchPage = schema(model)(createReactClass({
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         userType: PropTypes.string.isRequired,
+        onCreateRide: PropTypes.func.isRequired,
     },
 
     contextTypes: {
@@ -66,6 +69,7 @@ export const SearchPage = schema(model)(createReactClass({
         }
 
         this.props.tree.params.set(paginationParams);
+        this.resetFilters();
         this.loadRides(paginationParams);
     },
 
@@ -79,16 +83,28 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     hydrateParams(data) {
-        const params = _.chain(data)
-            .omitBy((value) => checkIfValueEmpty(value))
-            .mapValues((value, key) => {
-                if (key === 'cityFrom' || key === 'cityTo') {
-                    return value.pk;
-                }
+        let params = {};
 
-                return value;
-            })
-            .value();
+        _.forEach(data, (param, key) => {
+            if (!param) {
+                return;
+            }
+
+            if (key === 'cityFrom' || key === 'cityTo') {
+                params[key] = param.pk;
+            }
+
+            if (key === 'dateTime') {
+                params.dateTimeFrom = moment(param)
+                    .utc()
+                    .format();
+                params.dateTimeTo = moment(param)
+                    .add(3, 'days')
+                    .endOf('day')
+                    .utc()
+                    .format();
+            }
+        });
 
         return params;
     },
@@ -132,6 +148,11 @@ export const SearchPage = schema(model)(createReactClass({
                 previousResults: cursor.data.get('results'),
             }
         );
+    },
+
+    resetFilters() {
+        this.props.tree.searchForm.set({});
+        this.onSearchChange();
     },
 
     renderRides() {
@@ -238,7 +259,9 @@ export const SearchPage = schema(model)(createReactClass({
 
         return (
             <div className={s.container}>
-                <Title>Search for a ride</Title>
+                <Title>
+                    Search for a ride
+                </Title>
                 <Search
                     cursor={citiesCursor}
                     selectedValue={formCursor.get('cityFrom')}
@@ -273,17 +296,57 @@ export const SearchPage = schema(model)(createReactClass({
                     </div>
                     <div className={s.text}>To </div>
                 </Search>
-                {/*
-                <List className={s.form}>
+                <List
+                    className={classNames(s.datePicker, {
+                        [s._empty]: !formCursor.dateTime.get(),
+                    })}
+                    style={{ backgroundColor: 'white' }}
+                >
                     <DatePicker
-                        className="dateTime"
-                        value={this.state.date}
-                        onChange={(date) => this.setState({ date })}
+                        value={formCursor.dateTime.get()}
+                        onChange={(date) => {
+                            formCursor.dateTime.set(moment(date).toDate());
+                            this.onSearchChange();
+                        }}
+                        use12Hours
+                        title="When"
+                        minDate={moment().toDate()}
+                        format={(date) => {
+                            const today = moment();
+                            const tomorrow = moment().add(1, 'days');
+                            const isToday = moment(date).isSame(today, 'day');
+                            const isTomorrow = moment(date).isSame(tomorrow, 'day');
+
+                            if (isToday) {
+                                return `Today ${moment(date).format('h:mm A')}`;
+                            }
+
+                            if (isTomorrow) {
+                                return `Tomorrow ${moment(date).format('h:mm A')}`;
+                            }
+
+                            return moment(date).format('MMM D h:mm A');
+                        }}
                     >
-                        <List.Item arrow="horizontal">Date & Time</List.Item>
+                        <List.Item>
+                            <div className={s.field}>
+                                <div className={s.icon}>
+                                    <ClockIcon />
+                                </div>
+                                <div className={s.text}>When </div>
+                            </div>
+                        </List.Item>
                     </DatePicker>
                 </List>
-                */}
+                <div
+                    className={s.button}
+                    onClick={this.props.onCreateRide}
+                >
+                    <div className={s.icon}>
+                        <AddIcon color="rgba(26, 27, 32, 0.5)" />
+                    </div>
+                    Create a ride
+                </div>
                 {this.renderRides()}
                 {this.renderFooter()}
             </div>
