@@ -69,9 +69,18 @@ export class TopBar extends React.Component {
         this.setState({ modalOpen: false });
     }
 
+    checkIfInnerPage() {
+        const { pathname } = this.props.location;
+        const rootPaths = ['/app', '/app/my-rides', '/app/create-ride'];
+
+        return _.indexOf(rootPaths, pathname) === -1;
+    }
+
     renderArrow() {
+        const { history } = this.props;
+
         return (
-            <div className={s.wrapper}>
+            <div className={s.wrapper} onClick={history.goBack}>
                 <div
                     className={classNames(s.icon, s.arrow)}
                     style={{ backgroundImage: `url(${arrowBackIcon})` }}
@@ -124,7 +133,7 @@ export class TopBar extends React.Component {
 
     render() {
         const { modalOpen } = this.state;
-        const { innerPage } = this.props;
+        const isInnerPage = this.checkIfInnerPage();
 
         const userTypes = [
             {
@@ -139,23 +148,11 @@ export class TopBar extends React.Component {
             },
         ];
 
-        if (innerPage) {
-            return (
-                <NavBar
-                    mode="dark"
-                    leftContent={this.renderArrow()}
-                    rightContent={this.renderProfile()}
-                >
-                    {this.renderLogo()}
-                </NavBar>
-            );
-        }
-
         return (
             <div className={s.navbar}>
                 <NavBar
                     mode="dark"
-                    leftContent={this.renderUserTypeSwitch()}
+                    leftContent={isInnerPage ? this.renderArrow() : this.renderUserTypeSwitch()}
                     rightContent={this.renderProfile()}
                 >
                     {this.renderLogo()}
@@ -183,12 +180,8 @@ export class TopBar extends React.Component {
 }
 
 TopBar.propTypes = {
-    innerPage: PropTypes.bool,
     userTypeCursor: BaobabPropTypes.cursor.isRequired,
     history: PropTypes.shape().isRequired,
+    location: PropTypes.shape().isRequired,
     checkUserRights: PropTypes.func.isRequired,
-};
-
-TopBar.defaultProps = {
-    innerPage: false,
 };

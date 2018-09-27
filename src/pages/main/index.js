@@ -161,8 +161,8 @@ export const MainPage = createReactClass({
                 {isPageReady ? (
                     <div className={s.container}>
                         <TopBar
+                            {...this.props}
                             userTypeCursor={userTypeCursor}
-                            history={this.props.history}
                             checkUserRights={this.checkIfUserCanBeDriver}
                         />
                         <div className={s.content}>
