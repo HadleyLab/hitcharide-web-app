@@ -48,7 +48,7 @@ export class Calendar extends React.Component {
         this.onNextMonthClick = this.onNextMonthClick.bind(this);
         this.onPrevMonthClick = this.onPrevMonthClick.bind(this);
         this.state = {
-            activeDate: moment(),
+            activeDate: null,
             currentMonth: moment(),
             calendarMonthData: this.generateMonth(moment()),
         };
@@ -82,8 +82,16 @@ export class Calendar extends React.Component {
         return data;
     }
 
-    onDayClick(activeDate) {
-        this.setState({ activeDate });
+    onDayClick(day) {
+        const { activeDate } = this.state;
+
+        if (moment(activeDate).isSame(day, 'day')) {
+            this.setState({ activeDate: null });
+
+            return;
+        }
+
+        this.setState({ activeDate: day });
     }
 
     onNextMonthClick() {
@@ -141,7 +149,7 @@ export class Calendar extends React.Component {
                                     className={classNames(s.weekday, {
                                         [s._otherMonth]: !isCurrentMonth,
                                         [s._today]: day.isSame(moment(), 'day'),
-                                        [s._active]: day.isSame(activeDate, 'day'),
+                                        [s._active]: activeDate && day.isSame(activeDate, 'day'),
                                     })}
                                     onClick={() => {
                                         if (!isCurrentMonth) {

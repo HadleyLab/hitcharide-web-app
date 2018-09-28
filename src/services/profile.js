@@ -1,10 +1,9 @@
 import _ from 'lodash';
-import { getToken } from 'components/utils';
 import { buildGetService, buildPostService, defaultHeaders } from './base';
 
-export function getMyProfileService(handler) {
+export function getMyProfileService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor) => {
@@ -18,9 +17,9 @@ export function getMyProfileService(handler) {
     };
 }
 
-export function getUserProfileService(handler) {
+export function getUserProfileService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, pk) => {
@@ -34,18 +33,9 @@ export function getUserProfileService(handler) {
     };
 }
 
-// function hydrateData(profile) {
-//     let data = new FormData();
-//
-//     _.forEach(profile, (field, key) => data.append(key, field));
-//
-//     return data;
-// }
-
-export function updateProfileService(handler) {
+export function updateProfileService(handler, token) {
     const headers = {
-        // 'Content-Type': 'multipart/form-data',
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {
@@ -61,9 +51,9 @@ export function updateProfileService(handler) {
     };
 }
 
-export function sendPhoneVerificationCodeService(handler) {
+export function sendPhoneVerificationCodeService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor) => {
@@ -79,9 +69,9 @@ export function sendPhoneVerificationCodeService(handler) {
     };
 }
 
-export function checkPhoneVerificationCodeService(handler) {
+export function checkPhoneVerificationCodeService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {

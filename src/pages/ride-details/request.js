@@ -15,16 +15,13 @@ export const RideRequestDetailsPage = createReactClass({
                 pk: PropTypes.string.isRequired,
             }),
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getRideRequestService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async componentDidMount() {
-        const { getRideRequestService } = this.context.services;
+        const { getRideRequestService } = this.props.services;
         const { pk } = this.props.match.params;
         this.props.tree.select('seatsCount').set(1);
 

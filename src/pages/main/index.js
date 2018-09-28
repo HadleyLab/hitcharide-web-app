@@ -4,7 +4,7 @@ import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { TabBar, Modal } from 'antd-mobile';
-import { TopBar, Loader } from 'components';
+import { TopBar, Loader, ServiceContext } from 'components';
 import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
@@ -33,7 +33,7 @@ const tabs = [
     },
 ];
 
-export const MainPage = createReactClass({
+const MainPageContent = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
@@ -45,17 +45,14 @@ export const MainPage = createReactClass({
             pathname: PropTypes.string.isRequired,
         }).isRequired,
         history: PropTypes.shape().isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getMyProfileService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async componentDidMount() {
-        const { getMyProfileService, getCarListService } = this.context.services;
+        const { getMyProfileService, getCarListService } = this.props.services;
 
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
@@ -79,7 +76,7 @@ export const MainPage = createReactClass({
         const { profile } = this.props.tree.get();
         const {
             firstName, lastName, phone, isPhoneValidated,
-        } = profile.data;
+        } = profile && profile.data ? profile.data : {};
 
         if (!firstName || !lastName || !phone) {
             return {
@@ -100,7 +97,7 @@ export const MainPage = createReactClass({
 
     checkIfRideCreationAllowed() {
         const { profile, cars } = this.props.tree.get();
-        const { paypalAccount } = profile.data;
+        const { paypalAccount } = profile && profile.data ? profile.data : {};
 
         if (!paypalAccount) {
             return {
@@ -247,6 +244,7 @@ export const MainPage = createReactClass({
                                 )}
                             />
                         </div>
+
                         <div className={s.tabs}>
                             <TabBar
                                 unselectedTintColor="#8C8D8F"
@@ -289,3 +287,11 @@ export const MainPage = createReactClass({
         );
     },
 });
+
+export function MainPage(props) {
+    return (
+        <ServiceContext.Consumer>
+            {(services) => <MainPageContent {...props} services={services} />}
+        </ServiceContext.Consumer>
+    );
+}

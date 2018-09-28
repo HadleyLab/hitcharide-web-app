@@ -1,7 +1,6 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import _ from 'lodash';
-import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
@@ -12,6 +11,7 @@ import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import { MainPage, HomePage, AccountPage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
+import { ServiceContext } from 'components';
 import { getToken, removeToken } from 'components/utils';
 import services from 'services';
 import 'components/styles/styles.less';
@@ -27,22 +27,6 @@ const model = {
     },
 };
 
-function initServices(statusHandler) {
-    let initializedServices = {};
-
-    _.each(services, (service, name) => {
-        initializedServices[name] = service(statusHandler);
-    });
-
-    return initializedServices;
-}
-
-let servicesShape = {};
-
-_.each(services, (service, name) => {
-    servicesShape[name] = PropTypes.func.isRequired;
-});
-
 const App = schema(model)(createReactClass({
     displayName: 'App',
 
@@ -50,18 +34,31 @@ const App = schema(model)(createReactClass({
         tree: BaobabPropTypes.cursor.isRequired,
     },
 
-    childContextTypes: {
-        services: PropTypes.shape(servicesShape),
+    getInitialState() {
+        return {
+            services: this.initServices(),
+        };
     },
 
-    getChildContext() {
-        return {
-            services: initServices((response) => {
-                if (response.status === 401) {
-                    this.logout();
-                }
-            }),
-        };
+    initServices() {
+        const token = this.props.tree.token.get();
+        let initializedServices = {};
+
+        _.each(services, (service, name) => {
+            initializedServices[name] = service(this.checkIfTokenExpired, token);
+        });
+
+        return initializedServices;
+    },
+
+    reInitServices() {
+        this.setState({ services: this.initServices() });
+    },
+
+    checkIfTokenExpired(response) {
+        if (response.status === 401) {
+            this.logout();
+        }
     },
 
     logout() {
@@ -74,7 +71,7 @@ const App = schema(model)(createReactClass({
 
         return (
             <Router>
-                <div style={{ height: '100%' }}>
+                <ServiceContext.Provider value={this.state.services}>
                     <Route
                         path="/"
                         exact
@@ -111,10 +108,11 @@ const App = schema(model)(createReactClass({
                                 {...props}
                                 tree={this.props.tree.account}
                                 tokenCursor={tokenCursor}
+                                reInitServices={this.reInitServices}
                             />
                         )}
                     />
-                </div>
+                </ServiceContext.Provider>
             </Router>
         );
     },

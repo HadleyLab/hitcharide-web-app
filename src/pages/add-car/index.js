@@ -36,13 +36,10 @@ export const AddCarPage = schema(model)(createReactClass({
             goBack: PropTypes.func.isRequired,
         }).isRequired,
         editMode: PropTypes.bool,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             addCarService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     getDefaultProps() {
@@ -68,7 +65,7 @@ export const AddCarPage = schema(model)(createReactClass({
     },
 
     async onSubmit() {
-        const { addCarService, getCarListService } = this.context.services;
+        const { addCarService, getCarListService } = this.props.services;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
         const validationResult = await validateForm(validationSchema, data);

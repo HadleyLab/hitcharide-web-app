@@ -36,12 +36,9 @@ export const ResetPasswordPage = schema(model)(createReactClass({
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             resetPasswordService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async onSubmit() {
@@ -58,7 +55,7 @@ export const ResetPasswordPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const service = this.context.services.resetPasswordService;
+            const service = this.props.services.resetPasswordService;
             const result = await service(this.props.tree.result, data);
 
             if (result.status === 'Failure') {

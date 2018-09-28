@@ -43,6 +43,7 @@ const validationSchema = yup.object().shape({
         .required('Phone is a required field'),
     paypalAccount: yup
         .string()
+        .nullable()
         .email('Wrong format of a PayPal email account'),
 });
 
@@ -54,14 +55,11 @@ export const EditProfilePage = schema(model)(createReactClass({
         history: PropTypes.shape({
             goBack: PropTypes.func.isRequired,
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             updateProfileService: PropTypes.func.isRequired,
             sendPhoneVerificationCodeService: PropTypes.func.isRequired,
             checkPhoneVerificationCodeService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     getInitialState() {
@@ -104,7 +102,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     updateProfile(data = {}) {
-        const profile = this.props.tree.result.get();
+        const profile = this.props.tree.result.get() || this.props.profileCursor.get();
 
         this.props.profileCursor.set(_.merge({}, profile ? profile.data : {}, data));
     },
@@ -117,7 +115,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     async onSubmit() {
-        const { updateProfileService, sendPhoneVerificationCodeService } = this.context.services;
+        const { updateProfileService, sendPhoneVerificationCodeService } = this.props.services;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
 
@@ -211,7 +209,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     renderPhoneCodeModal() {
-        const { sendPhoneVerificationCodeService, checkPhoneVerificationCodeService } = this.context.services;
+        const { sendPhoneVerificationCodeService, checkPhoneVerificationCodeService } = this.props.services;
         const codeCursor = this.props.tree.phoneVerificationCode;
         const resultCursor = this.props.tree.checkPhoneVerificationCodeResult;
         const code = codeCursor.get() || '';
@@ -257,7 +255,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                 <div>
                     <div className={s.modalHeader}>
                         {"We've sent the code to your phone number "}
-                        <span style={{ color: '#1A1B20' }}>{phone}</span>
+                        <span style={{ color: '#1A1B20' }}>+{phone}</span>
                     </div>
                     <div className={s.codeInputWrapper}>
                         <input
@@ -307,7 +305,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     renderVerificationInfo() {
         const { isPhoneValidated, phone: savedPhone } = this.props.profileCursor.get();
         const currentPhone = this.props.tree.form.phone.get();
-        const { sendPhoneVerificationCodeService } = this.context.services;
+        const { sendPhoneVerificationCodeService } = this.props.services;
 
         if (!savedPhone || savedPhone !== currentPhone) {
             return null;

@@ -14,6 +14,7 @@ export const SocialAuthPage = createReactClass({
         location: PropTypes.shape({
             search: PropTypes.string.isRequired,
         }).isRequired,
+        reInitServices: PropTypes.func.isRequired,
     },
 
     async componentDidMount() {
@@ -22,6 +23,7 @@ export const SocialAuthPage = createReactClass({
 
         await setToken(token);
         await this.props.tokenCursor.set(token);
+        this.props.reInitServices();
     },
 
     render() {

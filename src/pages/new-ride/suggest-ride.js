@@ -32,13 +32,10 @@ export const SuggestRideForm = schema(model)(createReactClass({
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
             requestRideService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -56,7 +53,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
     },
 
     async onSubmit() {
-        const { requestRideService } = this.context.services;
+        const { requestRideService } = this.props.services;
         const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -93,7 +90,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.context.services;
+        const { getCitiesService } = this.props.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;

@@ -1,12 +1,11 @@
 import _ from 'lodash';
-import { getToken } from 'components/utils';
 import {
     buildGetService, buildPostService, defaultHeaders, paramsToString,
 } from './base';
 
-export function createRideService(handler) {
+export function createRideService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {
@@ -22,9 +21,9 @@ export function createRideService(handler) {
     };
 }
 
-export function requestRideService(handler) {
+export function requestRideService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {
@@ -40,9 +39,9 @@ export function requestRideService(handler) {
     };
 }
 
-export function addCarService(handler) {
+export function addCarService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {
@@ -58,9 +57,9 @@ export function addCarService(handler) {
     };
 }
 
-export function getCarListService(handler) {
+export function getCarListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor) => {
@@ -84,9 +83,9 @@ function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
     return data;
 }
 
-export function getRidesListService(handler) {
+export function getRidesListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, params, dehydrateParams = {}) => {
@@ -100,9 +99,9 @@ export function getRidesListService(handler) {
     };
 }
 
-export function getRideRequestsListService(handler) {
+export function getRideRequestsListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, params, dehydrateParams = {}) => {
@@ -116,9 +115,9 @@ export function getRideRequestsListService(handler) {
     };
 }
 
-export function getMyRidesListService(handler) {
+export function getMyRidesListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, params, dehydrateParams = {}) => {
@@ -132,9 +131,9 @@ export function getMyRidesListService(handler) {
     };
 }
 
-export function getMyRideRequestsListService(handler) {
+export function getMyRideRequestsListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, params, dehydrateParams = {}) => {
@@ -148,9 +147,9 @@ export function getMyRideRequestsListService(handler) {
     };
 }
 
-export function getMyBookingsListService(handler) {
+export function getMyBookingsListService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, params, dehydrateParams = {}) => {
@@ -164,14 +163,14 @@ export function getMyBookingsListService(handler) {
     };
 }
 
-export function getRideService(handler) {
+export function getRideService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, pk) => {
         const service = buildGetService(
-            `/rides/ride/${pk}`,
+            `/rides/ride/${pk}/`,
             _.identity,
             _.merge({}, defaultHeaders, headers)
         );
@@ -180,14 +179,14 @@ export function getRideService(handler) {
     };
 }
 
-export function getRideRequestService(handler) {
+export function getRideRequestService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, pk) => {
         const service = buildGetService(
-            `/rides/request/${pk}`,
+            `/rides/request/${pk}/`,
             _.identity,
             _.merge({}, defaultHeaders, headers)
         );
@@ -196,9 +195,9 @@ export function getRideRequestService(handler) {
     };
 }
 
-export function bookRideService(handler) {
+export function bookRideService(handler, token) {
     const headers = {
-        Authorization: `JWT ${getToken()}`,
+        Authorization: `JWT ${token}`,
     };
 
     return (cursor, data) => {

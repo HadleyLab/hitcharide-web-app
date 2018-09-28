@@ -46,12 +46,9 @@ export const SetNewPasswordPage = schema(model)(createReactClass({
                 token: PropTypes.string.isRequired,
             }),
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             setNewPasswordService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async onSubmit() {
@@ -69,7 +66,7 @@ export const SetNewPasswordPage = schema(model)(createReactClass({
 
         if (isDataValid) {
             const { params } = this.props.match;
-            const service = this.context.services.setNewPasswordService;
+            const service = this.props.services.setNewPasswordService;
             const result = await service(this.props.tree.result,
                 _.merge({}, params, _.pick(data, 'newPassword')));
 

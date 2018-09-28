@@ -27,12 +27,9 @@ export const MyRidesList = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getMyRidesListService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -48,7 +45,7 @@ export const MyRidesList = schema(model)(createReactClass({
     },
 
     async loadRides(params, dehydrateParams) {
-        const { getMyRidesListService } = this.context.services;
+        const { getMyRidesListService } = this.props.services;
 
         const cursor = this.props.tree.rides;
         await getMyRidesListService(cursor, params, dehydrateParams);

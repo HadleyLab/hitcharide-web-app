@@ -13,16 +13,13 @@ export const UserProfilePage = createReactClass({
                 pk: PropTypes.string.isRequired,
             }),
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getUserProfileService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async componentDidMount() {
-        const { getUserProfileService } = this.context.services;
+        const { getUserProfileService } = this.props.services;
         const { pk } = this.props.match.params;
 
         await getUserProfileService(this.props.tree, pk);

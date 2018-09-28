@@ -19,12 +19,9 @@ export const ActivateAccountPage = createReactClass({
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             activateAccountService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     getInitialState() {
@@ -35,7 +32,7 @@ export const ActivateAccountPage = createReactClass({
 
     async componentDidMount() {
         const { params } = this.props.match;
-        const service = this.context.services.activateAccountService;
+        const service = this.props.services.activateAccountService;
 
         const result = await service(this.props.tree, params);
 

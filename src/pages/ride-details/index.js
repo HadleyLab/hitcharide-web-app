@@ -30,17 +30,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
             }),
         }).isRequired,
         profile: PropTypes.shape().isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getRideService: PropTypes.func.isRequired,
             bookRideService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async componentDidMount() {
-        const { getRideService } = this.context.services;
+        const { getRideService } = this.props.services;
         const { pk } = this.props.match.params;
         this.props.tree.select('seatsCount').set(1);
 
@@ -69,7 +66,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 text: 'OK',
                 onPress: async () => {
                     const { pk } = this.props.match.params;
-                    const { bookRideService, getRideService } = this.context.services;
+                    const { bookRideService, getRideService } = this.props.services;
 
                     const result = await bookRideService(this.props.tree.bookingResult, {
                         ride: pk,

@@ -27,12 +27,9 @@ export const MyBookingsList = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getMyBookingsListService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -48,7 +45,7 @@ export const MyBookingsList = schema(model)(createReactClass({
     },
 
     async loadBookings(params, dehydrateParams) {
-        const { getMyBookingsListService } = this.context.services;
+        const { getMyBookingsListService } = this.props.services;
 
         const cursor = this.props.tree.bookings;
         await getMyBookingsListService(cursor, params, dehydrateParams);

@@ -51,13 +51,10 @@ export const CreateRideForm = schema(model)(createReactClass({
             push: PropTypes.func.isRequired,
         }).isRequired,
         cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
             createRideService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -82,7 +79,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     async onSubmit() {
-        const { createRideService } = this.context.services;
+        const { createRideService } = this.props.services;
         const date = moment();
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
@@ -153,7 +150,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     renderStopOvers() {
-        const { getCitiesService } = this.context.services;
+        const { getCitiesService } = this.props.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const stopsCursor = formCursor.stops;
@@ -221,7 +218,7 @@ export const CreateRideForm = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.context.services;
+        const { getCitiesService } = this.props.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;

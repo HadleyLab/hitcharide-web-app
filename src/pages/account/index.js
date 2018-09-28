@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Route, Link, Redirect } from 'react-router-dom';
+import { ServiceContext } from 'components';
 import {
     LoginPage, RegistrationPage, ActivateAccountPage,
     SocialAuthPage, SocialAuthErrorPage,
@@ -71,78 +72,95 @@ export const AccountPage = createReactClass({
 
                 {this.renderLogo()}
 
-                <Route
-                    exect
-                    path={url}
-                    render={(props) => (
-                        <AccountMenu {...props} />
-                    )}
-                />
-                <Route
-                    path={`${url}/login`}
-                    render={() => (
-                        <LoginPage
-                            tree={this.props.tree.login}
-                            tokenCursor={tokenCursor}
-                        />
-                    )}
-                />
+                <ServiceContext.Consumer>
+                    {(services) => (
+                        <div>
+                            <Route
+                                exect
+                                path={url}
+                                render={(props) => (
+                                    <AccountMenu {...props} />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/login`}
+                                render={() => (
+                                    <LoginPage
+                                        {...this.props}
+                                        tree={this.props.tree.login}
+                                        tokenCursor={tokenCursor}
+                                        services={services}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/registration`}
+                                render={(props) => (
+                                    <RegistrationPage
+                                        {...props}
+                                        tokenCursor={tokenCursor}
+                                        tree={this.props.tree.registration}
+                                        services={services}
+                                    />
+                                )}
+                            />
 
-                <Route
-                    path={`${url}/registration`}
-                    render={(props) => (
-                        <RegistrationPage
-                            {...props}
-                            tree={this.props.tree.registration}
-                            tokenCursor={tokenCursor}
-                        />
-                    )}
-                />
+                            <Route
+                                path={`${url}/reset-password`}
+                                render={(props) => (
+                                    <ResetPasswordPage
+                                        {...props}
+                                        tree={this.props.tree.resetPassword}
+                                        services={services}
+                                    />
+                                )}
+                            />
 
-                <Route
-                    path={`${url}/reset-password`}
-                    render={(props) => (
-                        <ResetPasswordPage
-                            {...props}
-                            tree={this.props.tree.resetPassword}
-                        />
-                    )}
-                />
+                            <Route
+                                path={`${url}/new-password/:uid/:token`}
+                                render={(props) => (
+                                    <SetNewPasswordPage
+                                        {...props}
+                                        tree={this.props.tree.newPassword}
+                                        services={services}
+                                    />
+                                )}
+                            />
 
-                <Route
-                    path={`${url}/new-password/:uid/:token`}
-                    render={(props) => (
-                        <SetNewPasswordPage
-                            {...props}
-                            tree={this.props.tree.newPassword}
-                        />
-                    )}
-                />
+                            <Route
+                                path={`${url}/activate/:uid/:token`}
+                                render={(props) => (
+                                    <ActivateAccountPage
+                                        {...props}
+                                        tree={this.props.tree.activateAccount}
+                                        services={services}
+                                    />
+                                )}
+                            />
 
-                <Route
-                    path={`${url}/activate/:uid/:token`}
-                    render={(props) => (
-                        <ActivateAccountPage
-                            {...props}
-                            tree={this.props.tree.activateAccount}
-                        />
-                    )}
-                />
+                            <Route
+                                path={`${url}/social-auth-success`}
+                                render={(props) => (
+                                    <SocialAuthPage
+                                        {...this.props}
+                                        {...props}
+                                        services={services}
+                                    />
+                                )}
+                            />
 
-                <Route
-                    path={`${url}/social-auth-success`}
-                    render={(props) => (
-                        <SocialAuthPage
-                            {...props}
-                            tokenCursor={tokenCursor}
-                        />
+                            <Route
+                                path={`${url}/social-auth-error`}
+                                render={(props) => (
+                                    <SocialAuthErrorPage
+                                        {...props}
+                                        services={services}
+                                    />
+                                )}
+                            />
+                        </div>
                     )}
-                />
-
-                <Route
-                    path={`${url}/social-auth-error`}
-                    render={(props) => <SocialAuthErrorPage {...props} />}
-                />
+                </ServiceContext.Consumer>
             </div>
         );
     },

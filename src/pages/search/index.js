@@ -42,14 +42,11 @@ export const SearchPage = schema(model)(createReactClass({
         history: PropTypes.shape().isRequired,
         userType: PropTypes.string.isRequired,
         onCreateRide: PropTypes.func.isRequired,
-    },
-
-    contextTypes: {
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
             getRidesListService: PropTypes.func.isRequired,
             getRideRequestsListService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -111,7 +108,7 @@ export const SearchPage = schema(model)(createReactClass({
 
     async loadRides(params, dehydrateParams) {
         const isDriver = this.props.userType === 'driver';
-        const { getRidesListService, getRideRequestsListService } = this.context.services;
+        const { getRidesListService, getRideRequestsListService } = this.props.services;
         const formCursor = this.props.tree.searchForm;
         const searchParams = this.hydrateParams(formCursor.get());
 
@@ -253,7 +250,7 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.context.services;
+        const { getCitiesService } = this.props.services;
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.searchForm;
 

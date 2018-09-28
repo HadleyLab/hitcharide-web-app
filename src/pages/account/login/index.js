@@ -27,10 +27,10 @@ const validationSchema = yup.object().shape({
 const model = {
     tree: {
         form: {
-            email: null,
-            password: null,
-            // email: 'user@bs.com',
-            // password: 'k134rf2i',
+            // email: null,
+            // password: null,
+            email: 'user@bs.com',
+            password: 'k134rf2i',
         },
         result: {},
         errors: {},
@@ -41,12 +41,10 @@ export const LoginPage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
-    },
-
-    contextTypes: {
+        reInitServices: PropTypes.func.isRequired,
         services: PropTypes.shape({
             signInService: PropTypes.func.isRequired,
-        }),
+        }).isRequired,
     },
 
     async onSubmit() {
@@ -63,7 +61,7 @@ export const LoginPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const service = this.context.services.signInService;
+            const service = this.props.services.signInService;
             const result = await service(this.props.tree.result, {
                 username: data.email,
                 password: data.password,
@@ -78,6 +76,7 @@ export const LoginPage = schema(model)(createReactClass({
 
                 await setToken(token);
                 await this.props.tokenCursor.set(token);
+                this.props.reInitServices();
             }
         }
     },
