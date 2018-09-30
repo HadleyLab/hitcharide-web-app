@@ -31,6 +31,10 @@ export const MyRidesList = schema(model)(createReactClass({
         services: PropTypes.shape({
             getMyRidesListService: PropTypes.func.isRequired,
         }).isRequired,
+        dateParams: PropTypes.shape({
+            dateTimeFrom: PropTypes.string,
+            dateTimeTo: PropTypes.string,
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -43,6 +47,13 @@ export const MyRidesList = schema(model)(createReactClass({
 
         this.props.tree.params.set(paginationParams);
         this.loadRides(paginationParams);
+    },
+
+    componentDidUpdate(prevProps) {
+        if (!_.isEqual(prevProps.dateParams, this.props.dateParams)) {
+            const { limit, offset } = this.props.tree.params.get();
+            this.loadRides(_.merge({ limit, offset }, this.props.dateParams));
+        }
     },
 
     async loadRides(params, dehydrateParams) {
@@ -60,7 +71,7 @@ export const MyRidesList = schema(model)(createReactClass({
         await this.props.tree.params.offset.set(offset);
 
         this.loadRides(
-            { limit, offset },
+            _.merge({ limit, offset }, this.props.dateParams),
             {
                 toMerge: true,
                 previousResults: cursor.data.get('results'),

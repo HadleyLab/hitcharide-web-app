@@ -86,12 +86,18 @@ export class Calendar extends React.Component {
         const { activeDate } = this.state;
 
         if (moment(activeDate).isSame(day, 'day')) {
-            this.setState({ activeDate: null });
+            this.resetDate();
 
             return;
         }
 
         this.setState({ activeDate: day });
+        this.props.onDaySelect(day);
+    }
+
+    resetDate() {
+        this.setState({ activeDate: null });
+        this.props.onDayUnselect();
     }
 
     onNextMonthClick() {
@@ -170,6 +176,9 @@ export class Calendar extends React.Component {
     }
 }
 
-Calendar.propTypes = {};
+Calendar.propTypes = {
+    onDaySelect: PropTypes.func.isRequired,
+    onDayUnselect: PropTypes.func.isRequired,
+};
 
 Calendar.defaultProps = {};

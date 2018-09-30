@@ -19,7 +19,8 @@ const model = {
     tree: {
         bookings: {},
         rideRequests: {},
-        params: paginationParams,
+        bookingsParams: paginationParams,
+        rideRequestsParams: paginationParams,
     },
 };
 
@@ -33,6 +34,10 @@ export const MyBookingsList = schema(model)(createReactClass({
             getMyBookingsListService: PropTypes.func.isRequired,
             getMyRideRequestsListService: PropTypes.func.isRequired,
         }).isRequired,
+        dateParams: PropTypes.shape({
+            dateTimeFrom: PropTypes.string,
+            dateTimeTo: PropTypes.string,
+        }).isRequired,
     },
 
     componentDidMount() {
@@ -43,9 +48,24 @@ export const MyBookingsList = schema(model)(createReactClass({
             return;
         }
 
-        this.props.tree.params.set(paginationParams);
+        this.resetParams();
         this.loadBookings(paginationParams);
         this.loadRideRequests(paginationParams);
+    },
+
+    componentDidUpdate(prevProps) {
+        if (!_.isEqual(prevProps.dateParams, this.props.dateParams)) {
+            const bookingsParams = this.props.tree.bookingsParams.get();
+            const rideRequestsParams = this.props.tree.rideRequestsParams.get();
+
+            this.loadBookings(_.merge({}, _.pick(bookingsParams, ['limit', 'offset']), this.props.dateParams));
+            this.loadRideRequests(_.merge({}, _.pick(rideRequestsParams, ['limit', 'offset']), this.props.dateParams));
+        }
+    },
+
+    resetParams() {
+        this.props.tree.bookingsParams.set(paginationParams);
+        this.props.tree.rideRequestsParams.set(paginationParams);
     },
 
     async loadBookings(params, dehydrateParams) {
@@ -64,23 +84,26 @@ export const MyBookingsList = schema(model)(createReactClass({
 
     async loadMore(type) {
         let cursor = null;
+        let paramsCursor = null;
         let loadData = null;
 
         if (type === 'bookings') {
             cursor = this.props.tree.bookings;
+            paramsCursor = this.props.tree.bookingsParams;
             loadData = this.loadBookings;
         } else {
             cursor = this.props.tree.rideRequests;
+            paramsCursor = this.props.tree.rideRequestsParams;
             loadData = this.loadRideRequests;
         }
 
-        const { limit, offset: prevOffset } = this.props.tree.params.get();
+        const { limit, offset: prevOffset } = paramsCursor.get();
         const offset = prevOffset + limit;
 
-        await this.props.tree.params.offset.set(offset);
+        await paramsCursor.offset.set(offset);
 
         loadData(
-            { limit, offset },
+            _.merge({ limit, offset }, this.props.dateParams),
             {
                 toMerge: true,
                 previousResults: cursor.data.get('results'),
@@ -192,19 +215,13 @@ export const MyBookingsList = schema(model)(createReactClass({
     },
 
     render() {
-        const rideRequests = this.props.tree.rideRequests.get();
-
         return (
             <div className={s.container}>
                 {this.renderRides('bookings')}
                 {this.renderFooter('bookings')}
-                {!_.isEmpty(rideRequests)
-                    && rideRequests.status === 'Succeed'
-                    && !_.isEmpty(rideRequests.data.results) ? (
-                        <Title>
-                            Your ride requests
-                        </Title>
-                    ) : null}
+                <Title>
+                    Your ride requests
+                </Title>
                 {this.renderRides('rideRequests')}
                 {this.renderFooter('rideRequests')}
             </div>
