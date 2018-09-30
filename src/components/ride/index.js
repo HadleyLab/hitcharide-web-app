@@ -4,9 +4,12 @@ import moment from 'moment';
 import { DriverIcon, TravelerIcon } from 'components/icons';
 import s from './ride.css';
 
-export const RideItem = ({ data, history }) => {
+export const RideItem = ({
+    data, history, icon, isMyRide,
+}) => {
     const {
-        cityFrom, cityTo, dateTime: date, availableNumberOfSeats, price, pk,
+        cityFrom, cityTo, availableNumberOfSeats,
+        price, pk, dateTime: date, numberOfSeats,
     } = data;
 
     return (
@@ -14,9 +17,7 @@ export const RideItem = ({ data, history }) => {
             className={s.ride}
             onClick={() => history.push(`/app/ride/${pk}`)}
         >
-            <div className={s.userTypeIcon}>
-                <DriverIcon color="#40A9FF" />
-            </div>
+            <div className={s.userTypeIcon}>{icon}</div>
             <div className={s.date}>
                 <div style={{ whiteSpace: 'nowrap' }}>{moment(date).format('h:mm A')}</div>
                 <div className={s.gray}>{moment(date).format('MMM D')}</div>
@@ -28,8 +29,16 @@ export const RideItem = ({ data, history }) => {
             <div className={s.info}>
                 <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
                 <span className={s.gray}>
-                    {availableNumberOfSeats}
-                    {availableNumberOfSeats === 1 ? ' seat' : ' seats'}
+                    {isMyRide ? (
+                        <span>
+                            {`${numberOfSeats - availableNumberOfSeats}/${numberOfSeats} booked`}
+                        </span>
+                    ) : (
+                        <span>
+                            {`${availableNumberOfSeats}/${numberOfSeats}`}
+                            {availableNumberOfSeats === 1 ? ' seat' : ' seats'}
+                        </span>
+                    )}
                 </span>
             </div>
         </div>
@@ -39,9 +48,16 @@ export const RideItem = ({ data, history }) => {
 RideItem.propTypes = {
     data: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
+    icon: PropTypes.node,
+    isMyRide: PropTypes.bool,
 };
 
-export const RideRequestItem = ({ data, history }) => {
+RideItem.defaultProps = {
+    icon: <DriverIcon color="#40A9FF" />,
+    isMyRide: false,
+};
+
+export const RideRequestItem = ({ data, history, icon }) => {
     const {
         cityFrom, cityTo, dateTime: date, pk,
     } = data;
@@ -51,9 +67,7 @@ export const RideRequestItem = ({ data, history }) => {
             className={s.ride}
             onClick={() => history.push(`/app/request/${pk}`)}
         >
-            <div className={s.userTypeIcon}>
-                <TravelerIcon color="#40A9FF" />
-            </div>
+            <div className={s.userTypeIcon}>{icon}</div>
             <div className={s.date}>
                 <div style={{ whiteSpace: 'nowrap' }}>{moment(date).format('h:mm A')}</div>
                 <div className={s.gray}>{moment(date).format('MMM D')}</div>
@@ -69,4 +83,9 @@ export const RideRequestItem = ({ data, history }) => {
 RideRequestItem.propTypes = {
     data: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
+    icon: PropTypes.node,
+};
+
+RideRequestItem.defaultProps = {
+    icon: <TravelerIcon color="#40A9FF" />,
 };

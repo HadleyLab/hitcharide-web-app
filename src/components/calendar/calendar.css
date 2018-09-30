@@ -92,7 +92,7 @@
 
     &._today:after {
         content: '';
-        background-color: rgba(#97B725, .3);
+        border: 1px solid #4263CA;
     }
 
     &._active {

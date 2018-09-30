@@ -4,19 +4,21 @@ import createReactClass from 'create-react-class';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { RideRequestItem, RideItem } from 'components';
+import { RideRequestItem, RideItem, Title } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
+import { TravelerIcon } from 'components/icons';
 import s from './my-rides.css';
 
 const paginationParams = {
-    limit: 20,
+    limit: 10,
     offset: 0,
 };
 
 const model = {
     tree: {
         bookings: {},
+        rideRequests: {},
         params: paginationParams,
     },
 };
@@ -29,6 +31,7 @@ export const MyBookingsList = schema(model)(createReactClass({
         history: PropTypes.shape().isRequired,
         services: PropTypes.shape({
             getMyBookingsListService: PropTypes.func.isRequired,
+            getMyRideRequestsListService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
@@ -42,6 +45,7 @@ export const MyBookingsList = schema(model)(createReactClass({
 
         this.props.tree.params.set(paginationParams);
         this.loadBookings(paginationParams);
+        this.loadRideRequests(paginationParams);
     },
 
     async loadBookings(params, dehydrateParams) {
@@ -51,14 +55,31 @@ export const MyBookingsList = schema(model)(createReactClass({
         await getMyBookingsListService(cursor, params, dehydrateParams);
     },
 
-    async loadMore() {
-        const cursor = this.props.tree.bookings;
+    async loadRideRequests(params, dehydrateParams) {
+        const { getMyRideRequestsListService } = this.props.services;
+
+        const cursor = this.props.tree.rideRequests;
+        await getMyRideRequestsListService(cursor, params, dehydrateParams);
+    },
+
+    async loadMore(type) {
+        let cursor = null;
+        let loadData = null;
+
+        if (type === 'bookings') {
+            cursor = this.props.tree.bookings;
+            loadData = this.loadBookings;
+        } else {
+            cursor = this.props.tree.rideRequests;
+            loadData = this.loadRideRequests;
+        }
+
         const { limit, offset: prevOffset } = this.props.tree.params.get();
         const offset = prevOffset + limit;
 
         await this.props.tree.params.offset.set(offset);
 
-        this.loadBookings(
+        loadData(
             { limit, offset },
             {
                 toMerge: true,
@@ -67,21 +88,28 @@ export const MyBookingsList = schema(model)(createReactClass({
         );
     },
 
-    renderBookings() {
-        const cursor = this.props.tree.bookings;
-        const bookingsData = cursor.get() || {};
-        const { data, status } = bookingsData;
+    renderRides(type) {
+        let cursor = null;
 
-        if (_.isEmpty(bookingsData) || !data || status !== 'Succeed') {
+        if (type === 'bookings') {
+            cursor = this.props.tree.bookings;
+        } else {
+            cursor = this.props.tree.rideRequests;
+        }
+
+        const ridesData = cursor.get() || {};
+        const { data, status } = ridesData;
+
+        if (_.isEmpty(ridesData) || !data || status !== 'Succeed') {
             return null;
         }
 
-        const { results: bookings, next } = data;
+        const { results: rides, next } = data;
 
-        if (bookings.length === 0) {
+        if (rides.length === 0) {
             return (
                 <div className={s.noResults}>
-                    No bookings found
+                    No rides found
                 </div>
             );
         }
@@ -92,26 +120,48 @@ export const MyBookingsList = schema(model)(createReactClass({
                     [s._withLast]: !next,
                 })}
             >
-                {_.map(bookings, (ride, index) => (
-                    <RideItem
-                        key={`ride-booking-${index}`}
-                        data={ride.ride}
-                        history={this.props.history}
-                    />
-                ))}
+                {_.map(rides, (ride, index) => {
+                    if (type === 'bookings') {
+                        return (
+                            <RideItem
+                                key={`ride-booking-${index}`}
+                                data={ride.ride}
+                                history={this.props.history}
+                                icon={<TravelerIcon color="#97B725" />}
+                            />
+                        );
+                    }
+
+                    return (
+                        <RideRequestItem
+                            key={`ride-booking-${index}`}
+                            data={ride}
+                            history={this.props.history}
+                            icon={<TravelerIcon color="#97B725" />}
+                        />
+                    );
+                })}
             </div>
         );
     },
 
-    renderFooter() {
-        const bookings = this.props.tree.bookings.get();
-        const bookingsData = bookings || {};
+    renderFooter(type) {
+        let cursor = null;
 
-        if (_.isEmpty(bookingsData)) {
+        if (type === 'bookings') {
+            cursor = this.props.tree.bookings;
+        } else {
+            cursor = this.props.tree.rideRequests;
+        }
+
+        const rides = cursor.get();
+        const ridesData = rides || {};
+
+        if (_.isEmpty(ridesData)) {
             return null;
         }
 
-        const { data, status } = bookingsData;
+        const { data, status } = ridesData;
 
         if (!data || status !== 'Succeed') {
             return (
@@ -130,7 +180,7 @@ export const MyBookingsList = schema(model)(createReactClass({
                         type="primary"
                         inline
                         style={{ width: 250 }}
-                        onClick={this.loadMore}
+                        onClick={() => this.loadMore(type)}
                     >
                         Load more
                     </Button>
@@ -142,10 +192,21 @@ export const MyBookingsList = schema(model)(createReactClass({
     },
 
     render() {
+        const rideRequests = this.props.tree.rideRequests.get();
+
         return (
             <div className={s.container}>
-                {this.renderBookings()}
-                {this.renderFooter()}
+                {this.renderRides('bookings')}
+                {this.renderFooter('bookings')}
+                {!_.isEmpty(rideRequests)
+                    && rideRequests.status === 'Succeed'
+                    && !_.isEmpty(rideRequests.data.results) ? (
+                        <Title>
+                            Your ride requests
+                        </Title>
+                    ) : null}
+                {this.renderRides('rideRequests')}
+                {this.renderFooter('rideRequests')}
             </div>
         );
     },

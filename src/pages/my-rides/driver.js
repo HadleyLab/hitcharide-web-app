@@ -7,10 +7,11 @@ import BaobabPropTypes from 'baobab-prop-types';
 import { RideItem } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
+import { DriverIcon } from 'components/icons';
 import s from './my-rides.css';
 
 const paginationParams = {
-    limit: 20,
+    limit: 10,
     offset: 0,
 };
 
@@ -97,6 +98,13 @@ export const MyRidesList = schema(model)(createReactClass({
                         key={`ride-${index}`}
                         data={ride}
                         history={this.props.history}
+                        isMyRide
+                        icon={(
+                            <DriverIcon
+                                color={ride.availableNumberOfSeats === ride.numberOfSeats
+                                    ? '#F5222D' : '#97B725'}
+                            />
+                        )}
                     />
                 ))}
             </div>
