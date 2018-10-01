@@ -109,7 +109,7 @@ export const MyRidesList = schema(model)(createReactClass({
                         key={`ride-${index}`}
                         data={ride}
                         history={this.props.history}
-                        isMyRide
+                        authorType="driver"
                         icon={(
                             <DriverIcon
                                 color={ride.availableNumberOfSeats === ride.numberOfSeats

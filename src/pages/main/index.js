@@ -192,6 +192,7 @@ const MainPageContent = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('myRides')}
                                         userType={userType}
+                                        userPk={profile.data.pk}
                                     />
                                 )}
                             />

@@ -38,6 +38,7 @@ export const MyBookingsList = schema(model)(createReactClass({
             dateTimeFrom: PropTypes.string,
             dateTimeTo: PropTypes.string,
         }).isRequired,
+        userPk: PropTypes.string.isRequired,
     },
 
     componentDidMount() {
@@ -150,6 +151,8 @@ export const MyBookingsList = schema(model)(createReactClass({
                                 key={`ride-booking-${index}`}
                                 data={ride.ride}
                                 history={this.props.history}
+                                authorType="passenger"
+                                userPk={this.props.userPk}
                                 icon={<TravelerIcon color="#97B725" />}
                             />
                         );
@@ -157,10 +160,10 @@ export const MyBookingsList = schema(model)(createReactClass({
 
                     return (
                         <RideRequestItem
-                            key={`ride-booking-${index}`}
+                            key={`ride-request-${index}`}
                             data={ride}
                             history={this.props.history}
-                            icon={<TravelerIcon color="#97B725" />}
+                            icon={<TravelerIcon color="#F5222D" />}
                         />
                     );
                 })}
