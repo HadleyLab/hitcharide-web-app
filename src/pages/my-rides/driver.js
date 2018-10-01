@@ -8,6 +8,7 @@ import { RideItem } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
 import { DriverIcon } from 'components/icons';
+import moment from 'moment';
 import s from './my-rides.css';
 
 const paginationParams = {
@@ -18,6 +19,7 @@ const paginationParams = {
 const model = {
     tree: {
         rides: {},
+        calendarRides: {},
         params: paginationParams,
     },
 };
@@ -35,11 +37,26 @@ export const MyRidesList = schema(model)(createReactClass({
             dateTimeFrom: PropTypes.string,
             dateTimeTo: PropTypes.string,
         }).isRequired,
+        monthRange: PropTypes.shape({
+            dateTimeFrom: PropTypes.string,
+            dateTimeTo: PropTypes.string,
+        }),
+        setCalendarData: PropTypes.func.isRequired,
+    },
+
+    getDefaultProps() {
+        return {
+            monthRange: {},
+        };
     },
 
     componentDidMount() {
         const { history } = this.props;
         const rides = this.props.tree.rides.get();
+
+        if (!_.isEmpty(this.props.monthRange)) {
+            this.loadRidesForCalendar();
+        }
 
         if (history.action === 'POP' && !_.isEmpty(rides)) {
             return;
@@ -54,6 +71,53 @@ export const MyRidesList = schema(model)(createReactClass({
             const { limit, offset } = this.props.tree.params.get();
             this.loadRides(_.merge({ limit, offset }, this.props.dateParams));
         }
+
+        if (!_.isEqual(prevProps.monthRange, this.props.monthRange) && !_.isEmpty(this.props.monthRange)) {
+            this.loadRidesForCalendar();
+        }
+    },
+
+    async loadRidesForCalendar() {
+        const { monthRange } = this.props;
+        const { getMyRidesListService } = this.props.services;
+
+        const cursor = this.props.tree.calendarRides;
+        const result = await getMyRidesListService(cursor, _.merge({ limit: 100, offset: 0 }, monthRange));
+
+        if (result.status === 'Succeed') {
+            this.prepareCalendarData(result.data.results);
+        }
+    },
+
+    setValue(data, path) {
+        const value = _.get(data, path);
+
+        if (value) {
+            _.set(data, path, value + 1);
+        } else {
+            _.set(data, path, 1);
+        }
+    },
+
+    prepareCalendarData(rides) {
+        let data = {};
+
+        _.forEach(rides, (ride) => {
+            const { availableNumberOfSeats, numberOfSeats, dateTime } = ride;
+            const date = moment(dateTime).format('YYYY-MM-DD');
+
+            if (availableNumberOfSeats === numberOfSeats) {
+                const path = [date, 'withoutBookings'];
+
+                this.setValue(data, path);
+            } else {
+                const path = [date, 'withBookings'];
+
+                this.setValue(data, path);
+            }
+        });
+
+        this.props.setCalendarData(data);
     },
 
     async loadRides(params, dehydrateParams) {

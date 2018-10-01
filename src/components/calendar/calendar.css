@@ -104,3 +104,30 @@
         }
     }
 }
+
+.markers {
+    position: absolute;
+    height: 8px;
+    display: flex;
+    top: 50%;
+    margin-top: 11px;
+    left: 0;
+    right: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.marker {
+    width: 4px;
+    height: 4px;
+    margin: 0 1px;
+    border-radius: 50%;
+
+    &._withoutBookings {
+        background-color: #F5222D;
+    }
+
+    &._withBookings {
+        background-color: #97B725;
+    }
+}

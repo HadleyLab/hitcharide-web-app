@@ -60,6 +60,8 @@ export class Calendar extends React.Component {
         const rangeStart = moment(monthStart).startOf('week');
         const rangeEnd = moment(monthEnd).endOf('week');
 
+        this.props.onMonthGenerate(rangeStart, rangeEnd);
+
         let data = [];
         let day = rangeStart;
 
@@ -122,6 +124,7 @@ export class Calendar extends React.Component {
 
     render() {
         const { activeDate, currentMonth, calendarMonthData } = this.state;
+        const { data } = this.props;
         const weekdays = moment.weekdaysShort();
 
         return (
@@ -148,6 +151,7 @@ export class Calendar extends React.Component {
                     <div className={s.week} key={`week-${weekIndex}`}>
                         {_.map(week.days, (day, dayIndex) => {
                             const isCurrentMonth = day.isSame(currentMonth, 'month');
+                            const formattedDay = moment(day).format('YYYY-MM-DD');
 
                             return (
                                 <div
@@ -166,6 +170,14 @@ export class Calendar extends React.Component {
                                     }}
                                 >
                                     {moment(day).format('D')}
+                                    <div className={s.markers}>
+                                        {_.get(data, [formattedDay, 'withoutBookings']) ? (
+                                            <div className={classNames(s.marker, s._withoutBookings)} />
+                                        ) : null}
+                                        {_.get(data, [formattedDay, 'withBookings']) ? (
+                                            <div className={classNames(s.marker, s._withBookings)} />
+                                        ) : null}
+                                    </div>
                                 </div>
                             );
                         })}
@@ -179,6 +191,11 @@ export class Calendar extends React.Component {
 Calendar.propTypes = {
     onDaySelect: PropTypes.func.isRequired,
     onDayUnselect: PropTypes.func.isRequired,
+    onMonthGenerate: PropTypes.func,
+    data: PropTypes.shape(),
 };
 
-Calendar.defaultProps = {};
+Calendar.defaultProps = {
+    onMonthGenerate: () => {},
+    data: {},
+};

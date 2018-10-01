@@ -12,6 +12,8 @@ const model = {
     tree: {
         dateTimeFrom: null,
         dateTimeTo: null,
+        monthRange: {},
+        calendarData: {},
     },
 };
 
@@ -40,9 +42,20 @@ export const MyRidesPage = schema(model)(createReactClass({
         this.props.tree.dateTimeTo.set(null);
     },
 
+    onMonthGenerate(rangeStart, rangeEnd) {
+        this.props.tree.monthRange.set({
+            dateTimeFrom: moment(rangeStart).utc().format(),
+            dateTimeTo: moment(rangeEnd).utc().format(),
+        });
+    },
+
+    setCalendarData(data) {
+        this.props.tree.calendarData.set(data);
+    },
+
     renderRides() {
         const isDriver = this.props.userType === 'driver';
-        const { dateTimeFrom, dateTimeTo } = this.props.tree.get();
+        const { dateTimeFrom, dateTimeTo, monthRange } = this.props.tree.get();
 
         if (isDriver) {
             return (
@@ -50,6 +63,8 @@ export const MyRidesPage = schema(model)(createReactClass({
                     {...this.props}
                     tree={this.props.tree.select('createRide')}
                     dateParams={{ dateTimeFrom, dateTimeTo }}
+                    monthRange={monthRange}
+                    setCalendarData={this.setCalendarData}
                 />
             );
         }
@@ -59,6 +74,8 @@ export const MyRidesPage = schema(model)(createReactClass({
                 {...this.props}
                 tree={this.props.tree.select('suggestRide')}
                 dateParams={{ dateTimeFrom, dateTimeTo }}
+                monthRange={monthRange}
+                setCalendarData={this.setCalendarData}
             />
         );
     },
@@ -70,6 +87,8 @@ export const MyRidesPage = schema(model)(createReactClass({
                     ref={(ref) => { this.calendar = ref; }}
                     onDaySelect={this.onDaySelect}
                     onDayUnselect={this.onDayUnselect}
+                    onMonthGenerate={this.onMonthGenerate}
+                    data={this.props.tree.calendarData.get()}
                 />
                 {this.renderRides()}
             </div>

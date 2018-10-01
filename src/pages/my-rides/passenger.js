@@ -8,6 +8,7 @@ import { RideRequestItem, RideItem, Title } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
 import { TravelerIcon } from 'components/icons';
+import moment from 'moment';
 import s from './my-rides.css';
 
 const paginationParams = {
@@ -19,6 +20,8 @@ const model = {
     tree: {
         bookings: {},
         rideRequests: {},
+        calendarBookings: {},
+        calendarRideRequests: {},
         bookingsParams: paginationParams,
         rideRequestsParams: paginationParams,
     },
@@ -38,14 +41,29 @@ export const MyBookingsList = schema(model)(createReactClass({
             dateTimeFrom: PropTypes.string,
             dateTimeTo: PropTypes.string,
         }).isRequired,
+        monthRange: PropTypes.shape({
+            dateTimeFrom: PropTypes.string,
+            dateTimeTo: PropTypes.string,
+        }),
+        setCalendarData: PropTypes.func.isRequired,
         userPk: PropTypes.string.isRequired,
+    },
+
+    getDefaultProps() {
+        return {
+            monthRange: {},
+        };
     },
 
     componentDidMount() {
         const { history } = this.props;
-        const bookings = this.props.tree.bookings.get();
+        const { bookings, rideRequests } = this.props.tree.get();
 
-        if (history.action === 'POP' && !_.isEmpty(bookings)) {
+        if (!_.isEmpty(this.props.monthRange)) {
+            this.loadRidesForCalendar();
+        }
+
+        if (history.action === 'POP' && !_.isEmpty(bookings) && !_.isEmpty(rideRequests)) {
             return;
         }
 
@@ -56,12 +74,66 @@ export const MyBookingsList = schema(model)(createReactClass({
 
     componentDidUpdate(prevProps) {
         if (!_.isEqual(prevProps.dateParams, this.props.dateParams)) {
+            const { dateParams } = this.props;
             const bookingsParams = this.props.tree.bookingsParams.get();
             const rideRequestsParams = this.props.tree.rideRequestsParams.get();
 
-            this.loadBookings(_.merge({}, _.pick(bookingsParams, ['limit', 'offset']), this.props.dateParams));
-            this.loadRideRequests(_.merge({}, _.pick(rideRequestsParams, ['limit', 'offset']), this.props.dateParams));
+            this.loadBookings(_.merge({}, _.pick(bookingsParams, ['limit', 'offset']), dateParams));
+            this.loadRideRequests(_.merge({}, _.pick(rideRequestsParams, ['limit', 'offset']), dateParams));
         }
+
+        if (!_.isEqual(prevProps.monthRange, this.props.monthRange) && !_.isEmpty(this.props.monthRange)) {
+            this.loadRidesForCalendar();
+        }
+    },
+
+    async loadRidesForCalendar() {
+        const { monthRange } = this.props;
+        const { getMyBookingsListService, getMyRideRequestsListService } = this.props.services;
+
+        const bookingsCursor = this.props.tree.calendarBookings;
+        const rideRequestsCursor = this.props.tree.calendarRideRequests;
+
+        const bookingsResult = await getMyBookingsListService(bookingsCursor,
+            _.merge({ limit: 100, offset: 0 }, monthRange));
+        const rideRequestsResult = await getMyRideRequestsListService(rideRequestsCursor,
+            _.merge({ limit: 100, offset: 0 }, monthRange));
+
+        if (bookingsResult.status === 'Succeed' && rideRequestsResult.status === 'Succeed') {
+            this.prepareCalendarData(bookingsResult.data.results, rideRequestsResult.data.results);
+        }
+    },
+
+    setValue(data, path) {
+        const value = _.get(data, path);
+
+        if (value) {
+            _.set(data, path, value + 1);
+        } else {
+            _.set(data, path, 1);
+        }
+    },
+
+    prepareCalendarData(bookings, rideRequests) {
+        let data = {};
+
+        _.forEach(bookings, ({ ride }) => {
+            const { dateTime } = ride;
+            const date = moment(dateTime).format('YYYY-MM-DD');
+            const path = [date, 'withBookings'];
+
+            this.setValue(data, path);
+        });
+
+        _.forEach(rideRequests, (ride) => {
+            const { dateTime } = ride;
+            const date = moment(dateTime).format('YYYY-MM-DD');
+            const path = [date, 'withoutBookings'];
+
+            this.setValue(data, path);
+        });
+
+        this.props.setCalendarData(data);
     },
 
     resetParams() {
@@ -133,7 +205,7 @@ export const MyBookingsList = schema(model)(createReactClass({
         if (rides.length === 0) {
             return (
                 <div className={s.noResults}>
-                    No rides found
+                    {`No ${type === 'bookings' ? 'bookings' : 'ride requests'} found`}
                 </div>
             );
         }
