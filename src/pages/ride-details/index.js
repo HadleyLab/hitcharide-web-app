@@ -48,7 +48,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const ride = this.props.tree.ride.get();
         const seatsCount = this.props.tree.seatsCount.get();
         const {
-            cityFrom, cityTo, price, dateTime,
+            cityFrom, cityTo, priceWithFee, dateTime,
         } = ride.data;
 
         const message = 'You are booking a ride '
@@ -57,7 +57,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             + `on ${moment(dateTime).format('MMM D YYYY')} `
             + `at ${moment(dateTime).format('h:mm A')} `
             + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
-            + `priced at ${parseFloat(price * seatsCount).toString()}$ per seat. `
+            + `priced at ${parseFloat(priceWithFee * seatsCount).toString()}$ per seat. `
             + 'Are you sure?';
 
         Modal.alert('Check a ride', message, [
@@ -95,10 +95,12 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
     renderRideInfo() {
         const ride = this.props.tree.ride.get();
+        const { profile } = this.props;
         const {
-            cityFrom, cityTo, price, dateTime, stops,
-            numberOfSeats, availableNumberOfSeats,
+            cityFrom, cityTo, price, priceWithFee, dateTime,
+            stops, numberOfSeats, availableNumberOfSeats, car,
         } = ride.data;
+        const amIDriver = profile.pk === car.owner.pk;
 
         const rows = [
             {
@@ -139,7 +141,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             },
             {
                 title: 'Price for seat',
-                content: `$ ${parseFloat(price).toString()}`,
+                content: `$ ${parseFloat(amIDriver ? price : priceWithFee).toString()}`,
             },
         ];
 

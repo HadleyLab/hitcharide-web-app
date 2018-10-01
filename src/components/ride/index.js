@@ -39,10 +39,14 @@ export class RideItem extends React.Component {
     }
 
     render() {
-        const { data, history, icon } = this.props;
         const {
-            cityFrom, cityTo, price, pk, dateTime: date,
+            data, history, icon, authorType,
+        } = this.props;
+        const {
+            cityFrom, cityTo, pk, dateTime: date,
         } = data;
+
+        const price = authorType === 'driver' ? data.price : data.priceWithFee;
 
         return (
             <div
