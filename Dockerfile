@@ -14,3 +14,4 @@ ADD .babelrc .babelrc
 ADD webpack/ webpack/
 ADD src/ src/
 RUN yarn
+RUN yarn build
