@@ -49,7 +49,9 @@ export const Timer = createReactClass({
     },
 
     displayTime(seconds) {
-        return `${Math.floor(seconds / 60)}:${seconds % 60}`;
+        const mod = seconds % 60;
+
+        return `${Math.floor(seconds / 60)}:${mod < 10 ? `0${mod}` : mod}`;
     },
 
     render() {
