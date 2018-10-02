@@ -30,6 +30,10 @@ export const ProfileContent = createReactClass({
     renderCars() {
         const { cars } = this.props;
 
+        if (cars.length === 0) {
+            return null;
+        }
+
         return (
             <div className={s.section}>
                 <Title>Car</Title>
@@ -158,7 +162,7 @@ export const ProfileContent = createReactClass({
                     <Title>Contacts</Title>
                     {phone ? (
                         <div className={s.infoField}>
-                            {phone}
+                            + {phone}
                             {isPhoneValidated && isYourProfile ? (
                                 <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
                             ) : null}
@@ -174,12 +178,14 @@ export const ProfileContent = createReactClass({
                 {isYourProfile ? (
                     <div>
                         {this.renderCars()}
-                        <div className={s.section}>
-                            <Title>PayPal</Title>
-                            <div className={s.infoField}>
-                                {paypalAccount}
+                        {paypalAccount ? (
+                            <div className={s.section}>
+                                <Title>PayPal</Title>
+                                <div className={s.infoField}>
+                                    {paypalAccount}
+                                </div>
                             </div>
-                        </div>
+                        ) : null}
                         {this.renderFooter()}
                     </div>
                 ) : null}

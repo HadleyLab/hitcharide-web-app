@@ -6,7 +6,7 @@ import createReactClass from 'create-react-class';
 import { Search, Title, Error } from 'components';
 import schema from 'libs/state';
 import moment from 'moment';
-import { Flex, Button, WhiteSpace } from 'antd-mobile';
+import { Button } from 'antd-mobile';
 import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
 import { DateTimePickers } from './date-time-pickers';
@@ -133,9 +133,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <WhiteSpace />
-                <WhiteSpace />
-                <Flex justify="center">
+                <div className={s.footer}>
                     <Button
                         type="primary"
                         inline
@@ -144,9 +142,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
                     >
                         Suggest a ride
                     </Button>
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
+                </div>
             </div>
         );
     },

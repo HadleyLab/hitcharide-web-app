@@ -7,9 +7,7 @@ import {
     Search, Title, Input, StepperInput, Error,
 } from 'components';
 import schema from 'libs/state';
-import {
-    Flex, Button, List, WhiteSpace, Picker,
-} from 'antd-mobile';
+import { Button, List, Picker } from 'antd-mobile';
 import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
 import moment from 'moment';
@@ -301,12 +299,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <div className={s.warningText}>
-                    You can delete this trip
-                    <br />
-                    up to 24 hours before
-                </div>
-                <Flex justify="center">
+                <div className={s.footer}>
                     <Button
                         type="primary"
                         inline
@@ -315,9 +308,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                     >
                         Create a ride
                     </Button>
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
+                </div>
             </div>
         );
     },

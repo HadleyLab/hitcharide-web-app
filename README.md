@@ -19,7 +19,7 @@ Mail templates -> Password reset
 
 Body:   <p>You're receiving this email because you need to      finish activation process on {{ site_name }}.</p>
         <p>Please go to the following page to activate account:</p>
-        <p><a href="http://192.168.11.254:3000/#/{{ url }}">http://192.168.11.254:3000/#/{{ url }}</a></p>
+        <p><a href="http://192.168.11.254:3000/{{ url }}">http://192.168.11.254:3000/{{ url }}</a></p>
         <p>Thanks for using our site!</p>
         <p>The {{ site_name }} team</p>
 ```

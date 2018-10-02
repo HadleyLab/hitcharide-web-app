@@ -84,11 +84,6 @@
         }
     }
 
-    &._passenger :global .am-button-primary {
-        background-color: #4263CA!important;
-        border-color: #4263CA!important;
-    }
-
     :global .am-button + .am-button {
         margin-top: 10px;
     }
@@ -147,4 +142,8 @@
     .departure & {
         top: 2px;
     }
+}
+
+.stepper:before {
+    left: 15px;
 }

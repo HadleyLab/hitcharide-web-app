@@ -4,7 +4,7 @@ import _ from 'lodash';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
-    HashRouter as Router, Route, Redirect,
+    BrowserRouter as Router, Route, Redirect,
 } from 'react-router-dom';
 import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';

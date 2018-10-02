@@ -68,7 +68,7 @@ export const CancelRidePage = schema(model)(createReactClass({
         return (
             <div className={s.section}>
                 <Title>
-                    {isDelete ? 'Delete trip' : 'Refuse trip'}
+                    {isDelete ? 'Delete trip' : 'Cancel booking'}
                 </Title>
                 {/*
                 <div style={{ fontSize: 12, lineHeight: 12, color: '#aaa' }}>Will be implemented soon</div>
@@ -101,7 +101,7 @@ export const CancelRidePage = schema(model)(createReactClass({
                         inline
                         onClick={this.onSubmit}
                     >
-                        {isDelete ? 'Delete trip' : 'Refuse trip'}
+                        {isDelete ? 'Delete trip' : 'Cancel booking'}
                     </Button>
                 </div>
             </div>

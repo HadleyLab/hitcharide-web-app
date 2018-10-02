@@ -25,6 +25,7 @@ module.exports = {
         stats: 'minimal',
         host: '0.0.0.0',
         port: config.port,
+        historyApiFallback: true,
     },
     resolve: utils.resolve,
     module: utils.module('development'),

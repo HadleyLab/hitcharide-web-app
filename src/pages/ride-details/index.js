@@ -36,13 +36,9 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     async componentDidMount() {
-        const { tree, history, match } = this.props;
+        const { tree, match } = this.props;
         const { getRideService } = this.props.services;
         tree.select('seatsCount').set(1);
-
-        if (history.action === 'POP' && !_.isEmpty(tree.ride.get())) {
-            return;
-        }
 
         await getRideService(tree.ride, match.params.pk);
     },
@@ -63,13 +59,12 @@ export const RideDetailsPage = schema(model)(createReactClass({
             + `priced at ${parseFloat(priceWithFee * seatsCount).toString()}$ per seat. `
             + 'Are you sure?';
 
-        Modal.alert('Check a ride', message, [
-            { text: 'Cancel' },
+        Modal.alert('Check your ride', message, [
             {
-                text: 'OK',
+                text: 'YES',
                 onPress: async () => {
                     const { pk } = this.props.match.params;
-                    const { bookRideService, getRideService } = this.props.services;
+                    const { bookRideService } = this.props.services;
 
                     const result = await bookRideService(this.props.tree.bookingResult, {
                         ride: pk,
@@ -77,23 +72,28 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     });
 
                     if (result.status === 'Failure') {
-                        let error = '';
-
-                        _.forEach(result.error.data, (item) => { error += item; });
-
-                        this.props.tree.bookingError.set(error);
-                    } else {
-                        this.props.tree.bookingError.set(null);
+                        this.props.tree.bookingError.set(result.error.data);
                     }
 
                     if (result.status === 'Succeed') {
-                        this.props.tree.bookingError.set(null);
-
-                        await getRideService(this.props.tree.ride, pk);
+                        window.location.replace(result.data.paypalApprovalLink);
                     }
                 },
+                style: { color: '#4263CA' },
+            },
+            {
+                text: 'NO',
+                style: { color: '#4263CA' },
             },
         ]);
+    },
+
+    async onBookingSucceed() {
+        const { pk } = this.props.match.params;
+        const { getRideService } = this.props.services;
+
+        this.props.tree.bookingError.set(null);
+        await getRideService(this.props.tree.ride, pk);
     },
 
     checkIfIAmDriver() {
@@ -264,6 +264,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
         return (
             <StepperInput
+                className={s.stepper}
                 title="Number of seats"
                 cursor={this.props.tree.select('seatsCount')}
                 minValue={1}
@@ -279,36 +280,61 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const { ride } = tree;
 
         if (amIPassenger) {
+            const { profile } = this.props;
+            const { bookings, dateTime } = ride.data;
+            const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
+            const isBookingPayed = myBooking.status === 'payed';
+            const isBookingNotPayed = myBooking.status === 'created';
+            const isRideStarted = moment().utc().isSameOrAfter(moment(dateTime).utc(), 'minute');
+            const dayBeforeRide = moment(dateTime).subtract(1, 'days').utc();
+            const canBeCanceled = moment().utc().isSameOrBefore(dayBeforeRide, 'minute');
+
             return (
                 <div className={classNames(s.footer, s._passenger)}>
-                    <Button
-                        type="primary"
-                        inline
-                        onClick={() => {
-                            Modal.alert('Refuse trip', 'Do you really want to refuse this trip? '
-                                + 'The money will be returned to your PayPal account.', [
-                                {
-                                    text: 'YES',
-                                    onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}/refuse`),
-                                    style: { color: '#4263CA' },
-                                },
-                                {
-                                    text: 'NO',
-                                    onPress: () => {},
-                                    style: { color: '#4263CA' },
-                                },
-                            ]);
-                        }}
-                    >
-                        Refuse trip
-                    </Button>
-                    <Button
-                        type="ghost"
-                        inline
-                        onClick={() => {}}
-                    >
-                        Complain
-                    </Button>
+                    {isBookingPayed && canBeCanceled ? (
+                        <Button
+                            type="primary"
+                            inline
+                            style={{
+                                backgroundColor: '#4263CA',
+                                borderColor: '#4263CA',
+                            }}
+                            onClick={() => {
+                                Modal.alert('Cancel booking', 'Do you really want to cancel your booking? '
+                                    + 'The money will be returned to your PayPal account.', [
+                                    {
+                                        text: 'YES',
+                                        onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}`),
+                                        style: { color: '#4263CA' },
+                                    },
+                                    {
+                                        text: 'NO',
+                                        style: { color: '#4263CA' },
+                                    },
+                                ]);
+                            }}
+                        >
+                            Cancel booking
+                        </Button>
+                    ) : null}
+                    {isBookingNotPayed ? (
+                        <Button
+                            type="primary"
+                            inline
+                            onClick={() => window.location.replace(myBooking.paypalApprovalLink)}
+                        >
+                            Pay your booking
+                        </Button>
+                    ) : null}
+                    {isRideStarted ? (
+                        <Button
+                            type="ghost"
+                            inline
+                            onClick={() => {}}
+                        >
+                            Complain
+                        </Button>
+                    ) : null}
                 </div>
             );
         }
@@ -328,7 +354,6 @@ export const RideDetailsPage = schema(model)(createReactClass({
                                 },
                                 {
                                     text: 'NO',
-                                    onPress: () => {},
                                     style: { color: '#4263CA' },
                                 },
                             ]);
@@ -341,7 +366,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         }
 
         return (
-            <div>
+            <div style={{ marginTop: 25 }}>
                 <Title className={s.title}>Number of reserved seats</Title>
                 {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
                 <div className={s.footer}>
