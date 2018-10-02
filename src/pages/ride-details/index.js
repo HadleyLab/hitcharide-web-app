@@ -5,18 +5,21 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
 import schema from 'libs/state';
-import { Title, Loader, StepperInput } from 'components';
+import {
+    Title, Loader, StepperInput, Error,
+} from 'components';
 import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
+import { Timer } from './timer';
 import s from './ride-details.css';
 
 const model = {
     ride: {},
     seatsCount: 1,
     bookingResult: {},
-    bookingError: null,
+    bookingError: {},
 };
 
 export const RideDetailsPage = schema(model)(createReactClass({
@@ -35,10 +38,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
         history: PropTypes.shape().isRequired,
     },
 
-    async componentDidMount() {
+    componentDidMount() {
+        this.props.tree.select('seatsCount').set(1);
+        this.loadRide();
+    },
+
+    async loadRide() {
         const { tree, match } = this.props;
         const { getRideService } = this.props.services;
-        tree.select('seatsCount').set(1);
 
         await getRideService(tree.ride, match.params.pk);
     },
@@ -89,11 +96,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     async onBookingSucceed() {
-        const { pk } = this.props.match.params;
-        const { getRideService } = this.props.services;
-
         this.props.tree.bookingError.set(null);
-        await getRideService(this.props.tree.ride, pk);
+        this.loadRide();
     },
 
     checkIfIAmDriver() {
@@ -318,6 +322,17 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         </Button>
                     ) : null}
                     {isBookingNotPayed ? (
+                        <div className={s.warningText}>
+                            {'You have '}
+                            <Timer
+                                date={myBooking.created}
+                                intervalInMinutes={15}
+                                onTimeExpired={this.loadRide}
+                            />
+                            {' minutes to pay your booking before it will be cancelled'}
+                        </div>
+                    ) : null}
+                    {isBookingNotPayed ? (
                         <Button
                             type="primary"
                             inline
@@ -370,13 +385,10 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 <Title className={s.title}>Number of reserved seats</Title>
                 {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
                 <div className={s.footer}>
-                    {/*
-                    {tree && tree.bookingError ? (
-                        <Error>
-                            {tree.bookingError}
-                        </Error>
-                    ) : null}
-                    */}
+                    <Error
+                        form={{}}
+                        errors={tree.bookingError}
+                    />
                     <div className={s.warningText}>
                         You can cancel the trip
                         <br />
