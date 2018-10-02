@@ -9,7 +9,7 @@ import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
-    RideRequestDetailsPage,
+    RideRequestDetailsPage, CancelRidePage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
@@ -223,6 +223,15 @@ const MainPageContent = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('ride')}
                                         profile={profile.data}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/cancel-ride/:pk/:type`}
+                                render={(props) => (
+                                    <CancelRidePage
+                                        {...props}
+                                        tree={this.props.tree.select('cancelRide')}
                                     />
                                 )}
                             />

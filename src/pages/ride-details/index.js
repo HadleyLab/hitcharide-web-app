@@ -5,9 +5,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
 import schema from 'libs/state';
-import {
-    Title, Loader, StepperInput, Error,
-} from 'components';
+import { Title, Loader, StepperInput } from 'components';
 import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
@@ -34,14 +32,19 @@ export const RideDetailsPage = schema(model)(createReactClass({
             getRideService: PropTypes.func.isRequired,
             bookRideService: PropTypes.func.isRequired,
         }).isRequired,
+        history: PropTypes.shape().isRequired,
     },
 
     async componentDidMount() {
+        const { tree, history, match } = this.props;
         const { getRideService } = this.props.services;
-        const { pk } = this.props.match.params;
-        this.props.tree.select('seatsCount').set(1);
+        tree.select('seatsCount').set(1);
 
-        await getRideService(this.props.tree.ride, pk);
+        if (history.action === 'POP' && !_.isEmpty(tree.ride.get())) {
+            return;
+        }
+
+        await getRideService(tree.ride, match.params.pk);
     },
 
     bookRide() {
@@ -93,14 +96,46 @@ export const RideDetailsPage = schema(model)(createReactClass({
         ]);
     },
 
+    checkIfIAmDriver() {
+        const { profile } = this.props;
+        const ride = this.props.tree.ride.get();
+        const { car } = ride.data;
+        const amIDriver = profile.pk === car.owner.pk;
+
+        return amIDriver;
+    },
+
+    checkIfIAmPassenger() {
+        const { profile } = this.props;
+        const ride = this.props.tree.ride.get();
+        const { bookings } = ride.data;
+        const amIPassenger = _.findIndex(bookings, ({ client }) => client.pk === profile.pk) !== -1;
+
+        return amIPassenger;
+    },
+
+    getPageTitle() {
+        const amIDriver = this.checkIfIAmDriver();
+        const amIPassenger = this.checkIfIAmPassenger();
+
+        if (amIDriver) {
+            return 'Your trip';
+        }
+
+        if (amIPassenger) {
+            return 'Booked trip';
+        }
+
+        return 'Trip information';
+    },
+
     renderRideInfo() {
         const ride = this.props.tree.ride.get();
-        const { profile } = this.props;
         const {
             cityFrom, cityTo, price, priceWithFee, dateTime,
-            stops, numberOfSeats, availableNumberOfSeats, car,
+            stops, numberOfSeats, availableNumberOfSeats,
         } = ride.data;
-        const amIDriver = profile.pk === car.owner.pk;
+        const amIDriver = this.checkIfIAmDriver();
 
         const rows = [
             {
@@ -239,15 +274,70 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
     renderFooter() {
         const tree = this.props.tree.get();
-        const { profile } = this.props;
-        const ride = this.props.tree.ride.get();
-        const { car } = ride.data;
-        const amIDriver = profile.pk === car.owner.pk;
-        const { bookings } = ride.data;
-        const amIClient = _.findIndex(bookings, ({ client }) => client.pk === profile.pk) !== -1;
+        const amIDriver = this.checkIfIAmDriver();
+        const amIPassenger = this.checkIfIAmPassenger();
+        const { ride } = tree;
 
-        if (amIDriver || amIClient) {
-            return null;
+        if (amIPassenger) {
+            return (
+                <div className={classNames(s.footer, s._passenger)}>
+                    <Button
+                        type="primary"
+                        inline
+                        onClick={() => {
+                            Modal.alert('Refuse trip', 'Do you really want to refuse this trip? '
+                                + 'The money will be returned to your PayPal account.', [
+                                {
+                                    text: 'YES',
+                                    onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}/refuse`),
+                                    style: { color: '#4263CA' },
+                                },
+                                {
+                                    text: 'NO',
+                                    onPress: () => {},
+                                    style: { color: '#4263CA' },
+                                },
+                            ]);
+                        }}
+                    >
+                        Refuse trip
+                    </Button>
+                    <Button
+                        type="ghost"
+                        inline
+                        onClick={() => {}}
+                    >
+                        Complain
+                    </Button>
+                </div>
+            );
+        }
+
+        if (amIDriver) {
+            return (
+                <div className={s.footer}>
+                    <Button
+                        type="ghost"
+                        inline
+                        onClick={() => {
+                            Modal.alert('Delete trip', 'Do you really want to delete this trip?', [
+                                {
+                                    text: 'YES',
+                                    onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}/delete`),
+                                    style: { color: '#4263CA' },
+                                },
+                                {
+                                    text: 'NO',
+                                    onPress: () => {},
+                                    style: { color: '#4263CA' },
+                                },
+                            ]);
+                        }}
+                    >
+                        Delete trip
+                    </Button>
+                </div>
+            );
         }
 
         return (
@@ -255,15 +345,21 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 <Title className={s.title}>Number of reserved seats</Title>
                 {tree && tree.seatsCount ? this.renderNumberOfSeats() : null}
                 <div className={s.footer}>
+                    {/*
                     {tree && tree.bookingError ? (
                         <Error>
                             {tree.bookingError}
                         </Error>
                     ) : null}
+                    */}
+                    <div className={s.warningText}>
+                        You can cancel the trip
+                        <br />
+                        up to 24 hours before
+                    </div>
                     <Button
                         type="primary"
                         inline
-                        style={{ width: 250 }}
                         onClick={this.bookRide}
                     >
                         Book it
@@ -281,7 +377,9 @@ export const RideDetailsPage = schema(model)(createReactClass({
             <Loader isLoaded={isRideLoaded}>
                 {isRideLoaded ? (
                     <div className={s.container}>
-                        <Title className={s.title}>Trip information</Title>
+                        <Title className={s.title}>
+                            {this.getPageTitle()}
+                        </Title>
                         {this.renderRideInfo()}
                         <Title className={s.title}>Notes</Title>
                         {this.renderNotes()}
