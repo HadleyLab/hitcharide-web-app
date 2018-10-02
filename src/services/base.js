@@ -23,7 +23,7 @@ export const defaultHeaders = {
     Accept: 'application/json',
 };
 
-export const url = 'http://localhost:8000';
+export const url = BACKEND_URL;
 
 export function buildGetService(
     path,

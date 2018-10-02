@@ -153,6 +153,9 @@ function plugins(mode) {
 
     if (mode === 'development') {
         pluginsList.push(new webpack.HotModuleReplacementPlugin());
+        pluginsList.push(new webpack.DefinePlugin({
+            BACKEND_URL: `"http://localhost:8000"`,
+        }));
     }
 
     if (mode === 'production') {
@@ -162,6 +165,9 @@ function plugins(mode) {
         pluginsList.push(new PrerenderSPAPlugin({
             staticDir: path.resolve(__dirname, '../build'),
             routes: ['/'],
+        }));
+        pluginsList.push(new webpack.DefinePlugin({
+            BACKEND_URL: `"${process.env.BACKEND_URL}"`,
         }));
     }
 
