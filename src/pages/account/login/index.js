@@ -125,7 +125,7 @@ export const LoginPage = schema(model)(createReactClass({
                         <Button onClick={this.onSubmit} type="primary">Sign in</Button>
                         <a
                             className={s.googleButton}
-                            href="http://localhost:8000/accounts/social/login/google-oauth2/"
+                            href={`${BACKEND_URL}/accounts/social/login/google-oauth2/`}
                         >
                             <img src={googleIcon} alt="Google" />
                             Sign in with Google+
