@@ -5,10 +5,8 @@ libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 li
 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 \
 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 \
 libnss3 lsb-release xdg-utils wget
-RUN useradd -m "user"
-USER "user"
-RUN mkdir /home/user/app
-WORKDIR /home/user/app
+RUN mkdir /app
+WORKDIR /app
 ADD package.json package.json
 ADD yarn.lock yarn.lock
 ADD .babelrc .babelrc
