@@ -12,5 +12,7 @@ ADD yarn.lock yarn.lock
 ADD .babelrc .babelrc
 ADD webpack/ webpack/
 ADD src/ src/
+ADD superstatic.json superstatic.json
 RUN yarn
 RUN yarn build
+EXPOSE 3000

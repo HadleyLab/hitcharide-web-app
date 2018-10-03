@@ -5,7 +5,7 @@
   "scripts": {
     "build": "rm -rf build && webpack --mode production --config webpack/webpack.static.config",
     "start": "webpack-dev-server --mode development --config webpack/webpack.dev.config",
-    "assets": "http-server /app/build/ -i true -d false -p 3000"
+    "assets": "superstatic --port 3000 --host 0.0.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^9.0.2",
@@ -29,11 +29,11 @@
     "prerender-spa-plugin": "^3.3.0",
     "react-hot-loader": "^4.0.1",
     "style-loader": "^0.21.0",
+    "superstatic": "^6.0.3",
     "uglifyjs-webpack-plugin": "^1.2.7",
     "url-loader": "^1.0.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.1",
-    "http-server": "0.11.1"
+    "webpack-dev-server": "^3.1.1"
   },
   "dependencies": {
     "antd-mobile": "^2.2.3",
