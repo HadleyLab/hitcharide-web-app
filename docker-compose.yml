@@ -3,12 +3,11 @@ services:
   app:
     build: .
     volumes:
-      - ./src:/home/user/app/src
-      - ./.babelrc:/home/user/app/.babelrc
-      - ./webpack:/home/user/app/webpack
+      - ./src:/app/src
+      - ./.babelrc:/app/.babelrc
+      - ./webpack:/app/webpack
     command: yarn start
     ports:
       - "3000:3000"
     environment:
       BACKEND_URL: http://localhost:8000
-
