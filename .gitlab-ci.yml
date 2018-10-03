@@ -10,7 +10,7 @@ variables:
 build:
   stage: build
   script:
-    - docker build --build-arg API_SERVER=https://api.hitcharide.us -t $BUILD_IMAGE .
+    - docker build --build-arg BACKEND_URL=https://api.hitcharide.us -t $BUILD_IMAGE .
 
 release:
   stage: release
