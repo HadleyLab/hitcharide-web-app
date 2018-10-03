@@ -278,13 +278,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     renderFooter() {
+        const { profile, history } = this.props;
         const tree = this.props.tree.get();
         const amIDriver = this.checkIfIAmDriver();
         const amIPassenger = this.checkIfIAmPassenger();
         const { ride } = tree;
+        const ridePk = ride.data.pk;
 
         if (amIPassenger) {
-            const { profile } = this.props;
             const { bookings, dateTime } = ride.data;
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
             const isBookingPayed = myBooking.status === 'payed';
@@ -308,7 +309,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                                     + 'The money will be returned to your PayPal account.', [
                                     {
                                         text: 'YES',
-                                        onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}`),
+                                        onPress: () => history.push(`/app/cancel-booking/${ridePk}`),
                                         style: { color: '#4263CA' },
                                     },
                                     {
@@ -345,7 +346,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         <Button
                             type="ghost"
                             inline
-                            onClick={() => {}}
+                            onClick={() => history.push(`/app/complain/${ridePk}`)}
                         >
                             Complain
                         </Button>
@@ -364,7 +365,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                             Modal.alert('Delete trip', 'Do you really want to delete this trip?', [
                                 {
                                     text: 'YES',
-                                    onPress: () => this.props.history.push(`/app/cancel-ride/${ride.data.pk}/delete`),
+                                    onPress: () => history.push(`/app/delete-ride/${ridePk}`),
                                     style: { color: '#4263CA' },
                                 },
                                 {

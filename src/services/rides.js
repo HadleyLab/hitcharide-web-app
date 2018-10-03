@@ -212,3 +212,21 @@ export function bookRideService(handler, token) {
         return service(handler, cursor, data);
     };
 }
+
+export function rideComplainService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/complaint/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor, data);
+    };
+}

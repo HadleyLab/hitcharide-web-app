@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
@@ -6,12 +7,12 @@ import schema from 'libs/state';
 import { Title, Error } from 'components';
 import warningIcon from 'components/icons/warning.svg';
 import { validateForm, checkInputError } from 'components/utils';
-import { Button } from 'antd-mobile';
+import { Button, Modal } from 'antd-mobile';
 import * as yup from 'yup';
-import s from './ride-details.css';
+import s from './message-screen.css';
 
 const validationSchema = yup.object().shape({
-    reason: yup.string().ensure().required('Indicate the reason for canceling the trip'),
+    description: yup.string().ensure().required('Required field'),
 });
 
 const model = {
@@ -20,21 +21,30 @@ const model = {
     errors: {},
 };
 
-export const CancelRidePage = schema(model)(createReactClass({
+export const MessageScreen = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        service: PropTypes.func.isRequired,
+        title: PropTypes.string.isRequired,
+        buttonLabel: PropTypes.string.isRequired,
+        placeholder: PropTypes.string.isRequired,
+        onSuccessMessage: PropTypes.string.isRequired,
         match: PropTypes.shape().isRequired,
+        history: PropTypes.shape().isRequired,
     },
 
     componentDidMount() {
         const formCursor = this.props.tree.form;
 
         formCursor.set({
-            reason: null,
+            description: null,
         });
     },
 
     async onSubmit() {
+        const {
+            service, match, history, onSuccessMessage, title,
+        } = this.props;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
         const validationResult = await validateForm(validationSchema, data);
@@ -43,43 +53,46 @@ export const CancelRidePage = schema(model)(createReactClass({
         if (!isDataValid) {
             this.props.tree.errors.set(errors);
 
-            // return;
+            return;
         }
 
-        // if (isDataValid) {
-        //     const result = await createRideService(this.props.tree.result, data);
-        //
-        //     if (result.status === 'Failure') {
-        //         this.props.tree.errors.set(result.error.data);
-        //     }
-        //
-        //     if (result.status === 'Succeed') {
-        //     }
-        // }
+        if (isDataValid) {
+            const result = await service(this.props.tree.result, _.merge({
+                ride: match.params.pk,
+            }, data));
+
+            if (result.status === 'Failure') {
+                this.props.tree.errors.set(result.error.data);
+            }
+
+            if (result.status === 'Succeed') {
+                Modal.alert(title, onSuccessMessage, [
+                    {
+                        text: 'OK',
+                        onPress: () => history.goBack(),
+                        style: { color: '#4263CA' },
+                    },
+                ]);
+            }
+        }
     },
 
     render() {
+        const { title, buttonLabel, placeholder } = this.props;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
-        const errorProps = checkInputError('reason', errorsCursor.get());
-        const { type } = this.props.match.params;
-        const isDelete = type === 'delete';
+        const errorProps = checkInputError('description', errorsCursor.get());
 
         return (
-            <div className={s.section}>
-                <Title>
-                    {isDelete ? 'Delete trip' : 'Cancel booking'}
-                </Title>
-                {/*
-                <div style={{ fontSize: 12, lineHeight: 12, color: '#aaa' }}>Will be implemented soon</div>
-                */}
-                <div className={s.reason}>
+            <div>
+                <Title>{title}</Title>
+                <div className={s.message}>
                     <textarea
-                        placeholder="Indicate the reason for canceling the trip"
+                        placeholder={placeholder}
                         className={s.textarea}
                         onChange={(e) => {
-                            formCursor.reason.set(e.target.value);
-                            errorsCursor.select('reason').set(null);
+                            formCursor.description.set(e.target.value);
+                            errorsCursor.select('description').set(null);
                         }}
                     />
                     {errorProps.error
@@ -91,17 +104,17 @@ export const CancelRidePage = schema(model)(createReactClass({
                             />
                         ) : null}
                 </div>
+                <Error
+                    form={formCursor.get()}
+                    errors={errorsCursor.get()}
+                />
                 <div className={s.footer}>
-                    <Error
-                        form={formCursor.get()}
-                        errors={errorsCursor.get()}
-                    />
                     <Button
                         type="primary"
                         inline
                         onClick={this.onSubmit}
                     >
-                        {isDelete ? 'Delete trip' : 'Cancel booking'}
+                        {buttonLabel}
                     </Button>
                 </div>
             </div>

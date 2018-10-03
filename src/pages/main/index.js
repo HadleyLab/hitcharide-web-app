@@ -4,12 +4,14 @@ import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { TabBar, Modal } from 'antd-mobile';
-import { TopBar, Loader, ServiceContext } from 'components';
+import {
+    TopBar, Loader, ServiceContext, MessageScreen,
+} from 'components';
 import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
-    RideRequestDetailsPage, CancelRidePage,
+    RideRequestDetailsPage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
@@ -48,6 +50,7 @@ const MainPageContent = createReactClass({
         services: PropTypes.shape({
             getMyProfileService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
+            rideComplainService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
@@ -227,15 +230,6 @@ const MainPageContent = createReactClass({
                                 )}
                             />
                             <Route
-                                path={`${url}/cancel-ride/:pk/:type`}
-                                render={(props) => (
-                                    <CancelRidePage
-                                        {...props}
-                                        tree={this.props.tree.select('cancelRide')}
-                                    />
-                                )}
-                            />
-                            <Route
                                 path={`${url}/request/:pk`}
                                 render={(props) => (
                                     <RideRequestDetailsPage
@@ -250,6 +244,62 @@ const MainPageContent = createReactClass({
                                     <UserProfilePage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('user')}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/delete-ride/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('deleteTrip')}
+                                        title="Delete trip"
+                                        buttonLabel="Delete trip"
+                                        placeholder="Indicate the reason for canceling the trip"
+                                        service={() => ({
+                                            status: 'Failure',
+                                            error: {
+                                                data: {
+                                                    message: ['The service not implemented yet :('],
+                                                },
+                                            },
+                                        })}
+                                        onSuccessMessage="Your trip succefully deleted!"
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/cancel-booking/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('cancelBooking')}
+                                        title="Cancel booking"
+                                        buttonLabel="Cancel booking"
+                                        placeholder="Indicate the reason for canceling the booking"
+                                        service={() => ({
+                                            status: 'Failure',
+                                            error: {
+                                                data: {
+                                                    message: ['The service not implemented yet :('],
+                                                },
+                                            },
+                                        })}
+                                        onSuccessMessage="Your booking succefully canceled!"
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/complain/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('complain')}
+                                        title="Complaint"
+                                        buttonLabel="Send complaint"
+                                        placeholder="Enter text"
+                                        service={this.props.services.rideComplainService}
+                                        onSuccessMessage="Your complaint succefully sent!"
                                     />
                                 )}
                             />
