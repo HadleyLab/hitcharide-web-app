@@ -40,11 +40,10 @@ export const Search = createReactClass({
     componentDidUpdate(prevProps, prevState) {
         const { preventBlur } = this.state;
         const { selectedValue, displayItem } = this.props;
-        // const selectedValue = valueCursor.get();
         const value = !_.isEmpty(selectedValue) ? displayItem(selectedValue) : selectedValue;
 
         if (!_.isEqual(prevProps.selectedValue, selectedValue) && !_.isEmpty(selectedValue)) {
-            this.setState({ value });
+            this.changeValue(value);
         }
 
         if (prevState.preventBlur === true && prevState.preventBlur !== preventBlur) {
@@ -53,6 +52,10 @@ export const Search = createReactClass({
     },
 
     timeout: null,
+
+    changeValue(value) {
+        this.setState({ value });
+    },
 
     onChange(e) {
         const { value } = e.target;
@@ -70,7 +73,7 @@ export const Search = createReactClass({
         clearTimeout(this.timeout);
 
         this.timeout = setTimeout(async () => {
-            await service(cursor, { search: value });
+            await service(cursor, { search: _.split(value, ',')[0] });
         }, 400);
     },
 
