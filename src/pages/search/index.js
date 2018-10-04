@@ -6,11 +6,10 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import {
     Search, Title, RideItem, RideRequestItem,
+    DateTimePicker,
 } from 'components';
 import schema from 'libs/state';
-import {
-    Button, Icon, List, DatePicker,
-} from 'antd-mobile';
+import { Button, Icon } from 'antd-mobile';
 import { MarkerIcon, ClockIcon, AddIcon } from 'components/icons';
 import moment from 'moment';
 import s from './search.css';
@@ -293,48 +292,21 @@ export const SearchPage = schema(model)(createReactClass({
                     </div>
                     <div className={s.text}>To </div>
                 </Search>
-                <List
-                    className={classNames(s.datePicker, {
-                        [s._empty]: !formCursor.dateTime.get(),
-                    })}
-                    style={{ backgroundColor: 'white' }}
+                <DateTimePicker
+                    className={s.datePicker}
+                    value={formCursor.dateTime.get()}
+                    onChange={(date) => {
+                        formCursor.dateTime.set(moment(date).toDate());
+                        this.onSearchChange();
+                    }}
                 >
-                    <DatePicker
-                        value={formCursor.dateTime.get()}
-                        onChange={(date) => {
-                            formCursor.dateTime.set(moment(date).toDate());
-                            this.onSearchChange();
-                        }}
-                        use12Hours
-                        title="When"
-                        minDate={moment().toDate()}
-                        format={(date) => {
-                            const today = moment();
-                            const tomorrow = moment().add(1, 'days');
-                            const isToday = moment(date).isSame(today, 'day');
-                            const isTomorrow = moment(date).isSame(tomorrow, 'day');
-
-                            if (isToday) {
-                                return `Today ${moment(date).format('h:mm A')}`;
-                            }
-
-                            if (isTomorrow) {
-                                return `Tomorrow ${moment(date).format('h:mm A')}`;
-                            }
-
-                            return moment(date).format('MMM D h:mm A');
-                        }}
-                    >
-                        <List.Item>
-                            <div className={s.field}>
-                                <div className={s.icon}>
-                                    <ClockIcon />
-                                </div>
-                                <div className={s.text}>When </div>
-                            </div>
-                        </List.Item>
-                    </DatePicker>
-                </List>
+                    <div className={s.field}>
+                        <div className={s.icon}>
+                            <ClockIcon />
+                        </div>
+                        <div className={s.text}>When </div>
+                    </div>
+                </DateTimePicker>
                 <div
                     className={s.button}
                     onClick={this.props.onCreateRide}

@@ -17,6 +17,7 @@ export const Search = createReactClass({
         onItemSelect: PropTypes.func.isRequired,
         displayItem: PropTypes.func.isRequired,
         className: PropTypes.string,
+        itemsClassName: PropTypes.string,
         itemClassName: PropTypes.string,
         selectedValue: PropTypes.object, // eslint-disable-line
         children: PropTypes.any, // eslint-disable-line
@@ -26,6 +27,7 @@ export const Search = createReactClass({
         return {
             className: null,
             itemClassName: null,
+            itemsClassName: null,
         };
     },
 
@@ -100,14 +102,15 @@ export const Search = createReactClass({
     getInputProps() {
         return _.omit(this.props, [
             'cursor', 'service', 'onItemSelect', 'displayItem',
-            'className', 'selectedValue', 'valueCursor', 'children', 'itemClassName',
+            'className', 'selectedValue', 'valueCursor', 'children',
+            'itemClassName', 'itemsClassName',
         ]);
     },
 
     render() {
         const { focused, value } = this.state;
         const {
-            cursor, className, children, displayItem, itemClassName,
+            cursor, className, children, displayItem, itemClassName, itemsClassName,
         } = this.props;
         const results = cursor.get();
         const showResults = focused && !_.isEmpty(results) && results.status === 'Succeed';
@@ -128,7 +131,7 @@ export const Search = createReactClass({
             >
                 {children}
                 {showResults ? (
-                    <div className={s.items}>
+                    <div className={classNames(s.items, itemsClassName)}>
                         {results.data.length > 0
                             ? _.map(results.data, (item, index) => (
                                 <div

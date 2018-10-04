@@ -77,6 +77,7 @@ const App = schema(model)(createReactClass({
                         exact
                         render={() => (
                             <HomePage
+                                tree={this.props.tree.app.search}
                                 token={tokenCursor.get()}
                                 logout={this.logout}
                             />

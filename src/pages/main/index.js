@@ -172,7 +172,7 @@ const MainPageContent = createReactClass({
                                 render={(props) => (
                                     <SearchPage
                                         {..._.merge(this.props, props)}
-                                        tree={this.props.tree.select('searchTab')}
+                                        tree={this.props.tree.select('search')}
                                         userType={userType}
                                         onCreateRide={() => {
                                             const userRights = this.checkIfUserCanBeDriver(userType);
