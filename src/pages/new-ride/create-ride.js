@@ -125,7 +125,7 @@ export const CreateRideForm = schema(model)(createReactClass({
 
         _.forEach(cars, (car) => pickerData.push({
             value: car.pk,
-            label: `${car.brand} ${car.model} (Black)`,
+            label: `${car.brand} ${car.model} (${car.color})`,
         }));
 
         return (

@@ -40,7 +40,8 @@ const validationSchema = yup.object().shape({
     phone: yup.number()
         .typeError('Wrong format')
         .nullable()
-        .required('Phone is a required field'),
+        .required('Phone is a required field')
+        .test('length', 'Phone must be exactly 11 numbers', (value) => value.toString().length === 11),
     paypalAccount: yup
         .string()
         .nullable()
