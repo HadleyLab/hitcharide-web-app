@@ -76,7 +76,10 @@ const App = schema(model)(createReactClass({
                         path="/"
                         exact
                         render={() => (
-                            <HomePage />
+                            <HomePage
+                                token={tokenCursor.get()}
+                                logout={this.logout}
+                            />
                         )}
                     />
 
