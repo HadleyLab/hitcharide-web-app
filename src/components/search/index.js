@@ -39,13 +39,16 @@ export const Search = createReactClass({
         };
     },
 
+    componentDidMount() {
+        this.changeValue();
+    },
+
     componentDidUpdate(prevProps, prevState) {
         const { preventBlur } = this.state;
-        const { selectedValue, displayItem } = this.props;
-        const value = !_.isEmpty(selectedValue) ? displayItem(selectedValue) : selectedValue;
+        const { selectedValue } = this.props;
 
-        if (!_.isEqual(prevProps.selectedValue, selectedValue) && !_.isEmpty(selectedValue)) {
-            this.changeValue(value);
+        if (!_.isEqual(prevProps.selectedValue, selectedValue)) {
+            this.changeValue();
         }
 
         if (prevState.preventBlur === true && prevState.preventBlur !== preventBlur) {
@@ -55,8 +58,11 @@ export const Search = createReactClass({
 
     timeout: null,
 
-    changeValue(value) {
-        this.setState({ value });
+    changeValue() {
+        const { selectedValue, displayItem } = this.props;
+        const value = !_.isEmpty(selectedValue) ? displayItem(selectedValue) : selectedValue;
+
+        this.setState({ value: value || '' });
     },
 
     onChange(e) {

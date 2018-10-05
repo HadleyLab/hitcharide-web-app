@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import classNames from 'classnames';
 import schema from 'libs/state';
 import createReactClass from 'create-react-class';
 import moment from 'moment';
 import { Search, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
 import themeImage from './intro.png';
+import { Button } from '../button';
 import s from './intro.css';
 
 const model = {
@@ -94,7 +94,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
                             <div className={s.text}>When </div>
                         </div>
                     </DateTimePicker>
-                    <div className={classNames(s.button, s._full)}>Search a ride</div>
+                    <Button to="/search" className={s.button}>Search a ride</Button>
                 </div>
             </div>
         );

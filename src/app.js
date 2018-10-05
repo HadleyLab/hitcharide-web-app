@@ -74,12 +74,13 @@ const App = schema(model)(createReactClass({
                 <ServiceContext.Provider value={this.state.services}>
                     <Route
                         path="/"
-                        exact
-                        render={() => (
+                        render={(props) => (
                             <HomePage
-                                tree={this.props.tree.app.search}
+                                {...props}
+                                tree={this.props.tree.select('app', 'search')}
                                 token={tokenCursor.get()}
                                 logout={this.logout}
+                                services={this.state.services}
                             />
                         )}
                     />

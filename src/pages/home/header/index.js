@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import createReactClass from 'create-react-class';
 import logoIcon from 'components/icons/logo.svg';
+import { Button } from '../button';
 import s from './header.css';
 
 export const HomeHeader = createReactClass({
@@ -81,7 +82,7 @@ export const HomeHeader = createReactClass({
                     <Link to="/app/my-rides" className={s.link}>My rides</Link>
                     <Link to="/app/profile" className={s.link}>Profile</Link>
                     <div className={s.link} onClick={this.logout}>Logout</div>
-                    <Link to="/app/create-ride" className={s.button}>Create a ride</Link>
+                    <Button to="/app/create-ride" className={s.button}>Create a ride</Button>
                 </div>
             );
         }
@@ -104,7 +105,7 @@ export const HomeHeader = createReactClass({
         if (token) {
             return (
                 <div className={s.menu}>
-                    <Link to="/app/create-ride" className={s.button}>Create a ride</Link>
+                    <Button to="/app/create-ride" className={s.button}>Create a ride</Button>
                     <Link to="/app" className={s.link}>Search</Link>
                     <Link to="/app/my-rides" className={s.link}>My rides</Link>
                     <Link to="/app/profile" className={s.link}>Profile</Link>

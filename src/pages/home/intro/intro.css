@@ -1,44 +1,5 @@
 .button {
-    height: 40px;
-    background-color: #97B725;
-    padding: 8px 30px;
-    display: inline-block;
-    text-align: center;
-    font-size: 16px;
-    line-height: 24px;
-    color: #fff;
-    border-radius: 4px;
-    transition: background-color .2s;
-
-    &:hover {
-        background-color: darken(#97B725, 10%);
-    }
-
-    &._full {
-        display: block;
-    }
-}
-
-.introDesktop {
-    /* position: relative;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-blend-mode: overlay;
-    display: flex;
-    justify-content: flex-end;
-    flex-direction: column;
-
-    &:before {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        background-color: #4263CA;
-        opacity: .2;
-    } */
+    display: block;
 }
 
 .introContent {
@@ -115,11 +76,16 @@
 
     :global .am-list-extra {
         margin-right: 40px;
+        min-width: 125px;
     }
 
     :global .am-list-body,
     :global .am-list-item {
         border-radius: 4px;
+    }
+
+    :global .am-list-content {
+        min-width: 70px;
     }
 
     :global .am-list-content,
@@ -192,10 +158,6 @@
         }
     }
 
-    .introContent {
-        text-align: center;
-    }
-
     .introTitle {
         margin-bottom: 15px;
     }
@@ -208,6 +170,12 @@
         position: relative;
         padding: 10px 0 80px;
         z-index: 1;
+    }
+}
+
+@media screen and (min-width: 420px) {
+    .introContent {
+        text-align: center;
     }
 }
 
@@ -260,7 +228,7 @@
 
     .searchWrapper {
         background-color: #4263CA;
-        padding: 0 20px 60px;
+        padding: 0 20px 80px;
     }
 
     .search {

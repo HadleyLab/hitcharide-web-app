@@ -83,16 +83,12 @@ function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
     return data;
 }
 
-export function getRidesListService(handler, token) {
-    const headers = {
-        Authorization: `JWT ${token}`,
-    };
-
+export function getRidesListService(handler) {
     return (cursor, params, dehydrateParams = {}) => {
         const service = buildGetService(
             `/rides/ride/${paramsToString(params)}`,
             (data) => dehydrateRidesList(data, dehydrateParams),
-            _.merge({}, defaultHeaders, headers)
+            defaultHeaders
         );
 
         return service(handler, cursor);

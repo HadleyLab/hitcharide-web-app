@@ -65,7 +65,6 @@ export const SearchPage = schema(model)(createReactClass({
         }
 
         this.props.tree.params.set(paginationParams);
-        this.resetFilters();
         this.loadRides(paginationParams);
     },
 
