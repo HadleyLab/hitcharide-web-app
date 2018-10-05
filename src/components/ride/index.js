@@ -40,7 +40,7 @@ export class RideItem extends React.Component {
 
     render() {
         const {
-            data, history, icon, authorType,
+            data, history, icon, authorType, onClick, preventRedirect,
         } = this.props;
         const {
             cityFrom, cityTo, pk, dateTime: date,
@@ -51,7 +51,15 @@ export class RideItem extends React.Component {
         return (
             <div
                 className={s.ride}
-                onClick={() => history.push(`/app/ride/${pk}`)}
+                onClick={() => {
+                    if (onClick && preventRedirect) {
+                        onClick();
+
+                        return;
+                    }
+
+                    history.push(`/app/ride/${pk}`);
+                }}
             >
                 <div className={s.userTypeIcon}>{icon}</div>
                 <div className={s.date}>
@@ -79,12 +87,16 @@ RideItem.propTypes = {
     icon: PropTypes.node,
     authorType: PropTypes.string,
     userPk: PropTypes.string,
+    onClick: PropTypes.func,
+    preventRedirect: PropTypes.bool,
 };
 
 RideItem.defaultProps = {
     icon: <DriverIcon color="#40A9FF" />,
     authorType: '',
     userPk: null,
+    onClick: () => {},
+    preventRedirect: false,
 };
 
 export const RideRequestItem = ({ data, history, icon }) => {

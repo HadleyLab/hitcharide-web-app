@@ -27,6 +27,7 @@ Button.defaultProps = {
 export const HomePage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         location: PropTypes.shape().isRequired,
     },
@@ -43,17 +44,18 @@ export const HomePage = createReactClass({
 
     render() {
         const isGuest = this.checkIfGuestUser();
+        const token = this.props.tokenCursor.get();
 
         return (
             <div className={isGuest ? s.container : null}>
                 {isGuest ? (
-                    <HomeHeader {...this.props} />
+                    <HomeHeader {...this.props} token={token} />
                 ) : null}
                 <Route
                     path="/"
                     exact
                     render={() => (
-                        <HomeIntroSection {...this.props} />
+                        <HomeIntroSection {...this.props} token={token} />
                     )}
                 />
                 <Route

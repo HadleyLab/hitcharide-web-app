@@ -93,7 +93,7 @@ const App = schema(model)(createReactClass({
                             <HomePage
                                 {...props}
                                 tree={this.props.tree.select('app', 'search')}
-                                token={tokenCursor.get()}
+                                tokenCursor={tokenCursor}
                                 logout={this.logout}
                                 services={this.state.services}
                             />

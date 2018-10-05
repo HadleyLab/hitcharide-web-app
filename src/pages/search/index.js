@@ -9,7 +9,7 @@ import {
     DateTimePicker,
 } from 'components';
 import schema from 'libs/state';
-import { Button, Icon } from 'antd-mobile';
+import { Button, Icon, Modal } from 'antd-mobile';
 import {
     MarkerIcon, ClockIcon, AddFilledIcon, ResetIcon,
 } from 'components/icons';
@@ -40,6 +40,7 @@ export const SearchPage = schema(model)(createReactClass({
 
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         userType: PropTypes.string.isRequired,
         onCreateRide: PropTypes.func.isRequired,
@@ -157,6 +158,7 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     renderRides() {
+        const token = this.props.tokenCursor.get();
         const isDriver = this.props.userType === 'driver';
         const cursor = isDriver ? this.props.tree.rideRequests : this.props.tree.rides;
         const ridesData = cursor.get() || {};
@@ -198,6 +200,18 @@ export const SearchPage = schema(model)(createReactClass({
                             key={`ride-request-${index}`}
                             data={ride}
                             history={this.props.history}
+                            preventRedirect={!token}
+                            onClick={() => {
+                                if (!token) {
+                                    Modal.alert('Ride details', 'Log in to see more details', [
+                                        { text: 'Cancel', onPress: () => null },
+                                        {
+                                            text: 'Log in',
+                                            onPress: () => this.props.history.push('/account/login'),
+                                        },
+                                    ]);
+                                }
+                            }}
                         />
                     );
                 })}
