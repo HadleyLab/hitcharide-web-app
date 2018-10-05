@@ -24,9 +24,16 @@ const model = {
 export const HomeIntroSection = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        token: PropTypes.string,
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
         }).isRequired,
+    },
+
+    getDefaultProps() {
+        return {
+            token: null,
+        };
     },
 
     renderIntro() {
@@ -45,9 +52,10 @@ export const HomeIntroSection = schema(model)(createReactClass({
     },
 
     renderSearchForm() {
-        const { getCitiesService } = this.props.services;
-        const citiesCursor = this.props.tree.cities;
-        const formCursor = this.props.tree.searchForm;
+        const { token, services, tree } = this.props;
+        const { getCitiesService } = services;
+        const citiesCursor = tree.cities;
+        const formCursor = tree.searchForm;
 
         return (
             <div className={s.searchWrapper}>
@@ -94,7 +102,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
                             <div className={s.text}>When </div>
                         </div>
                     </DateTimePicker>
-                    <Button to="/search" className={s.button}>Search a ride</Button>
+                    <Button to={token ? '/app' : '/search'} className={s.button}>Search a ride</Button>
                 </div>
             </div>
         );

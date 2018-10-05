@@ -40,6 +40,21 @@ const App = schema(model)(createReactClass({
         };
     },
 
+    componentDidMount() {
+        this.loadProfileData();
+    },
+
+    async loadProfileData(onLoad) {
+        const { getMyProfileService, getCarListService } = this.state.services;
+
+        await getMyProfileService(this.props.tree.app.profile);
+        await getCarListService(this.props.tree.app.cars);
+
+        if (onLoad) {
+            onLoad();
+        }
+    },
+
     initServices() {
         const token = this.props.tree.token.get();
         let initializedServices = {};
@@ -95,6 +110,7 @@ const App = schema(model)(createReactClass({
                                         tokenCursor={tokenCursor}
                                         accountCursor={this.props.tree.account}
                                         logout={this.logout}
+                                        loadProfileData={this.loadProfileData}
                                         {...props}
                                     />
                                 );

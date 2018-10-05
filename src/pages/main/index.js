@@ -52,27 +52,44 @@ const MainPageContent = createReactClass({
             getCarListService: PropTypes.func.isRequired,
             rideComplainService: PropTypes.func.isRequired,
         }).isRequired,
+        loadProfileData: PropTypes.func.isRequired,
     },
 
-    async componentDidMount() {
-        const { getMyProfileService, getCarListService } = this.props.services;
-
+    componentDidMount() {
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
-        await getMyProfileService(this.props.tree.profile);
-        await getCarListService(this.props.tree.cars);
-        const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-        if (!checkIfUserCanBeDriver.allowed) {
-            this.props.tree.userType.set('passenger');
-            setUserType('passenger');
-        }
+        this.loadProfileData(() => {
+            const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-        this.props.tree.userType.set(getUserType() || 'passenger');
+            if (!checkIfUserCanBeDriver.allowed) {
+                this.props.tree.userType.set('passenger');
+                setUserType('passenger');
+            }
+
+            this.props.tree.userType.set(getUserType() || 'passenger');
+        });
     },
 
     componentWillUnmount() {
         this.props.tree.set({});
+    },
+
+    loadProfileData() {
+        const tree = this.props.tree.get();
+
+        if (!tree) {
+            this.props.loadProfileData();
+
+            return;
+        }
+
+        const { profile, cars } = this.props.tree.get();
+
+        if (_.isEmpty(profile) || _.isEmpty(cars)
+            || profile.status === 'Failure' || cars.status === 'Failure') {
+            this.props.loadProfileData();
+        }
     },
 
     checkIfSuggestAndBookingAllowed() {
@@ -150,7 +167,7 @@ const MainPageContent = createReactClass({
         const profile = this.props.tree.profile.get();
         const cars = this.props.tree.cars.get();
         const userTypeCursor = this.props.tree.select('userType');
-        const userType = userTypeCursor.get();
+        const userType = userTypeCursor.get() || 'passenger';
         const { url } = this.props.match;
         const isProfileLoaded = profile && profile.status === 'Succeed';
         const isCarsLoaded = cars && cars.status === 'Succeed';
