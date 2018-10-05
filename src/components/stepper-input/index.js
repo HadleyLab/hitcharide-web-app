@@ -2,8 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import plusIcon from 'components/icons/plus-circle-empty.svg';
 import minusIcon from 'components/icons/minus-circle-empty.svg';
+import { AddIcon } from 'components/icons';
 import s from './stepper-input.css';
 
 export class StepperInput extends React.Component {
@@ -57,9 +57,10 @@ export class StepperInput extends React.Component {
                         className={classNames(s.button, {
                             [s._disabled]: value === maxValue,
                         })}
-                        style={{ backgroundImage: `url(${plusIcon})` }}
                         onClick={this.inc}
-                    />
+                    >
+                        <AddIcon color="#97B725" />
+                    </div>
                 </div>
             </div>
         );

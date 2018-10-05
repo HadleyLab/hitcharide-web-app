@@ -10,7 +10,9 @@ import {
 } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
-import { MarkerIcon, ClockIcon, AddIcon } from 'components/icons';
+import {
+    MarkerIcon, ClockIcon, AddFilledIcon, ResetIcon,
+} from 'components/icons';
 import moment from 'moment';
 import s from './search.css';
 
@@ -146,7 +148,11 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     resetFilters() {
-        this.props.tree.searchForm.set({});
+        this.props.tree.searchForm.set({
+            cityFrom: null,
+            cityTo: null,
+            dateTime: null,
+        });
         this.onSearchChange();
     },
 
@@ -306,14 +312,27 @@ export const SearchPage = schema(model)(createReactClass({
                         <div className={s.text}>When </div>
                     </div>
                 </DateTimePicker>
-                <div
-                    className={s.button}
-                    onClick={this.props.onCreateRide}
-                >
-                    <div className={s.icon}>
-                        <AddIcon color="rgba(26, 27, 32, 0.5)" />
+                <div className={s.controls}>
+                    <div
+                        className={s.button}
+                        onClick={this.props.onCreateRide}
+                    >
+                        <div className={s.icon}>
+                            <AddFilledIcon />
+                        </div>
+                        Create a ride
                     </div>
-                    Create a ride
+                    {!_.isEmpty(_.omitBy(formCursor.get(), (value) => !value)) ? (
+                        <div
+                            className={classNames(s.button, s._reset)}
+                            onClick={this.resetFilters}
+                        >
+                            Reset filters
+                            <div className={s.icon}>
+                                <ResetIcon />
+                            </div>
+                        </div>
+                    ) : null}
                 </div>
                 {this.renderRides()}
                 {this.renderFooter()}

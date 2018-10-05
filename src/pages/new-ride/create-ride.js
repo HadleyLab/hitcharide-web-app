@@ -12,9 +12,9 @@ import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
 import moment from 'moment';
 import minusIcon from 'components/icons/minus-circle.svg';
-import plusIcon from 'components/icons/plus-circle.svg';
 import carIcon from 'components/icons/car.svg';
 import warningIcon from 'components/icons/warning.svg';
+import { AddFilledIcon } from 'components/icons';
 import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
 
@@ -178,7 +178,9 @@ export const CreateRideForm = schema(model)(createReactClass({
                     className={s.addStop}
                     onClick={() => formCursor.stops.push({})}
                 >
-                    <div className={s.stopIcon} style={{ backgroundImage: `url(${plusIcon})` }} />
+                    <div className={s.stopIcon}>
+                        <AddFilledIcon />
+                    </div>
                     <div>Add one</div>
                 </div>
             </div>
