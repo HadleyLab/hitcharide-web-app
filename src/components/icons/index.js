@@ -7,4 +7,4 @@ export { ClockIcon } from './clock';
 export { AddIcon, AddFilledIcon } from './add';
 export { RouteIcon } from './route';
 export { SearchIcon } from './search';
-export { ResetIcon } from './reset';
+export { ResetIcon, ResetFilledIcon } from './reset';
