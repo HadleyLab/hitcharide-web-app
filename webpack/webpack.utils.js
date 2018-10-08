@@ -157,7 +157,7 @@ function plugins(mode) {
 
     if (mode === 'production') {
         pluginsList.push(new MiniCssExtractPlugin({
-            filename: 'styles.css',
+            filename: 'styles.[hash].css',
         }));
         pluginsList.push(new PrerenderSPAPlugin({
             staticDir: path.resolve(__dirname, '../build'),
