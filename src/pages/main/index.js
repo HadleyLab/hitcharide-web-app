@@ -4,12 +4,14 @@ import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { TabBar, Modal } from 'antd-mobile';
-import { TopBar, Loader, ServiceContext } from 'components';
+import {
+    TopBar, Loader, ServiceContext, MessageScreen,
+} from 'components';
 import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
-    RideRequestDetailsPage, CancelRidePage,
+    RideRequestDetailsPage,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
@@ -48,28 +50,42 @@ const MainPageContent = createReactClass({
         services: PropTypes.shape({
             getMyProfileService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
+            rideComplainService: PropTypes.func.isRequired,
         }).isRequired,
+        loadProfileData: PropTypes.func.isRequired,
     },
 
-    async componentDidMount() {
-        const { getMyProfileService, getCarListService } = this.props.services;
-
+    componentDidMount() {
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
-        await getMyProfileService(this.props.tree.profile);
-        await getCarListService(this.props.tree.cars);
-        const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-        if (!checkIfUserCanBeDriver.allowed) {
-            this.props.tree.userType.set('passenger');
-            setUserType('passenger');
-        }
+        this.loadProfileData(() => {
+            const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-        this.props.tree.userType.set(getUserType() || 'passenger');
+            if (!checkIfUserCanBeDriver.allowed) {
+                this.props.tree.userType.set('passenger');
+                setUserType('passenger');
+            }
+
+            this.props.tree.userType.set(getUserType() || 'passenger');
+        });
     },
 
-    componentWillUnmount() {
-        this.props.tree.set({});
+    loadProfileData() {
+        const tree = this.props.tree.get();
+
+        if (!tree) {
+            this.props.loadProfileData();
+
+            return;
+        }
+
+        const { profile, cars } = this.props.tree.get();
+
+        if (_.isEmpty(profile) || _.isEmpty(cars)
+            || profile.status === 'Failure' || cars.status === 'Failure') {
+            this.props.loadProfileData();
+        }
     },
 
     checkIfSuggestAndBookingAllowed() {
@@ -147,7 +163,7 @@ const MainPageContent = createReactClass({
         const profile = this.props.tree.profile.get();
         const cars = this.props.tree.cars.get();
         const userTypeCursor = this.props.tree.select('userType');
-        const userType = userTypeCursor.get();
+        const userType = userTypeCursor.get() || 'passenger';
         const { url } = this.props.match;
         const isProfileLoaded = profile && profile.status === 'Succeed';
         const isCarsLoaded = cars && cars.status === 'Succeed';
@@ -169,7 +185,7 @@ const MainPageContent = createReactClass({
                                 render={(props) => (
                                     <SearchPage
                                         {..._.merge(this.props, props)}
-                                        tree={this.props.tree.select('searchTab')}
+                                        tree={this.props.tree.select('search')}
                                         userType={userType}
                                         onCreateRide={() => {
                                             const userRights = this.checkIfUserCanBeDriver(userType);
@@ -227,15 +243,6 @@ const MainPageContent = createReactClass({
                                 )}
                             />
                             <Route
-                                path={`${url}/cancel-ride/:pk/:type`}
-                                render={(props) => (
-                                    <CancelRidePage
-                                        {...props}
-                                        tree={this.props.tree.select('cancelRide')}
-                                    />
-                                )}
-                            />
-                            <Route
                                 path={`${url}/request/:pk`}
                                 render={(props) => (
                                     <RideRequestDetailsPage
@@ -250,6 +257,62 @@ const MainPageContent = createReactClass({
                                     <UserProfilePage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('user')}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/delete-ride/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('deleteTrip')}
+                                        title="Delete trip"
+                                        buttonLabel="Delete trip"
+                                        placeholder="Indicate the reason for canceling the trip"
+                                        service={() => ({
+                                            status: 'Failure',
+                                            error: {
+                                                data: {
+                                                    message: ['The service not implemented yet :('],
+                                                },
+                                            },
+                                        })}
+                                        onSuccessMessage="Your trip succefully deleted!"
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/cancel-booking/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('cancelBooking')}
+                                        title="Cancel booking"
+                                        buttonLabel="Cancel booking"
+                                        placeholder="Indicate the reason for canceling the booking"
+                                        service={() => ({
+                                            status: 'Failure',
+                                            error: {
+                                                data: {
+                                                    message: ['The service not implemented yet :('],
+                                                },
+                                            },
+                                        })}
+                                        onSuccessMessage="Your booking succefully canceled!"
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/complain/:pk`}
+                                render={(props) => (
+                                    <MessageScreen
+                                        {...props}
+                                        tree={this.props.tree.select('complain')}
+                                        title="Complaint"
+                                        buttonLabel="Send complaint"
+                                        placeholder="Enter text"
+                                        service={this.props.services.rideComplainService}
+                                        onSuccessMessage="Your complaint succefully sent!"
                                     />
                                 )}
                             />

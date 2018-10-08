@@ -83,16 +83,12 @@ function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
     return data;
 }
 
-export function getRidesListService(handler, token) {
-    const headers = {
-        Authorization: `JWT ${token}`,
-    };
-
+export function getRidesListService(handler) {
     return (cursor, params, dehydrateParams = {}) => {
         const service = buildGetService(
             `/rides/ride/${paramsToString(params)}`,
             (data) => dehydrateRidesList(data, dehydrateParams),
-            _.merge({}, defaultHeaders, headers)
+            defaultHeaders
         );
 
         return service(handler, cursor);
@@ -203,6 +199,24 @@ export function bookRideService(handler, token) {
     return (cursor, data) => {
         const service = buildPostService(
             '/rides/booking/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor, data);
+    };
+}
+
+export function rideComplainService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, data) => {
+        const service = buildPostService(
+            '/rides/complaint/',
             'POST',
             JSON.stringify,
             _.identity,

@@ -12,9 +12,8 @@ import {
 } from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
-import plusIcon from 'components/icons/plus-circle.svg';
 import tickIcon from 'components/icons/tick-circle.svg';
-import { HappinessIcon } from 'components/icons';
+import { HappinessIcon, AddFilledIcon } from 'components/icons';
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -40,7 +39,8 @@ const validationSchema = yup.object().shape({
     phone: yup.number()
         .typeError('Wrong format')
         .nullable()
-        .required('Phone is a required field'),
+        .required('Phone is a required field')
+        .test('length', 'Phone must be exactly 11 numbers', (value) => value.toString().length === 11),
     paypalAccount: yup
         .string()
         .nullable()
@@ -201,7 +201,9 @@ export const EditProfilePage = schema(model)(createReactClass({
                     to="/app/profile/car/add"
                     className={s.addCar}
                 >
-                    <div className={classNames(s.icon, s._plus)} style={{ backgroundImage: `url(${plusIcon})` }} />
+                    <div className={classNames(s.icon, s._plus)}>
+                        <AddFilledIcon />
+                    </div>
                     <div>Add one</div>
                 </Link>
             </div>

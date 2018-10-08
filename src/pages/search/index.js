@@ -6,12 +6,13 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import {
     Search, Title, RideItem, RideRequestItem,
+    DateTimePicker,
 } from 'components';
 import schema from 'libs/state';
+import { Button, Icon, Modal } from 'antd-mobile';
 import {
-    Button, Icon, List, DatePicker,
-} from 'antd-mobile';
-import { MarkerIcon, ClockIcon, AddIcon } from 'components/icons';
+    MarkerIcon, ClockIcon, AddFilledIcon, ResetIcon,
+} from 'components/icons';
 import moment from 'moment';
 import s from './search.css';
 
@@ -39,6 +40,7 @@ export const SearchPage = schema(model)(createReactClass({
 
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         userType: PropTypes.string.isRequired,
         onCreateRide: PropTypes.func.isRequired,
@@ -66,7 +68,6 @@ export const SearchPage = schema(model)(createReactClass({
         }
 
         this.props.tree.params.set(paginationParams);
-        this.resetFilters();
         this.loadRides(paginationParams);
     },
 
@@ -123,7 +124,11 @@ export const SearchPage = schema(model)(createReactClass({
         await getRidesListService(cursor, _.merge(searchParams, params), dehydrateParams);
     },
 
-    onSearchChange() {
+    onSearchChange(v) {
+        if (v && v.name && !v.pk) {
+            return;
+        }
+
         this.props.tree.params.offset.set(0);
         this.loadRides(paginationParams);
     },
@@ -148,11 +153,16 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     resetFilters() {
-        this.props.tree.searchForm.set({});
+        this.props.tree.searchForm.set({
+            cityFrom: null,
+            cityTo: null,
+            dateTime: null,
+        });
         this.onSearchChange();
     },
 
     renderRides() {
+        const token = this.props.tokenCursor.get();
         const isDriver = this.props.userType === 'driver';
         const cursor = isDriver ? this.props.tree.rideRequests : this.props.tree.rides;
         const ridesData = cursor.get() || {};
@@ -194,6 +204,18 @@ export const SearchPage = schema(model)(createReactClass({
                             key={`ride-request-${index}`}
                             data={ride}
                             history={this.props.history}
+                            preventRedirect={!token}
+                            onClick={() => {
+                                if (!token) {
+                                    Modal.alert('Ride details', 'Log in to see more details', [
+                                        { text: 'Cancel', onPress: () => null },
+                                        {
+                                            text: 'Log in',
+                                            onPress: () => this.props.history.push('/account/login'),
+                                        },
+                                    ]);
+                                }
+                            }}
                         />
                     );
                 })}
@@ -260,16 +282,16 @@ export const SearchPage = schema(model)(createReactClass({
                     Search for a ride
                 </Title>
                 <Search
-                    cursor={citiesCursor}
-                    selectedValue={formCursor.get('cityFrom')}
-                    valueCursor={formCursor.cityFrom}
-                    service={getCitiesService}
-                    displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => {
-                        formCursor.cityFrom.set(v);
-                        this.onSearchChange();
-                    }}
                     className={s.field}
+                    citiesCursor={citiesCursor}
+                    service={getCitiesService}
+                    currentValue={formCursor.cityFrom.get()}
+                    onChange={(v) => {
+                        formCursor.cityFrom.set(v);
+                        this.onSearchChange(v);
+                    }}
+                    showLoader
+                    name="cityFrom"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#6FA6F8" />
@@ -277,72 +299,58 @@ export const SearchPage = schema(model)(createReactClass({
                     <div className={s.text}>From </div>
                 </Search>
                 <Search
-                    cursor={citiesCursor}
-                    selectedValue={formCursor.get('cityTo')}
-                    valueCursor={formCursor.cityTo}
-                    service={getCitiesService}
-                    displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => {
-                        formCursor.cityTo.set(v);
-                        this.onSearchChange();
-                    }}
                     className={s.field}
+                    citiesCursor={citiesCursor}
+                    service={getCitiesService}
+                    currentValue={formCursor.cityTo.get()}
+                    onChange={(v) => {
+                        formCursor.cityTo.set(v);
+                        this.onSearchChange(v);
+                    }}
+                    showLoader
+                    name="cityTo"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#97B725" />
                     </div>
                     <div className={s.text}>To </div>
                 </Search>
-                <List
-                    className={classNames(s.datePicker, {
-                        [s._empty]: !formCursor.dateTime.get(),
-                    })}
-                    style={{ backgroundColor: 'white' }}
+                <DateTimePicker
+                    className={s.datePicker}
+                    value={formCursor.dateTime.get()}
+                    onChange={(date) => {
+                        formCursor.dateTime.set(moment(date).toDate());
+                        this.onSearchChange();
+                    }}
                 >
-                    <DatePicker
-                        value={formCursor.dateTime.get()}
-                        onChange={(date) => {
-                            formCursor.dateTime.set(moment(date).toDate());
-                            this.onSearchChange();
-                        }}
-                        use12Hours
-                        title="When"
-                        minDate={moment().toDate()}
-                        format={(date) => {
-                            const today = moment();
-                            const tomorrow = moment().add(1, 'days');
-                            const isToday = moment(date).isSame(today, 'day');
-                            const isTomorrow = moment(date).isSame(tomorrow, 'day');
-
-                            if (isToday) {
-                                return `Today ${moment(date).format('h:mm A')}`;
-                            }
-
-                            if (isTomorrow) {
-                                return `Tomorrow ${moment(date).format('h:mm A')}`;
-                            }
-
-                            return moment(date).format('MMM D h:mm A');
-                        }}
-                    >
-                        <List.Item>
-                            <div className={s.field}>
-                                <div className={s.icon}>
-                                    <ClockIcon />
-                                </div>
-                                <div className={s.text}>When </div>
-                            </div>
-                        </List.Item>
-                    </DatePicker>
-                </List>
-                <div
-                    className={s.button}
-                    onClick={this.props.onCreateRide}
-                >
-                    <div className={s.icon}>
-                        <AddIcon color="rgba(26, 27, 32, 0.5)" />
+                    <div className={s.field}>
+                        <div className={s.icon}>
+                            <ClockIcon />
+                        </div>
+                        <div className={s.text}>When </div>
                     </div>
-                    Create a ride
+                </DateTimePicker>
+                <div className={s.controls}>
+                    <div
+                        className={s.button}
+                        onClick={this.props.onCreateRide}
+                    >
+                        <div className={s.icon}>
+                            <AddFilledIcon />
+                        </div>
+                        Create a ride
+                    </div>
+                    {!_.isEmpty(_.omitBy(formCursor.get(), (value) => !value)) ? (
+                        <div
+                            className={classNames(s.button, s._reset)}
+                            onClick={this.resetFilters}
+                        >
+                            Reset filters
+                            <div className={s.icon}>
+                                <ResetIcon />
+                            </div>
+                        </div>
+                    ) : null}
                 </div>
                 {this.renderRides()}
                 {this.renderFooter()}

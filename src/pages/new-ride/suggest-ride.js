@@ -100,12 +100,10 @@ export const SuggestRideForm = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Direction</Title>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityFrom')}
-                        valueCursor={formCursor.cityFrom}
+                        citiesCursor={citiesCursor}
                         service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => {
+                        currentValue={formCursor.cityFrom.get()}
+                        onChange={(v) => {
                             formCursor.cityFrom.set(v);
                             errorsCursor.select('cityFrom').set(null);
                         }}
@@ -114,12 +112,10 @@ export const SuggestRideForm = schema(model)(createReactClass({
                         <div className={s.text}>From</div>
                     </Search>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityTo')}
-                        valueCursor={formCursor.cityTo}
+                        citiesCursor={citiesCursor}
                         service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => {
+                        currentValue={formCursor.cityTo.get()}
+                        onChange={(v) => {
                             formCursor.cityTo.set(v);
                             errorsCursor.select('cityTo').set(null);
                         }}

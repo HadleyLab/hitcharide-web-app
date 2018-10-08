@@ -26,3 +26,16 @@
         border: 0;
     }
 }
+
+.loader {
+    position: absolute;
+    background-color: #fff;
+    height: 22px;
+    width: 22px;
+    margin-top: 1px;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}

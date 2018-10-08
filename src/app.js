@@ -40,6 +40,21 @@ const App = schema(model)(createReactClass({
         };
     },
 
+    componentDidMount() {
+        this.loadProfileData();
+    },
+
+    async loadProfileData(onLoad) {
+        const { getMyProfileService, getCarListService } = this.state.services;
+
+        await getMyProfileService(this.props.tree.app.profile);
+        await getCarListService(this.props.tree.app.cars);
+
+        if (onLoad) {
+            onLoad();
+        }
+    },
+
     initServices() {
         const token = this.props.tree.token.get();
         let initializedServices = {};
@@ -64,6 +79,7 @@ const App = schema(model)(createReactClass({
     logout() {
         removeToken();
         this.props.tree.token.set(null);
+        this.props.tree.app.set({});
     },
 
     render() {
@@ -74,9 +90,14 @@ const App = schema(model)(createReactClass({
                 <ServiceContext.Provider value={this.state.services}>
                     <Route
                         path="/"
-                        exact
-                        render={() => (
-                            <HomePage />
+                        render={(props) => (
+                            <HomePage
+                                {...props}
+                                tree={this.props.tree.select('app', 'search')}
+                                tokenCursor={tokenCursor}
+                                logout={this.logout}
+                                services={this.state.services}
+                            />
                         )}
                     />
 
@@ -90,6 +111,7 @@ const App = schema(model)(createReactClass({
                                         tokenCursor={tokenCursor}
                                         accountCursor={this.props.tree.account}
                                         logout={this.logout}
+                                        loadProfileData={this.loadProfileData}
                                         {...props}
                                     />
                                 );

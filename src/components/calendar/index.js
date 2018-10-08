@@ -3,6 +3,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import moment from 'moment';
+import { ResetFilledIcon } from 'components/icons';
 import s from './calendar.css';
 
 class ArrowButton extends React.Component {
@@ -152,6 +153,7 @@ export class Calendar extends React.Component {
                         {_.map(week.days, (day, dayIndex) => {
                             const isCurrentMonth = day.isSame(currentMonth, 'month');
                             const formattedDay = moment(day).format('YYYY-MM-DD');
+                            const isActive = activeDate && day.isSame(activeDate, 'day');
 
                             return (
                                 <div
@@ -159,7 +161,7 @@ export class Calendar extends React.Component {
                                     className={classNames(s.weekday, {
                                         [s._otherMonth]: !isCurrentMonth,
                                         [s._today]: day.isSame(moment(), 'day'),
-                                        [s._active]: activeDate && day.isSame(activeDate, 'day'),
+                                        [s._active]: isActive,
                                     })}
                                     onClick={() => {
                                         if (!isCurrentMonth) {
@@ -169,8 +171,15 @@ export class Calendar extends React.Component {
                                         this.onDayClick(day);
                                     }}
                                 >
+                                    <div className={s.topMarkers}>
+                                        {isActive ? (
+                                            <div className={s.resetDate}>
+                                                <ResetFilledIcon color="#8d8d90" />
+                                            </div>
+                                        ) : null}
+                                    </div>
                                     {moment(day).format('D')}
-                                    <div className={s.markers}>
+                                    <div className={s.bottomMarkers}>
                                         {_.get(data, [formattedDay, 'withoutBookings']) ? (
                                             <div className={classNames(s.marker, s._withoutBookings)} />
                                         ) : null}
