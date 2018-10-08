@@ -159,12 +159,10 @@ export const CreateRideForm = schema(model)(createReactClass({
                 {_.map(stops, (stop, index) => (
                     <Search
                         key={`stop-${index}`}
-                        cursor={citiesCursor}
-                        selectedValue={stopsCursor.get(index)}
-                        valueCursor={stopsCursor.select(index)}
+                        citiesCursor={citiesCursor}
                         service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => stopsCursor.select(index).set(v)}
+                        currentValue={stopsCursor.select(index).get()}
+                        onChange={(v) => stopsCursor.select(index).set(v)}
                         placeholder="Select a stop"
                     >
                         <div
@@ -176,7 +174,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                 ))}
                 <div
                     className={s.addStop}
-                    onClick={() => formCursor.stops.push({})}
+                    onClick={() => formCursor.stops.push({ name: '', pk: null })}
                 >
                     <div className={s.stopIcon}>
                         <AddFilledIcon />
@@ -228,12 +226,10 @@ export const CreateRideForm = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Direction</Title>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityFrom')}
-                        valueCursor={formCursor.cityFrom}
+                        citiesCursor={citiesCursor}
                         service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => {
+                        currentValue={formCursor.cityFrom.get()}
+                        onChange={(v) => {
                             formCursor.cityFrom.set(v);
                             errorsCursor.select('cityFrom').set(null);
                         }}
@@ -242,12 +238,10 @@ export const CreateRideForm = schema(model)(createReactClass({
                         <div className={s.text}>From</div>
                     </Search>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityTo')}
-                        valueCursor={formCursor.cityTo}
+                        citiesCursor={citiesCursor}
                         service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => {
+                        currentValue={formCursor.cityTo.get()}
+                        onChange={(v) => {
                             formCursor.cityTo.set(v);
                             errorsCursor.select('cityTo').set(null);
                         }}

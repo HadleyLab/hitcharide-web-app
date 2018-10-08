@@ -71,10 +71,6 @@ const MainPageContent = createReactClass({
         });
     },
 
-    componentWillUnmount() {
-        this.props.tree.set({});
-    },
-
     loadProfileData() {
         const tree = this.props.tree.get();
 

@@ -124,7 +124,11 @@ export const SearchPage = schema(model)(createReactClass({
         await getRidesListService(cursor, _.merge(searchParams, params), dehydrateParams);
     },
 
-    onSearchChange() {
+    onSearchChange(v) {
+        if (v && v.name && !v.pk) {
+            return;
+        }
+
         this.props.tree.params.offset.set(0);
         this.loadRides(paginationParams);
     },
@@ -278,16 +282,16 @@ export const SearchPage = schema(model)(createReactClass({
                     Search for a ride
                 </Title>
                 <Search
-                    cursor={citiesCursor}
-                    selectedValue={formCursor.get('cityFrom')}
-                    valueCursor={formCursor.cityFrom}
-                    service={getCitiesService}
-                    displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => {
-                        formCursor.cityFrom.set(v);
-                        this.onSearchChange();
-                    }}
                     className={s.field}
+                    citiesCursor={citiesCursor}
+                    service={getCitiesService}
+                    currentValue={formCursor.cityFrom.get()}
+                    onChange={(v) => {
+                        formCursor.cityFrom.set(v);
+                        this.onSearchChange(v);
+                    }}
+                    showLoader
+                    name="cityFrom"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#6FA6F8" />
@@ -295,16 +299,16 @@ export const SearchPage = schema(model)(createReactClass({
                     <div className={s.text}>From </div>
                 </Search>
                 <Search
-                    cursor={citiesCursor}
-                    selectedValue={formCursor.get('cityTo')}
-                    valueCursor={formCursor.cityTo}
-                    service={getCitiesService}
-                    displayItem={({ name, state }) => `${name}, ${state.name}`}
-                    onItemSelect={(v) => {
-                        formCursor.cityTo.set(v);
-                        this.onSearchChange();
-                    }}
                     className={s.field}
+                    citiesCursor={citiesCursor}
+                    service={getCitiesService}
+                    currentValue={formCursor.cityTo.get()}
+                    onChange={(v) => {
+                        formCursor.cityTo.set(v);
+                        this.onSearchChange(v);
+                    }}
+                    showLoader
+                    name="cityTo"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#97B725" />

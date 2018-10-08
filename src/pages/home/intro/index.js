@@ -61,14 +61,12 @@ export const HomeIntroSection = schema(model)(createReactClass({
             <div className={s.searchWrapper}>
                 <div className={s.search}>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityFrom')}
-                        valueCursor={formCursor.cityFrom}
-                        service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => formCursor.cityFrom.set(v)}
                         className={s.field}
-                        itemsClassName={s.fieldResult}
+                        resultsClassName={s.fieldResult}
+                        citiesCursor={citiesCursor}
+                        service={getCitiesService}
+                        currentValue={formCursor.cityFrom.get()}
+                        onChange={(v) => formCursor.cityFrom.set(v)}
                     >
                         <div className={s.icon}>
                             <MarkerIcon color="#6FA6F8" />
@@ -76,14 +74,12 @@ export const HomeIntroSection = schema(model)(createReactClass({
                         <div className={s.text}>From </div>
                     </Search>
                     <Search
-                        cursor={citiesCursor}
-                        selectedValue={formCursor.get('cityTo')}
-                        valueCursor={formCursor.cityTo}
-                        service={getCitiesService}
-                        displayItem={({ name, state }) => `${name}, ${state.name}`}
-                        onItemSelect={(v) => formCursor.cityTo.set(v)}
                         className={s.field}
-                        itemsClassName={s.fieldResult}
+                        resultsClassName={s.fieldResult}
+                        citiesCursor={citiesCursor}
+                        service={getCitiesService}
+                        currentValue={formCursor.cityTo.get()}
+                        onChange={(v) => formCursor.cityTo.set(v)}
                     >
                         <div className={s.icon}>
                             <MarkerIcon color="#97B725" />

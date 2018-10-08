@@ -79,6 +79,7 @@ const App = schema(model)(createReactClass({
     logout() {
         removeToken();
         this.props.tree.token.set(null);
+        this.props.tree.app.set({});
     },
 
     render() {
