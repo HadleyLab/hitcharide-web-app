@@ -63,7 +63,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
             + `on ${moment(dateTime).format('MMM D YYYY')} `
             + `at ${moment(dateTime).format('h:mm A')} `
             + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
-            + `priced at $${parseFloat(priceWithFee * seatsCount).toString()} per seat. `
+            + `priced at $${parseFloat(priceWithFee * seatsCount).toString()}`
+            + `${seatsCount > 1 ? ` ($${parseFloat(priceWithFee).toString()} per seat)` : ''}. `
             + 'Are you sure?';
 
         Modal.alert('Check your ride', message, [

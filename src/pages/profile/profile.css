@@ -14,16 +14,16 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    background-color: #F0F5FC;
 }
 
 .section {
     margin-top: 25px;
 }
 
-.photo {
+.photoWrapper {
     width: 90px;
     height: 90px;
-    padding: 25px;
     border-radius: 50%;
     background-color: #CADEF3;
     color: #4263CA;
@@ -32,7 +32,22 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.defaultPhoto {
+    width: 100%;
+    height: 100%;
+    padding: 25px;
     opacity: .5;
+}
+
+.photo {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
 }
 
 .name {

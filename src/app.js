@@ -36,6 +36,7 @@ const AuthorizedApp = createReactClass({
             getCarListService: PropTypes.func.isRequired,
             getMyProfileService: PropTypes.func.isRequired,
         }).isRequired,
+        logout: PropTypes.func.isRequired,
     },
 
     componentDidMount() {
@@ -53,12 +54,6 @@ const AuthorizedApp = createReactClass({
         }
     },
 
-    logout() {
-        removeToken();
-        this.props.tree.token.set(null);
-        this.props.tree.app.set({});
-    },
-
     render() {
         const { tokenCursor } = this.props;
 
@@ -71,7 +66,7 @@ const AuthorizedApp = createReactClass({
                             {...props}
                             tree={this.props.tree.select('app', 'search')}
                             tokenCursor={tokenCursor}
-                            logout={this.logout}
+                            logout={this.props.logout}
                             services={this.props.services}
                         />
                     )}
@@ -86,7 +81,7 @@ const AuthorizedApp = createReactClass({
                                     tree={this.props.tree.app}
                                     tokenCursor={tokenCursor}
                                     accountCursor={this.props.tree.account}
-                                    logout={this.logout}
+                                    logout={this.props.logout}
                                     loadProfileData={this.loadProfileData}
                                     {...props}
                                 />
@@ -137,6 +132,12 @@ const App = schema(model)(createReactClass({
         }
     },
 
+    logout() {
+        removeToken();
+        this.props.tree.token.set(null);
+        this.props.tree.app.set({});
+    },
+
     render() {
         const tokenCursor = this.props.tree.token;
 
@@ -164,6 +165,7 @@ const App = schema(model)(createReactClass({
                                     tree={this.props.tree}
                                     tokenCursor={tokenCursor}
                                     services={this.state.services}
+                                    logout={this.logout}
                                 />
                             )}
                         />

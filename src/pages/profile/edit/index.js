@@ -13,7 +13,8 @@ import {
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
-import { HappinessIcon, AddFilledIcon } from 'components/icons';
+import { AddFilledIcon } from 'components/icons';
+import warningIcon from 'components/icons/warning.svg';
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -65,6 +66,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     getInitialState() {
         return {
             openCodeModal: false,
+            photo: null,
         };
     },
 
@@ -75,6 +77,35 @@ export const EditProfilePage = schema(model)(createReactClass({
         if (_.isEmpty(formCursor.get())) {
             formCursor.set(profile);
         }
+    },
+
+    handleFileChange(files) {
+        if (files && files[0]) {
+            const reader = new FileReader();
+
+            this.setState({ photo: files[0] });
+            reader.onload = (e) => this.props.tree.form.photo.set(e.target.result);
+            reader.readAsDataURL(files[0]);
+        }
+    },
+
+    prepareData() {
+        const formCursor = this.props.tree.form;
+        const formFields = formCursor.get();
+        const oldProfile = this.props.profileCursor.get();
+        const { photo } = this.state;
+
+        const formData = _.pickBy(formFields, (data, key) => {
+            if (oldProfile[key] !== data) {
+                return true;
+            }
+
+            return false;
+        });
+
+        const photoData = photo ? { photo } : {};
+
+        return _.merge(formData, _.pick(formFields, ['firstName', 'lastName', 'phone']), photoData);
     },
 
     async validateForm() {
@@ -108,7 +139,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     onProfileSuccessfullyEdited(data) {
-        this.setState({ openCodeModal: false });
+        this.setState({ openCodeModal: false, photo: null });
         this.updateProfile(data);
         this.resetCodeRelatedCursors();
         this.props.history.goBack();
@@ -117,7 +148,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     async onSubmit() {
         const { updateProfileService, sendPhoneVerificationCodeService } = this.props.services;
         const formCursor = this.props.tree.form;
-        const data = formCursor.get();
+        const data = this.prepareData();
 
         const result = await updateProfileService(this.props.tree.result, data);
 
@@ -130,7 +161,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
                 sendCodeResultCursor.set({});
 
-                if (oldProfile.phone !== data.phone) {
+                if (oldProfile.phone !== formCursor.phone.get()) {
                     this.setState({ openCodeModal: true });
                 } else {
                     this.onProfileSuccessfullyEdited();
@@ -336,17 +367,43 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
+    renderAboutInput() {
+        const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
+        const errorProps = this.checkInputError('shortDesc');
+
+        return (
+            <div className={s.section}>
+                <Title>About you</Title>
+                <div className={s.about}>
+                    <textarea
+                        placeholder="A few words about yourself"
+                        className={s.aboutInput}
+                        onChange={(e) => {
+                            formCursor.description.set(e.target.value);
+                            errorsCursor.select('shortDesc').set(null);
+                        }}
+                    />
+                    {errorProps.error
+                        ? (
+                            <div
+                                className={s.warning}
+                                style={{ backgroundImage: `url(${warningIcon})` }}
+                                onClick={errorProps.onErrorClick}
+                            />
+                        ) : null}
+                </div>
+            </div>
+        );
+    },
+
     render() {
+        const formCursor = this.props.tree.form;
         const { phone } = this.props.tree.form.get() || '';
+        const photo = formCursor.get('photo');
 
         return (
             <div>
-                <div className={s.photoPicker}>
-                    <div className={s.photo}>
-                        <HappinessIcon />
-                    </div>
-                    Change photo
-                </div>
                 <div className={classNames(s.section, s.general)}>
                     <Title>General</Title>
                     <Input {...this.getInputProps('firstName')}>
@@ -356,14 +413,27 @@ export const EditProfilePage = schema(model)(createReactClass({
                         <div className={s.text}>Last name</div>
                     </Input>
                 </div>
-                <div className={s.moreInfo}>
-                    <div className={s.section}>
-                        <Title>About you</Title>
-                        <Input
-                            {...this.getInputProps('shortDesc')}
-                            placeholder="A few words about myself"
+                <div className={s.section}>
+                    <Title>Photo</Title>
+                    <div
+                        className={classNames(s.photoPicker, {
+                            [s._empty]: !photo,
+                        })}
+                    >
+                        <div
+                            className={s.photo}
+                            style={{ backgroundImage: photo ? `url(${photo})` : null }}
+                        />
+                        <input
+                            className={s.photoInput}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => this.handleFileChange(e.target.files)}
                         />
                     </div>
+                </div>
+                <div className={s.moreInfo}>
+                    {this.renderAboutInput()}
                     <div className={s.section}>
                         <Title>Contacts</Title>
                         <PhoneInput
