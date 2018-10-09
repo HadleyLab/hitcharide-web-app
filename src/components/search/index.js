@@ -21,7 +21,6 @@ export class Search extends React.Component {
         };
         this.onChangetimeout = null;
         this.onBlurTimeout = null;
-        this.searchRef = React.createRef();
 
         this.onItemClick = this.onItemClick.bind(this);
         this.onFocus = this.onFocus.bind(this);
@@ -127,7 +126,7 @@ export class Search extends React.Component {
     onBlur() {
         this.onBlurTimeout = setTimeout(() => {
             this.resetCities();
-        }, 50);
+        }, 200);
     }
 
     render() {
@@ -150,7 +149,6 @@ export class Search extends React.Component {
                 onFocus={this.onFocus}
                 onChange={(e) => this.onChange({ name: e.target.value, pk: null })}
                 onBlur={() => this.onBlur()}
-                ref={(ref) => { this.searchRef = ref; }}
             >
                 {children}
                 {showLoader && focused && isLoading ? (
