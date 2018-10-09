@@ -17,12 +17,12 @@ export const SocialAuthPage = createReactClass({
         reInitServices: PropTypes.func.isRequired,
     },
 
-    async componentDidMount() {
+    componentDidMount() {
         const { search } = this.props.location;
         const token = _.replace(search, '?token=', '');
 
-        await setToken(token);
-        await this.props.tokenCursor.set(token);
+        setToken(token);
+        this.props.tokenCursor.set(token);
         this.props.reInitServices();
     },
 

@@ -1,10 +1,11 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import _ from 'lodash';
+import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
-    BrowserRouter as Router, Route, Redirect,
+    BrowserRouter as Router, Switch, Route, Redirect,
 } from 'react-router-dom';
 import { LocaleProvider } from 'antd-mobile';
 import enUS from 'antd-mobile/lib/locale-provider/en_US';
@@ -27,6 +28,81 @@ const model = {
     },
 };
 
+const AuthorizedApp = createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        tokenCursor: BaobabPropTypes.cursor.isRequired,
+        services: PropTypes.shape({
+            getCarListService: PropTypes.func.isRequired,
+            getMyProfileService: PropTypes.func.isRequired,
+        }).isRequired,
+    },
+
+    componentDidMount() {
+        this.loadProfileData();
+    },
+
+    async loadProfileData(onLoad) {
+        const { getMyProfileService, getCarListService } = this.props.services;
+
+        await getMyProfileService(this.props.tree.app.profile);
+        await getCarListService(this.props.tree.app.cars);
+
+        if (onLoad) {
+            onLoad();
+        }
+    },
+
+    logout() {
+        removeToken();
+        this.props.tree.token.set(null);
+        this.props.tree.app.set({});
+    },
+
+    render() {
+        const { tokenCursor } = this.props;
+
+        return (
+            <div>
+                <Route
+                    path="/"
+                    render={(props) => (
+                        <HomePage
+                            {...props}
+                            tree={this.props.tree.select('app', 'search')}
+                            tokenCursor={tokenCursor}
+                            logout={this.logout}
+                            services={this.props.services}
+                        />
+                    )}
+                />
+
+                <Route
+                    path="/app"
+                    render={(props) => {
+                        if (tokenCursor.get()) {
+                            return (
+                                <MainPage
+                                    tree={this.props.tree.app}
+                                    tokenCursor={tokenCursor}
+                                    accountCursor={this.props.tree.account}
+                                    logout={this.logout}
+                                    loadProfileData={this.loadProfileData}
+                                    {...props}
+                                />
+                            );
+                        }
+
+                        return (
+                            <Redirect to="/account/login" />
+                        );
+                    }}
+                />
+            </div>
+        );
+    },
+});
+
 const App = schema(model)(createReactClass({
     displayName: 'App',
 
@@ -38,21 +114,6 @@ const App = schema(model)(createReactClass({
         return {
             services: this.initServices(),
         };
-    },
-
-    componentDidMount() {
-        this.loadProfileData();
-    },
-
-    async loadProfileData(onLoad) {
-        const { getMyProfileService, getCarListService } = this.state.services;
-
-        await getMyProfileService(this.props.tree.app.profile);
-        await getCarListService(this.props.tree.app.cars);
-
-        if (onLoad) {
-            onLoad();
-        }
     },
 
     initServices() {
@@ -76,64 +137,37 @@ const App = schema(model)(createReactClass({
         }
     },
 
-    logout() {
-        removeToken();
-        this.props.tree.token.set(null);
-        this.props.tree.app.set({});
-    },
-
     render() {
         const tokenCursor = this.props.tree.token;
 
         return (
             <Router>
                 <ServiceContext.Provider value={this.state.services}>
-                    <Route
-                        path="/"
-                        render={(props) => (
-                            <HomePage
-                                {...props}
-                                tree={this.props.tree.select('app', 'search')}
-                                tokenCursor={tokenCursor}
-                                logout={this.logout}
-                                services={this.state.services}
-                            />
-                        )}
-                    />
-
-                    <Route
-                        path="/app"
-                        render={(props) => {
-                            if (tokenCursor.get()) {
-                                return (
-                                    <MainPage
-                                        tree={this.props.tree.app}
-                                        tokenCursor={tokenCursor}
-                                        accountCursor={this.props.tree.account}
-                                        logout={this.logout}
-                                        loadProfileData={this.loadProfileData}
-                                        {...props}
-                                    />
-                                );
-                            }
-
-                            return (
-                                <Redirect to="/account/login" />
-                            );
-                        }}
-                    />
-
-                    <Route
-                        path="/account"
-                        render={(props) => (
-                            <AccountPage
-                                {...props}
-                                tree={this.props.tree.account}
-                                tokenCursor={tokenCursor}
-                                reInitServices={this.reInitServices}
-                            />
-                        )}
-                    />
+                    <Switch>
+                        <Route
+                            path="/account"
+                            render={(props) => (
+                                <AccountPage
+                                    {...props}
+                                    tree={this.props.tree.account}
+                                    tokenCursor={tokenCursor}
+                                    services={this.state.services}
+                                    reInitServices={this.reInitServices}
+                                />
+                            )}
+                        />
+                        <Route
+                            path="/"
+                            render={(props) => (
+                                <AuthorizedApp
+                                    {...props}
+                                    tree={this.props.tree}
+                                    tokenCursor={tokenCursor}
+                                    services={this.state.services}
+                                />
+                            )}
+                        />
+                    </Switch>
                 </ServiceContext.Provider>
             </Router>
         );
