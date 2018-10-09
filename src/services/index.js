@@ -13,7 +13,7 @@ import {
     getRideService, bookRideService, requestRideService,
     getRideRequestsListService, getMyRideRequestsListService,
     getMyBookingsListService, getRideRequestService,
-    rideComplainService,
+    rideComplainService, rideDeleteService, bookingCancelService,
 } from './rides.js';
 
 export default {
@@ -42,4 +42,6 @@ export default {
     bookRideService,
     requestRideService,
     rideComplainService,
+    rideDeleteService,
+    bookingCancelService,
 };

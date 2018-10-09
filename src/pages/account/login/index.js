@@ -74,8 +74,8 @@ export const LoginPage = schema(model)(createReactClass({
             if (result.status === 'Succeed') {
                 const { token } = result.data;
 
-                await setToken(token);
-                await this.props.tokenCursor.set(token);
+                setToken(token);
+                this.props.tokenCursor.set(token);
                 this.props.reInitServices();
             }
         }
