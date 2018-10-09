@@ -214,9 +214,45 @@ export function rideComplainService(handler, token) {
         Authorization: `JWT ${token}`,
     };
 
-    return (cursor, data) => {
+    return (cursor, pk, data) => {
         const service = buildPostService(
             '/rides/complaint/',
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor, data);
+    };
+}
+
+export function rideDeleteService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, pk, data) => {
+        const service = buildPostService(
+            `/rides/ride/${pk}/cancel/`,
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor, data);
+    };
+}
+
+export function bookingCancelService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, pk, data) => {
+        const service = buildPostService(
+            `/rides/booking/${pk}/cancel/`,
             'POST',
             JSON.stringify,
             _.identity,

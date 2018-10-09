@@ -63,7 +63,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             + `on ${moment(dateTime).format('MMM D YYYY')} `
             + `at ${moment(dateTime).format('h:mm A')} `
             + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
-            + `priced at ${parseFloat(priceWithFee * seatsCount).toString()}$ per seat. `
+            + `priced at $${parseFloat(priceWithFee * seatsCount).toString()} per seat. `
             + 'Are you sure?';
 
         Modal.alert('Check your ride', message, [
@@ -285,6 +285,14 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const { ride } = tree;
         const ridePk = ride.data.pk;
 
+        if (ride.data.status === 'canceled') {
+            return (
+                <div className={s.footer}>
+                    <div className={s.canceled}>The ride canceled</div>
+                </div>
+            );
+        }
+
         if (amIPassenger) {
             const { bookings, dateTime } = ride.data;
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
@@ -309,7 +317,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                                     + 'The money will be returned to your PayPal account.', [
                                     {
                                         text: 'YES',
-                                        onPress: () => history.push(`/app/cancel-booking/${ridePk}`),
+                                        onPress: () => history.push(`/app/cancel-booking/${myBooking.pk}`),
                                         style: { color: '#4263CA' },
                                     },
                                     {

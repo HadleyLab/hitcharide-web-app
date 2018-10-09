@@ -108,3 +108,13 @@
 .stepper:before {
     left: 15px;
 }
+
+.canceled {
+    font-size: 18px;
+    line-height: 18px;
+    color: #F5222D;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 42px;
+}

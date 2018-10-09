@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
@@ -7,7 +6,7 @@ import schema from 'libs/state';
 import { Title, Error } from 'components';
 import warningIcon from 'components/icons/warning.svg';
 import { validateForm, checkInputError } from 'components/utils';
-import { Button, Modal } from 'antd-mobile';
+import { Button, Modal, Icon } from 'antd-mobile';
 import * as yup from 'yup';
 import s from './message-screen.css';
 
@@ -31,6 +30,7 @@ export const MessageScreen = schema(model)(createReactClass({
         onSuccessMessage: PropTypes.string.isRequired,
         match: PropTypes.shape().isRequired,
         history: PropTypes.shape().isRequired,
+        hydrateData: PropTypes.func.isRequired,
     },
 
     componentDidMount() {
@@ -43,12 +43,14 @@ export const MessageScreen = schema(model)(createReactClass({
 
     async onSubmit() {
         const {
-            service, match, history, onSuccessMessage, title,
+            service, match, history, onSuccessMessage,
+            title, hydrateData,
         } = this.props;
         const formCursor = this.props.tree.form;
         const data = formCursor.get();
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
+        const { pk } = match.params;
 
         if (!isDataValid) {
             this.props.tree.errors.set(errors);
@@ -57,9 +59,8 @@ export const MessageScreen = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await service(this.props.tree.result, _.merge({
-                ride: match.params.pk,
-            }, data));
+            const hydratedData = hydrateData(pk, data);
+            const result = await service(this.props.tree.result, pk, hydratedData);
 
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
@@ -81,7 +82,11 @@ export const MessageScreen = schema(model)(createReactClass({
         const { title, buttonLabel, placeholder } = this.props;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
-        const errorProps = checkInputError('description', errorsCursor.get());
+        const descriptionError = checkInputError('description', errorsCursor.get());
+        const cancelReasonError = checkInputError('cancelReason', errorsCursor.get());
+        const errorProps = descriptionError.error ? descriptionError : cancelReasonError;
+        const result = this.props.tree.result.get();
+        const isLoading = result && result.status === 'Loading';
 
         return (
             <div>
@@ -93,6 +98,7 @@ export const MessageScreen = schema(model)(createReactClass({
                         onChange={(e) => {
                             formCursor.description.set(e.target.value);
                             errorsCursor.select('description').set(null);
+                            errorsCursor.select('cancelReason').set(null);
                         }}
                     />
                     {errorProps.error
@@ -109,13 +115,15 @@ export const MessageScreen = schema(model)(createReactClass({
                     errors={errorsCursor.get()}
                 />
                 <div className={s.footer}>
-                    <Button
-                        type="primary"
-                        inline
-                        onClick={this.onSubmit}
-                    >
-                        {buttonLabel}
-                    </Button>
+                    {isLoading ? <Icon type="loading" size="md" /> : (
+                        <Button
+                            type="primary"
+                            inline
+                            onClick={this.onSubmit}
+                        >
+                            {buttonLabel}
+                        </Button>
+                    )}
                 </div>
             </div>
         );

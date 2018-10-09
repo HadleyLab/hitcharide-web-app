@@ -51,6 +51,8 @@ const MainPageContent = createReactClass({
             getMyProfileService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
             rideComplainService: PropTypes.func.isRequired,
+            rideDeleteService: PropTypes.func.isRequired,
+            bookingCancelService: PropTypes.func.isRequired,
         }).isRequired,
         loadProfileData: PropTypes.func.isRequired,
     },
@@ -269,15 +271,9 @@ const MainPageContent = createReactClass({
                                         title="Delete trip"
                                         buttonLabel="Delete trip"
                                         placeholder="Indicate the reason for canceling the trip"
-                                        service={() => ({
-                                            status: 'Failure',
-                                            error: {
-                                                data: {
-                                                    message: ['The service not implemented yet :('],
-                                                },
-                                            },
-                                        })}
+                                        service={this.props.services.rideDeleteService}
                                         onSuccessMessage="Your trip succefully deleted!"
+                                        hydrateData={(pk, data) => ({ cancelReason: data.description })}
                                     />
                                 )}
                             />
@@ -290,15 +286,9 @@ const MainPageContent = createReactClass({
                                         title="Cancel booking"
                                         buttonLabel="Cancel booking"
                                         placeholder="Indicate the reason for canceling the booking"
-                                        service={() => ({
-                                            status: 'Failure',
-                                            error: {
-                                                data: {
-                                                    message: ['The service not implemented yet :('],
-                                                },
-                                            },
-                                        })}
+                                        service={this.props.services.bookingCancelService}
                                         onSuccessMessage="Your booking succefully canceled!"
+                                        hydrateData={(pk, data) => ({ cancelReason: data.description })}
                                     />
                                 )}
                             />
@@ -313,6 +303,7 @@ const MainPageContent = createReactClass({
                                         placeholder="Enter text"
                                         service={this.props.services.rideComplainService}
                                         onSuccessMessage="Your complaint succefully sent!"
+                                        hydrateData={(pk, data) => ({ ride: pk, description: data.description })}
                                     />
                                 )}
                             />

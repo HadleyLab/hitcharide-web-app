@@ -143,6 +143,20 @@ export const MyRidesList = schema(model)(createReactClass({
         );
     },
 
+    getRideBadgeColor(ride) {
+        const { availableNumberOfSeats, numberOfSeats, status } = ride;
+
+        if (status === 'canceled') {
+            return 'rgba(26, 27, 32, 0.3)';
+        }
+
+        if (availableNumberOfSeats === numberOfSeats) {
+            return '#F5222D';
+        }
+
+        return '#97B725';
+    },
+
     renderRides() {
         const cursor = this.props.tree.rides;
         const ridesData = cursor.get() || {};
@@ -176,8 +190,7 @@ export const MyRidesList = schema(model)(createReactClass({
                         authorType="driver"
                         icon={(
                             <DriverIcon
-                                color={ride.availableNumberOfSeats === ride.numberOfSeats
-                                    ? '#F5222D' : '#97B725'}
+                                color={this.getRideBadgeColor(ride)}
                             />
                         )}
                     />
