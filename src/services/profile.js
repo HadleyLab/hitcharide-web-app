@@ -33,8 +33,17 @@ export function getUserProfileService(handler, token) {
     };
 }
 
+function hydrateData(profile) {
+    let data = new FormData();
+
+    _.forEach(profile, (value, key) => data.append(key, value));
+
+    return data;
+}
+
 export function updateProfileService(handler, token) {
     const headers = {
+        Accept: 'application/json',
         Authorization: `JWT ${token}`,
     };
 
@@ -42,9 +51,9 @@ export function updateProfileService(handler, token) {
         const service = buildPostService(
             '/accounts/my/',
             'PUT',
-            JSON.stringify,
+            hydrateData,
             _.identity,
-            _.merge({}, defaultHeaders, headers)
+            headers
         );
 
         return service(handler, cursor, data);

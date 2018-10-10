@@ -135,22 +135,30 @@ export const ProfileContent = createReactClass({
         const { profile, isYourProfile } = this.props;
         const {
             firstName, lastName, phone, email, isPhoneValidated,
-            paypalAccount, shortDesc, age,
+            paypalAccount, shortDesc, age, photo,
         } = profile;
 
         return (
             <div className={s.container}>
                 <div className={s.profile}>
-                    <div className={s.photo}>
-                        <HappinessIcon />
+                    <div className={s.photoWrapper}>
+                        {photo ? (
+                            <div className={s.photo} style={{ backgroundImage: `url(${photo})` }} />
+                        ) : (
+                            <div className={s.defaultPhoto}>
+                                <HappinessIcon />
+                            </div>
+                        )}
                     </div>
                     <div className={s.name}>
                         {`${firstName} ${lastName}`}
                         {age ? ` (${age} years)` : null}
                     </div>
                 </div>
+                {/*
                 {this.renderReviewsInfo()}
-                {isYourProfile || (shortDesc && !isYourProfile) ? (
+                */}
+                {shortDesc ? (
                     <div className={s.section}>
                         <Title>{isYourProfile ? 'About you' : 'About'}</Title>
                         <div className={s.infoField}>

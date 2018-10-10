@@ -1,28 +1,47 @@
 .photoPicker {
-    padding: 30px 15px 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    color: #4263CA;
-    font-size: 17px;
-    line-height: 17px;
+    position: relative;
+    padding: 0 15px;
 }
 
+.photoInput {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    width: 105px;
+    height: 105px;
+    opacity: 0;
+ }
+
 .photo {
-    width: 90px;
-    height: 90px;
-    padding: 25px;
-    border-radius: 50%;
-    background-color: #CADEF3;
-    color: #4263CA;
-    font-size: 12px;
-    line-height: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 15px;
-    opacity: .5;
+    position: relative;
+    width: 105px;
+    height: 105px;
+    border: 1px solid rgba(#1A1B20, .3);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .photoPicker._empty & {
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background-color: #DCDEE3;
+        }
+
+        &:before {
+            height: 50px;
+            width: 1px;
+            margin-top: -25px;
+        }
+
+        &:after {
+            height: 1px;
+            width: 50px;
+            margin-left: -25px;
+        }
+    }
 }
 
 .section {
@@ -36,6 +55,8 @@
 }
 
 .general {
+    margin-top: 0;
+
     input {
         color: #1A1B20;
     }
@@ -193,4 +214,39 @@
     position: absolute;
     left: 15px;
     color: #888;
+}
+
+.about {
+    position: relative;
+}
+
+.aboutInput {
+    width: 100%;
+    height: 85px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 0;
+    border-right: 0;
+    font: inherit;
+    font-size: 17px;
+    line-height: 25px;
+    resize: none;
+    padding: 10px 15px;
+    -webkit-appearance: none;
+
+    &::placeholder {
+        color: rgba(#1A1B20, .3);
+    }
+}
+
+.warning {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    width: 21px;
+    height: 21px;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #fff;
 }

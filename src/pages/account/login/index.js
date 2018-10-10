@@ -63,7 +63,7 @@ export const LoginPage = schema(model)(createReactClass({
         if (isDataValid) {
             const service = this.props.services.signInService;
             const result = await service(this.props.tree.result, {
-                username: data.email,
+                username: _.toLower(data.email),
                 password: data.password,
             });
 

@@ -70,7 +70,10 @@ export const RegistrationPage = schema(model)(createReactClass({
 
         if (isDataValid) {
             const service = this.props.services.signUpService;
-            const result = await service(this.props.tree.result, data);
+            const result = await service(this.props.tree.result, {
+                email: _.toLower(data.email),
+                password: data.password,
+            });
 
             if (result.status === 'Failure') {
                 this.props.tree.errors.set(result.error.data);
