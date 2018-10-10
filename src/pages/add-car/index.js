@@ -2,12 +2,14 @@ import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
+import classNames from 'classnames';
 import createReactClass from 'create-react-class';
-import { Button } from 'antd-mobile';
+import { Button, List, DatePicker } from 'antd-mobile';
 import { Title, Input, Error } from 'components';
 import { validateForm, checkInputError } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
+import moment from 'moment';
 import deleteIcon from 'components/icons/delete.svg';
 import s from './add-car.css';
 
@@ -220,6 +222,35 @@ export const AddCarPage = schema(model)(createReactClass({
         );
     },
 
+    renderYearSelect() {
+        const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
+        const yearCursor = formCursor.productionYear;
+        const year = yearCursor.get();
+
+        return (
+            <List
+                className={classNames(s.datePicker, {
+                    [s._empty]: !year,
+                })}
+            >
+                <DatePicker
+                    value={year ? moment().year(year).toDate() : null}
+                    onChange={(date) => {
+                        errorsCursor.productionYear.set(null);
+                        yearCursor.set(moment(date).year());
+                    }}
+                    mode="year"
+                    title="Car year"
+                    minDate={moment('1900', 'YYYY').toDate()}
+                    format={(date) => moment(date).format('YYYY')}
+                >
+                    <List.Item>Year</List.Item>
+                </DatePicker>
+            </List>
+        );
+    },
+
     render() {
         const { editMode } = this.props;
 
@@ -248,9 +279,7 @@ export const AddCarPage = schema(model)(createReactClass({
                 >
                     <div className={s.text}>Number of seats</div>
                 </Input>
-                <Input {...this.getInputProps('productionYear')}>
-                    <div className={s.text}>Year</div>
-                </Input>
+                {this.renderYearSelect()}
                 <Input {...this.getInputProps('licensePlate')}>
                     <div className={s.text}>License plate</div>
                 </Input>

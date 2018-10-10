@@ -100,3 +100,27 @@
     display: flex;
     justify-content: center;
 }
+
+.datePicker {
+    background-color: #fff;
+
+    :global .am-list-body:before {
+        content: none!important;
+    }
+
+    :global .am-list-body:after {
+        left: 15px!important;
+        right: 0!important;
+        width: auto!important;
+        transform: none!important;
+        transform-origin: none!important;
+    }
+
+    :global .am-list-extra {
+        min-width: 160px;
+    }
+
+    &._empty :global .am-list-extra {
+        display: none;
+    }
+}
