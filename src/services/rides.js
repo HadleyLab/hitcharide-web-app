@@ -39,40 +39,6 @@ export function requestRideService(handler, token) {
     };
 }
 
-export function addCarService(handler, token) {
-    const headers = {
-        Authorization: `JWT ${token}`,
-    };
-
-    return (cursor, data) => {
-        const service = buildPostService(
-            '/rides/car/',
-            'POST',
-            JSON.stringify,
-            _.identity,
-            _.merge({}, defaultHeaders, headers)
-        );
-
-        return service(handler, cursor, data);
-    };
-}
-
-export function getCarListService(handler, token) {
-    const headers = {
-        Authorization: `JWT ${token}`,
-    };
-
-    return (cursor) => {
-        const service = buildGetService(
-            '/rides/car/',
-            _.identity,
-            _.merge({}, defaultHeaders, headers)
-        );
-
-        return service(handler, cursor);
-    };
-}
-
 function dehydrateRidesList(data, { toMerge = false, previousResults = [] }) {
     if (toMerge) {
         const results = _.concat([], previousResults, data.results);

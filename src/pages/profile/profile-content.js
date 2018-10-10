@@ -207,9 +207,9 @@ export const ProfileContent = createReactClass({
                         ) : null}
                     </div>
                 </div>
+                {this.renderCars()}
                 {isYourProfile ? (
                     <div>
-                        {this.renderCars()}
                         {paypalAccount ? (
                             <div className={s.section}>
                                 <Title>PayPal</Title>

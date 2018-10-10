@@ -125,3 +125,11 @@ export function paramsToString(data) {
 
     return paramsRow;
 }
+
+export function hydrateFormData(data) {
+    let formData = new FormData();
+
+    _.forEach(data, (value, key) => formData.append(key, value));
+
+    return formData;
+}
