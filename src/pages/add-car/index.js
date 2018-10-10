@@ -3,16 +3,18 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Flex, Button, WhiteSpace } from 'antd-mobile';
+import { Button } from 'antd-mobile';
 import { Title, Input, Error } from 'components';
 import { validateForm, checkInputError } from 'components/utils';
 import schema from 'libs/state';
 import * as yup from 'yup';
+import deleteIcon from 'components/icons/delete.svg';
 import s from './add-car.css';
 
 const model = {
     form: {},
     result: {},
+    imagesResult: [],
     errors: {},
 };
 
@@ -39,12 +41,19 @@ export const AddCarPage = schema(model)(createReactClass({
         services: PropTypes.shape({
             addCarService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
+            addCarImageService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
     getDefaultProps() {
         return {
             editMode: false,
+        };
+    },
+
+    getInitialState() {
+        return {
+            images: [],
         };
     },
 
@@ -59,15 +68,46 @@ export const AddCarPage = schema(model)(createReactClass({
             color: '',
             numberOfSeats: null,
             licensePlate: '',
+            productionYear: null,
+            images: [],
         };
 
         this.props.tree.select('form').set(initData);
     },
 
+    async reloadCarsList() {
+        const { getCarListService } = this.props.services;
+
+        await getCarListService(this.props.carsCursor);
+        this.props.history.goBack();
+    },
+
+    async loadImages(pk) {
+        const { addCarImageService } = this.props.services;
+        const errorsCursor = this.props.tree.errors;
+        const { images } = this.state;
+
+        await Promise.all(
+            _.map(images, (image, index) => addCarImageService(
+                this.props.tree.imagesResult.select(index),
+                pk,
+                { image }
+            ))
+        )
+            .then((data) => {
+                this.reloadCarsList();
+
+                return data;
+            })
+            .catch((error) => errorsCursor.set(error));
+    },
+
     async onSubmit() {
-        const { addCarService, getCarListService } = this.props.services;
+        const { addCarService } = this.props.services;
         const formCursor = this.props.tree.form;
+        const errorsCursor = this.props.tree.errors;
         const data = formCursor.get();
+        const { images } = this.state;
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
 
@@ -78,16 +118,18 @@ export const AddCarPage = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const result = await addCarService(this.props.tree.result, data);
+            const result = await addCarService(this.props.tree.result, _.omit(data, 'images'));
+
+            if (result.status === 'Succeed' && !_.isEmpty(images)) {
+                this.loadImages(result.data.pk);
+            }
 
             if (result.status === 'Succeed') {
-                await getCarListService(this.props.carsCursor);
-
-                this.props.history.goBack();
+                this.reloadCarsList();
             }
 
             if (result.status === 'Failure') {
-                this.props.tree.errors.set(result.error.data);
+                errorsCursor.set(result.error.data);
             }
         }
     },
@@ -109,6 +151,73 @@ export const AddCarPage = schema(model)(createReactClass({
                 errorsCursor.select(name).set(null);
             },
         }, this.checkInputError(name));
+    },
+
+    handleFileChange(images) {
+        if (images && !_.isEmpty(images)) {
+            this.setState({ images: _.map(images) });
+
+            _.forEach(images, (image, index) => {
+                const reader = new FileReader();
+
+                reader.onload = (e) => this.props.tree.form.images.push({
+                    pk: `local-${index}`,
+                    image: e.target.result,
+                });
+                reader.readAsDataURL(image);
+            });
+        }
+    },
+
+    removeImage(pk, index) {
+        const formCursor = this.props.tree.form;
+        const images = formCursor.get('images');
+        const indexInTree = _.findIndex(images, { pk });
+        const stateImages = this.state.images;
+
+        formCursor.select('images').unset(indexInTree);
+        this.setState({
+            images: _.filter(stateImages,
+                (stateImage, stateImageIndex) => stateImageIndex !== index),
+        });
+    },
+
+    renderImages() {
+        const formCursor = this.props.tree.form;
+        const images = formCursor.get('images') || [];
+
+        return (
+            <div className={s.imagesContainer}>
+                <div className={s.title}>Photo</div>
+                <div className={s.imagesWrapper}>
+                    <div className={s.images}>
+                        {_.map(images, ({ pk, image }, index) => (
+                            <div
+                                key={`image-${index}`}
+                                className={s.photo}
+                                style={{ backgroundImage: `url(${image})` }}
+                            >
+                                <div
+                                    className={s.deleteIcon}
+                                    style={{ backgroundImage: `url(${deleteIcon})` }}
+                                    onClick={() => this.removeImage(pk, index)}
+                                />
+                            </div>
+                        ))}
+                        <div className={s.photoPicker}>
+                            <input
+                                className={s.photoInput}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                onChange={(e) => this.handleFileChange(e.target.files)}
+                            />
+                        </div>
+                        <div className={s.imagesOffset} />
+                    </div>
+                </div>
+            </div>
+        );
     },
 
     render() {
@@ -139,16 +248,18 @@ export const AddCarPage = schema(model)(createReactClass({
                 >
                     <div className={s.text}>Number of seats</div>
                 </Input>
+                <Input {...this.getInputProps('productionYear')}>
+                    <div className={s.text}>Year</div>
+                </Input>
                 <Input {...this.getInputProps('licensePlate')}>
                     <div className={s.text}>License plate</div>
                 </Input>
+                {this.renderImages()}
                 <Error
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <WhiteSpace />
-                <WhiteSpace />
-                <Flex justify="center">
+                <div className={s.footer}>
                     <Button
                         type="primary"
                         inline
@@ -157,9 +268,7 @@ export const AddCarPage = schema(model)(createReactClass({
                     >
                         {editMode ? 'Save car' : 'Add car'}
                     </Button>
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
+                </div>
             </div>
         );
     },

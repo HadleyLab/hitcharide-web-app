@@ -1,11 +1,102 @@
 .text {
     white-space: nowrap;
     margin-right: 10px;
-    color: rgba(#1A1B20, .3);
+    color: #1A1B20;
 }
 
-.container {
-    input {
-        color: #1A1B20;
+.imagesContainer {
+    padding: 10px 0 0;
+}
+
+.title {
+    font-size: 17px;
+    line-height: 25px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.imagesWrapper {
+    overflow: hidden;
+    height: 105px;
+}
+
+.images {
+    display: flex;
+    overflow: auto;
+    height: 115px;
+    width: 100%;
+}
+
+.imagesOffset {
+    width: 15px;
+    min-width: 15px;
+}
+
+.photo {
+    position: relative;
+    min-width: 105px;
+    width: 105px;
+    height: 105px;
+    border: 1px solid rgba(#1A1B20, .3);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+ }
+
+.deleteIcon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background-position: center;
+    background-size: 22px 22px;
+    background-repeat: no-repeat;
+}
+
+.photoPicker {
+    position: relative;
+    min-width: 105px;
+    width: 105px;
+    height: 105px;
+    border: 1px solid rgba(#1A1B20, .3);
+    margin-left: 15px;
+
+    &:before, &:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: #DCDEE3;
     }
+
+    &:before {
+        height: 50px;
+        width: 1px;
+        margin-top: -25px;
+    }
+
+    &:after {
+        height: 1px;
+        width: 50px;
+        margin-left: -25px;
+    }
+ }
+
+.photoInput {
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    width: 105px;
+    height: 105px;
+    opacity: 0;
+}
+
+.footer {
+    margin: 25px 0 50px;
+    display: flex;
+    justify-content: center;
 }

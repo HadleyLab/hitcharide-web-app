@@ -250,3 +250,13 @@
     background-repeat: no-repeat;
     background-color: #fff;
 }
+
+.footer {
+    margin: 25px 0 50px;
+    display: flex;
+    justify-content: center;
+}
+
+.licensePlate {
+    padding-left: 15px;
+}

@@ -94,13 +94,8 @@
 
 .car {
     position: relative;
-    min-height: 45px;
-    padding: 5px 15px 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: rgba(#1A1B20, .3);
-    font-size: 16px;
+    color: #888;
+    font-size: 17px;
 
     &:after {
         content: '';
@@ -111,7 +106,47 @@
         height: 1px;
         background-color: #ddd;
     }
+
+    &._withImages {
+        padding-bottom: 11px;
+    }
 }
+
+.carInfo {
+    padding: 5px 15px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 45px;
+}
+
+.imagesWrapper {
+    overflow: hidden;
+    height: 105px;
+}
+
+.images {
+    display: flex;
+    overflow: auto;
+    height: 115px;
+    width: 100%;
+}
+
+.imagesOffset {
+    width: 15px;
+    min-width: 15px;
+}
+
+.carImage {
+    min-width: 105px;
+    width: 105px;
+    height: 105px;
+    border: 1px solid rgba(#1A1B20, .3);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-left: 15px;
+ }
 
 .logout {
     margin-top: 10px;
@@ -168,4 +203,8 @@
 
 .footer {
     margin-top: 25px;
+}
+
+.licensePlate {
+    padding-left: 15px;
 }

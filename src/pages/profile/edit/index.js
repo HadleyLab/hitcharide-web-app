@@ -7,9 +7,7 @@ import { Title, Input, Error } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm, checkInputError } from 'components/utils';
-import {
-    Flex, Button, WhiteSpace, Modal, Toast,
-} from 'antd-mobile';
+import { Button, Modal, Toast } from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
@@ -201,7 +199,8 @@ export const EditProfilePage = schema(model)(createReactClass({
             <div className={s.cars}>
                 {_.map(cars, (car, index) => {
                     const {
-                        brand, model: carModel, color, numberOfSeats, licensePlate,
+                        brand, model: carModel, numberOfSeats,
+                        licensePlate, productionYear, color,
                     } = car;
 
                     // return (
@@ -223,8 +222,12 @@ export const EditProfilePage = schema(model)(createReactClass({
                             key={`car-${index}`}
                             className={s.car}
                         >
-                            <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
-                            <div>{licensePlate}</div>
+                            <div>
+                                {`${brand} ${carModel} `}
+                                {`(${color}, ${numberOfSeats} seats`}
+                                {productionYear ? `, ${productionYear} year)` : ')'}
+                            </div>
+                            {licensePlate ? <div className={s.licensePlate}>{licensePlate}</div> : null}
                         </div>
                     );
                 })}
@@ -475,9 +478,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <WhiteSpace />
-                <WhiteSpace />
-                <Flex direction="column" justify="center">
+                <div className={s.footer}>
                     <Button
                         type="primary"
                         inline
@@ -486,9 +487,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                     >
                         Save profile
                     </Button>
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
+                </div>
                 {this.renderPhoneCodeModal()}
             </div>
         );

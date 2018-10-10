@@ -95,3 +95,22 @@ export function checkPhoneVerificationCodeService(handler, token) {
         return service(handler, cursor, data);
     };
 }
+
+export function addCarImageService(handler, token) {
+    const headers = {
+        Accept: 'application/json',
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, pk, data) => {
+        const service = buildPostService(
+            `/rides/car/${pk}/images/`,
+            'POST',
+            hydrateData,
+            _.identity,
+            headers
+        );
+
+        return service(handler, cursor, data);
+    };
+}
