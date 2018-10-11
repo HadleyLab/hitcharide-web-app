@@ -56,7 +56,7 @@ export const YourProfilePage = createReactClass({
                                 />
                                 <Route
                                     exact
-                                    path={`${url}/car/:pk/edit`}
+                                    path={`${url}/car/:pk/:mode`}
                                     render={(props) => (
                                         <AddCarPage
                                             {...props}

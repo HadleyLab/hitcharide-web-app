@@ -9,7 +9,7 @@ import {
 } from './profile.js';
 import {
     addCarImageService, addCarService, getCarListService,
-    removeCarService,
+    removeCarService, getCarService, editCarService, removeCarImageService,
 } from './car.js';
 import {
     createRideService, getMyRidesListService, getRidesListService,
@@ -35,6 +35,9 @@ export default {
     addCarImageService,
     addCarService,
     getCarListService,
+    getCarService,
+    editCarService,
+    removeCarImageService,
     removeCarService,
     createRideService,
     getMyRidesListService,

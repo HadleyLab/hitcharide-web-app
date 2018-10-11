@@ -13,12 +13,7 @@ import moment from 'moment';
 import deleteIcon from 'components/icons/delete.svg';
 import s from './add-car.css';
 
-const model = {
-    form: {},
-    result: {},
-    imagesResult: [],
-    errors: {},
-};
+const model = {};
 
 const validationSchema = yup.object().shape({
     brand: yup.string().ensure().required('Car brand is a required field.'),
@@ -39,11 +34,15 @@ export const AddCarPage = schema(model)(createReactClass({
         history: PropTypes.shape({
             goBack: PropTypes.func.isRequired,
         }).isRequired,
+        match: PropTypes.shape().isRequired,
         editMode: PropTypes.bool,
         services: PropTypes.shape({
             addCarService: PropTypes.func.isRequired,
-            getCarListService: PropTypes.func.isRequired,
             addCarImageService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
+            getCarService: PropTypes.func.isRequired,
+            editCarService: PropTypes.func.isRequired,
+            removeCarImageService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
@@ -60,7 +59,19 @@ export const AddCarPage = schema(model)(createReactClass({
     },
 
     componentDidMount() {
+        const { mode } = this.props.match.params;
+
+        if (mode === 'edit') {
+            this.initEditForm();
+
+            return;
+        }
+
         this.initForm();
+    },
+
+    componentWillUnmount() {
+        this.props.tree.set({});
     },
 
     initForm() {
@@ -77,11 +88,20 @@ export const AddCarPage = schema(model)(createReactClass({
         this.props.tree.select('form').set(initData);
     },
 
+    async initEditForm() {
+        const { getCarService } = this.props.services;
+        const { pk } = this.props.match.params;
+        const result = await getCarService(this.props.tree.select('carInfoResult'), pk);
+
+        if (result.status === 'Succeed') {
+            this.props.tree.select('form').set(result.data);
+        }
+    },
+
     async reloadCarsList() {
         const { getCarListService } = this.props.services;
 
         await getCarListService(this.props.carsCursor);
-        this.props.history.goBack();
     },
 
     async loadImages(pk) {
@@ -98,42 +118,92 @@ export const AddCarPage = schema(model)(createReactClass({
         )
             .then((data) => {
                 this.reloadCarsList();
+                this.props.history.goBack();
 
                 return data;
             })
             .catch((error) => errorsCursor.set(error));
     },
 
-    async onSubmit() {
-        const { addCarService } = this.props.services;
+    async validateForm() {
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
         const data = formCursor.get();
-        const { images } = this.state;
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid, errors } = validationResult;
 
         if (!isDataValid) {
-            this.props.tree.errors.set(errors);
+            errorsCursor.set(errors);
 
+            return false;
+        }
+
+        return true;
+    },
+
+    onCarAddOrEditSucceed(result) {
+        const { images } = this.state;
+        const errorsCursor = this.props.tree.errors;
+
+        if (result.status === 'Succeed' && !_.isEmpty(images)) {
+            this.loadImages(result.data.pk);
+        }
+
+        if (result.status === 'Succeed') {
+            this.reloadCarsList();
+            this.props.history.goBack();
+        }
+
+        if (result.status === 'Failure') {
+            errorsCursor.set(result.error.data);
+        }
+    },
+
+    async addCar() {
+        const { addCarService } = this.props.services;
+        const formCursor = this.props.tree.form;
+        const data = formCursor.get();
+        const isDataValid = this.validateForm();
+
+        if (!isDataValid) {
             return;
         }
 
         if (isDataValid) {
             const result = await addCarService(this.props.tree.result, _.omit(data, 'images'));
 
-            if (result.status === 'Succeed' && !_.isEmpty(images)) {
-                this.loadImages(result.data.pk);
-            }
-
-            if (result.status === 'Succeed') {
-                this.reloadCarsList();
-            }
-
-            if (result.status === 'Failure') {
-                errorsCursor.set(result.error.data);
-            }
+            this.onCarAddOrEditSucceed(result);
         }
+    },
+
+    async editCar() {
+        const { pk } = this.props.match.params;
+        const { editCarService } = this.props.services;
+        const formCursor = this.props.tree.form;
+        const data = formCursor.get();
+        const isDataValid = this.validateForm();
+
+        if (!isDataValid) {
+            return;
+        }
+
+        if (isDataValid) {
+            const result = await editCarService(this.props.tree.result, pk, _.omit(data, 'images'));
+
+            this.onCarAddOrEditSucceed(result);
+        }
+    },
+
+    onSubmit() {
+        const { mode } = this.props.match.params;
+
+        if (mode === 'edit') {
+            this.editCar();
+
+            return;
+        }
+
+        this.addCar();
     },
 
     checkInputError(name) {
@@ -152,6 +222,7 @@ export const AddCarPage = schema(model)(createReactClass({
                 formCursor.select(name).set(e.target.value);
                 errorsCursor.select(name).set(null);
             },
+            defaultValue: formCursor.get(name),
         }, this.checkInputError(name));
     },
 
@@ -171,17 +242,30 @@ export const AddCarPage = schema(model)(createReactClass({
         }
     },
 
-    removeImage(pk, index) {
+    async removeImage(pk, index) {
         const formCursor = this.props.tree.form;
         const images = formCursor.get('images');
         const indexInTree = _.findIndex(images, { pk });
         const stateImages = this.state.images;
 
-        formCursor.select('images').unset(indexInTree);
-        this.setState({
-            images: _.filter(stateImages,
-                (stateImage, stateImageIndex) => stateImageIndex !== index),
-        });
+        if (_.startsWith(pk, 'local')) {
+            formCursor.select('images').unset(indexInTree);
+            this.setState({
+                images: _.filter(stateImages,
+                    (stateImage, stateImageIndex) => stateImageIndex !== index),
+            });
+
+            return;
+        }
+
+        const { removeCarImageService } = this.props.services;
+        const { pk: carPk } = this.props.match.params;
+        const result = await removeCarImageService(this.props.tree.removeImageResult, carPk, pk);
+
+        if (result.status === 'Succeed') {
+            formCursor.select('images').unset(indexInTree);
+            this.reloadCarsList();
+        }
     },
 
     renderImages() {

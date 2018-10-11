@@ -69,13 +69,10 @@
 .car {
     position: relative;
     min-height: 45px;
-    /* padding: 5px 38px 8px 15px; */
     padding: 5px 15px 8px 52px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #888;
     font-size: 16px;
+    display: flex;
+    flex-direction: column;
 
     &:after {
         content: '';
@@ -86,6 +83,15 @@
         height: 1px;
         background-color: #ddd;
     }
+}
+
+.carInfo {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 15px;
+    color: #888;
 }
 
 .addCar {

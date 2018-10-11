@@ -14,6 +14,7 @@ import tickIcon from 'components/icons/tick-circle.svg';
 import { AddFilledIcon } from 'components/icons';
 import warningIcon from 'components/icons/warning.svg';
 import minusIcon from 'components/icons/minus-circle.svg';
+import arrowIcon from 'components/icons/arrow-right.svg';
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -216,20 +217,6 @@ export const EditProfilePage = schema(model)(createReactClass({
                         licensePlate, productionYear, color, pk,
                     } = car;
 
-                    // return (
-                    //     <Link
-                    //         key={`car-${index}`}
-                    //         className={s.car}
-                    //         to={`/app/profile/car/${pk}/edit`}
-                    //     >
-                    //         <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
-                    //         <div>{licensePlate}</div>
-                    //         <div
-                    //             className={classNames(s.icon, s._arrow)}
-                    //             style={{ backgroundImage: `url(${arrowIcon})` }}
-                    //         />
-                    //     </Link>
-                    // );
                     return (
                         <div
                             key={`car-${index}`}
@@ -254,12 +241,18 @@ export const EditProfilePage = schema(model)(createReactClass({
                                         ]);
                                 }}
                             />
-                            <div>
-                                {`${brand} ${carModel} `}
-                                {`(${color}, ${numberOfSeats} seats`}
-                                {productionYear ? `, ${productionYear} year)` : ')'}
-                            </div>
-                            {licensePlate ? <div className={s.licensePlate}>{licensePlate}</div> : null}
+                            <Link className={s.carInfo} to={`/app/profile/car/${pk}/edit`}>
+                                <div>
+                                    {`${brand} ${carModel} `}
+                                    {`(${color}, ${numberOfSeats} seats`}
+                                    {productionYear ? `, ${productionYear} year)` : ')'}
+                                </div>
+                                {licensePlate ? <div className={s.licensePlate}>{licensePlate}</div> : null}
+                                <div
+                                    className={classNames(s.icon, s._arrow)}
+                                    style={{ backgroundImage: `url(${arrowIcon})` }}
+                                />
+                            </Link>
                         </div>
                     );
                 })}
