@@ -243,6 +243,7 @@ export const AddCarPage = schema(model)(createReactClass({
                     mode="year"
                     title="Car year"
                     minDate={moment('1900', 'YYYY').toDate()}
+                    maxDate={moment().toDate()}
                     format={(date) => moment(date).format('YYYY')}
                 >
                     <List.Item>Year</List.Item>
