@@ -8,8 +8,11 @@ import {
     sendPhoneVerificationCodeService, checkPhoneVerificationCodeService,
 } from './profile.js';
 import {
-    createRideService, addCarService, getCarListService,
-    getMyRidesListService, getRidesListService,
+    addCarImageService, addCarService, getCarListService,
+    removeCarService, getCarService, editCarService, removeCarImageService,
+} from './car.js';
+import {
+    createRideService, getMyRidesListService, getRidesListService,
     getRideService, bookRideService, requestRideService,
     getRideRequestsListService, getMyRideRequestsListService,
     getMyBookingsListService, getRideRequestService,
@@ -29,9 +32,14 @@ export default {
     updateProfileService,
     sendPhoneVerificationCodeService,
     checkPhoneVerificationCodeService,
-    createRideService,
+    addCarImageService,
     addCarService,
     getCarListService,
+    getCarService,
+    editCarService,
+    removeCarImageService,
+    removeCarService,
+    createRideService,
     getMyRidesListService,
     getMyRideRequestsListService,
     getMyBookingsListService,

@@ -7,14 +7,14 @@ import { Title, Input, Error } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm, checkInputError } from 'components/utils';
-import {
-    Flex, Button, WhiteSpace, Modal, Toast,
-} from 'antd-mobile';
+import { Button, Modal, Toast } from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
 import { AddFilledIcon } from 'components/icons';
 import warningIcon from 'components/icons/warning.svg';
+import minusIcon from 'components/icons/minus-circle.svg';
+import arrowIcon from 'components/icons/arrow-right.svg';
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -31,6 +31,7 @@ const model = {
     sendPhoneVerificationCodeResult: {},
     checkPhoneVerificationCodeResult: {},
     result: {},
+    removeCarResult: {},
     errors: {},
 };
 
@@ -52,14 +53,16 @@ export const EditProfilePage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         profileCursor: BaobabPropTypes.cursor.isRequired,
-        cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+        carsCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape({
             goBack: PropTypes.func.isRequired,
         }).isRequired,
         services: PropTypes.shape({
             updateProfileService: PropTypes.func.isRequired,
+            getCarListService: PropTypes.func.isRequired,
             sendPhoneVerificationCodeService: PropTypes.func.isRequired,
             checkPhoneVerificationCodeService: PropTypes.func.isRequired,
+            removeCarService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
@@ -149,23 +152,21 @@ export const EditProfilePage = schema(model)(createReactClass({
         const { updateProfileService, sendPhoneVerificationCodeService } = this.props.services;
         const formCursor = this.props.tree.form;
         const data = this.prepareData();
-
         const result = await updateProfileService(this.props.tree.result, data);
 
         if (result.status === 'Succeed') {
-            const sendCodeResultCursor = this.props.tree.sendPhoneVerificationCodeResult;
-            const sendCodeResult = await sendPhoneVerificationCodeService(sendCodeResultCursor);
+            const oldProfile = this.props.profileCursor.get();
 
-            if (sendCodeResult.status === 'Succeed') {
-                const oldProfile = this.props.profileCursor.get();
+            if (oldProfile.phone !== formCursor.phone.get()) {
+                const sendCodeResultCursor = this.props.tree.sendPhoneVerificationCodeResult;
+                const sendCodeResult = await sendPhoneVerificationCodeService(sendCodeResultCursor);
 
-                sendCodeResultCursor.set({});
-
-                if (oldProfile.phone !== formCursor.phone.get()) {
+                if (sendCodeResult.status === 'Succeed') {
+                    sendCodeResultCursor.set({});
                     this.setState({ openCodeModal: true });
-                } else {
-                    this.onProfileSuccessfullyEdited();
                 }
+            } else {
+                this.onProfileSuccessfullyEdited();
             }
         }
 
@@ -194,37 +195,62 @@ export const EditProfilePage = schema(model)(createReactClass({
         }, this.checkInputError(name));
     },
 
+    async removeCar(pk) {
+        const { removeCarService, getCarListService } = this.props.services;
+        const result = await removeCarService(this.props.tree.removeCarResult, pk);
+
+        if (result.status === 'Succeed') {
+            await getCarListService(this.props.carsCursor);
+        }
+    },
+
     renderCarsList() {
-        const { cars } = this.props;
+        const cars = this.props.carsCursor.get('data');
 
         return (
             <div className={s.cars}>
                 {_.map(cars, (car, index) => {
                     const {
-                        brand, model: carModel, color, numberOfSeats, licensePlate,
+                        brand, model: carModel, numberOfSeats,
+                        licensePlate, productionYear, color, pk,
                     } = car;
 
-                    // return (
-                    //     <Link
-                    //         key={`car-${index}`}
-                    //         className={s.car}
-                    //         to={`/app/profile/car/${pk}/edit`}
-                    //     >
-                    //         <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
-                    //         <div>{licensePlate}</div>
-                    //         <div
-                    //             className={classNames(s.icon, s._arrow)}
-                    //             style={{ backgroundImage: `url(${arrowIcon})` }}
-                    //         />
-                    //     </Link>
-                    // );
                     return (
                         <div
                             key={`car-${index}`}
                             className={s.car}
                         >
-                            <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
-                            <div>{licensePlate}</div>
+                            <div
+                                className={s.deleteIcon}
+                                style={{ backgroundImage: `url(${minusIcon})` }}
+                                onClick={() => {
+                                    Modal.alert('Remove car',
+                                        `You are going to remove ${brand} ${carModel}. Are you sure?`,
+                                        [
+                                            {
+                                                text: 'YES',
+                                                onPress: () => this.removeCar(pk),
+                                                style: { color: '#4263CA' },
+                                            },
+                                            {
+                                                text: 'NO',
+                                                style: { color: '#4263CA' },
+                                            },
+                                        ]);
+                                }}
+                            />
+                            <Link className={s.carInfo} to={`/app/profile/car/${pk}/edit`}>
+                                <div>
+                                    {`${brand} ${carModel} `}
+                                    {`(${color}, ${numberOfSeats} seats`}
+                                    {productionYear ? `, ${productionYear} year)` : ')'}
+                                </div>
+                                {licensePlate ? <div className={s.licensePlate}>{licensePlate}</div> : null}
+                                <div
+                                    className={classNames(s.icon, s._arrow)}
+                                    style={{ backgroundImage: `url(${arrowIcon})` }}
+                                />
+                            </Link>
                         </div>
                     );
                 })}
@@ -235,7 +261,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                     <div className={classNames(s.icon, s._plus)}>
                         <AddFilledIcon />
                     </div>
-                    <div>Add one</div>
+                    <div>Add auto</div>
                 </Link>
             </div>
         );
@@ -475,9 +501,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}
                 />
-                <WhiteSpace />
-                <WhiteSpace />
-                <Flex direction="column" justify="center">
+                <div className={s.footer}>
                     <Button
                         type="primary"
                         inline
@@ -486,9 +510,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                     >
                         Save profile
                     </Button>
-                </Flex>
-                <WhiteSpace />
-                <WhiteSpace />
+                </div>
                 {this.renderPhoneCodeModal()}
             </div>
         );

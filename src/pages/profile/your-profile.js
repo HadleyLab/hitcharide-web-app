@@ -56,7 +56,7 @@ export const YourProfilePage = createReactClass({
                                 />
                                 <Route
                                     exact
-                                    path={`${url}/car/:pk/edit`}
+                                    path={`${url}/car/:pk/:mode`}
                                     render={(props) => (
                                         <AddCarPage
                                             {...props}
@@ -76,7 +76,7 @@ export const YourProfilePage = createReactClass({
                                             services={services}
                                             tree={this.props.tree.select('editProfile')}
                                             profileCursor={this.props.tree.profile.data}
-                                            cars={this.props.tree.cars.get('data')}
+                                            carsCursor={this.props.tree.cars}
                                         />
                                     )}
                                 />

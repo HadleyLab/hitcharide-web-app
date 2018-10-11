@@ -41,7 +41,7 @@ export const DateTimePickers = createReactClass({
                     Departure
                 </Title>
                 {this.renderDateTimeError()}
-                <List className={s.datePicker} style={{ backgroundColor: 'white' }}>
+                <List className={s.datePicker}>
                     <DatePicker
                         value={formCursor.dateTime.get()}
                         onChange={(date) => {

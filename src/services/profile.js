@@ -1,5 +1,8 @@
 import _ from 'lodash';
-import { buildGetService, buildPostService, defaultHeaders } from './base';
+import {
+    buildGetService, buildPostService,
+    defaultHeaders, hydrateFormData,
+} from './base';
 
 export function getMyProfileService(handler, token) {
     const headers = {
@@ -33,14 +36,6 @@ export function getUserProfileService(handler, token) {
     };
 }
 
-function hydrateData(profile) {
-    let data = new FormData();
-
-    _.forEach(profile, (value, key) => data.append(key, value));
-
-    return data;
-}
-
 export function updateProfileService(handler, token) {
     const headers = {
         Accept: 'application/json',
@@ -51,7 +46,7 @@ export function updateProfileService(handler, token) {
         const service = buildPostService(
             '/accounts/my/',
             'PUT',
-            hydrateData,
+            hydrateFormData,
             _.identity,
             headers
         );

@@ -40,13 +40,39 @@ export const ProfileContent = createReactClass({
                 <div className={s.cars}>
                     {_.map(cars, (car, index) => {
                         const {
-                            brand, model: carModel, color, numberOfSeats, licensePlate,
+                            brand, model: carModel, numberOfSeats,
+                            licensePlate, productionYear, color, images,
                         } = car;
 
                         return (
-                            <div key={`car-${index}`} className={s.car}>
-                                <div>{`${brand} ${carModel} (${color}, ${numberOfSeats} seats)`}</div>
-                                <div>{licensePlate}</div>
+                            <div
+                                key={`car-${index}`}
+                                className={classNames(s.car, {
+                                    [s._withImages]: !_.isEmpty(images),
+                                })}
+                            >
+                                <div className={s.carInfo}>
+                                    <div>
+                                        {`${brand} ${carModel} `}
+                                        {`(${color}, ${numberOfSeats} seats`}
+                                        {productionYear ? `, ${productionYear} year)` : ')'}
+                                    </div>
+                                    {licensePlate ? <div className={s.licensePlate}>{licensePlate}</div> : null}
+                                </div>
+                                {!_.isEmpty(images) ? (
+                                    <div className={s.imagesWrapper}>
+                                        <div className={s.images}>
+                                            {_.map(images, ({ image }, imageIndex) => (
+                                                <div
+                                                    key={`car-${index}-image-${imageIndex}`}
+                                                    className={s.carImage}
+                                                    style={{ backgroundImage: `url(${image})` }}
+                                                />
+                                            ))}
+                                            <div className={s.imagesOffset} />
+                                        </div>
+                                    </div>
+                                ) : null}
                             </div>
                         );
                     })}
@@ -160,10 +186,8 @@ export const ProfileContent = createReactClass({
                 */}
                 {shortDesc ? (
                     <div className={s.section}>
-                        <Title>{isYourProfile ? 'About you' : 'About'}</Title>
-                        <div className={s.infoField}>
-                            {shortDesc || 'A few words about myself'}
-                        </div>
+                        <Title>{isYourProfile ? 'About you' : 'About user'}</Title>
+                        <div className={s.infoField}>{shortDesc}</div>
                     </div>
                 ) : null}
                 <div className={s.section}>
@@ -183,9 +207,9 @@ export const ProfileContent = createReactClass({
                         ) : null}
                     </div>
                 </div>
+                {this.renderCars()}
                 {isYourProfile ? (
                     <div>
-                        {this.renderCars()}
                         {paypalAccount ? (
                             <div className={s.section}>
                                 <Title>PayPal</Title>

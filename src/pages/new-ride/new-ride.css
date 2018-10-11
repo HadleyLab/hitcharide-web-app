@@ -19,8 +19,6 @@
 }
 
 .datePicker, .carPicker {
-    background-color: #f00;
-
     :global .am-list-body:before {
         content: none!important;
     }
