@@ -152,23 +152,21 @@ export const EditProfilePage = schema(model)(createReactClass({
         const { updateProfileService, sendPhoneVerificationCodeService } = this.props.services;
         const formCursor = this.props.tree.form;
         const data = this.prepareData();
-
         const result = await updateProfileService(this.props.tree.result, data);
 
         if (result.status === 'Succeed') {
-            const sendCodeResultCursor = this.props.tree.sendPhoneVerificationCodeResult;
-            const sendCodeResult = await sendPhoneVerificationCodeService(sendCodeResultCursor);
+            const oldProfile = this.props.profileCursor.get();
 
-            if (sendCodeResult.status === 'Succeed') {
-                const oldProfile = this.props.profileCursor.get();
+            if (oldProfile.phone !== formCursor.phone.get()) {
+                const sendCodeResultCursor = this.props.tree.sendPhoneVerificationCodeResult;
+                const sendCodeResult = await sendPhoneVerificationCodeService(sendCodeResultCursor);
 
-                sendCodeResultCursor.set({});
-
-                if (oldProfile.phone !== formCursor.phone.get()) {
+                if (sendCodeResult.status === 'Succeed') {
+                    sendCodeResultCursor.set({});
                     this.setState({ openCodeModal: true });
-                } else {
-                    this.onProfileSuccessfullyEdited();
                 }
+            } else {
+                this.onProfileSuccessfullyEdited();
             }
         }
 
