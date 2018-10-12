@@ -6,6 +6,8 @@ import createReactClass from 'create-react-class';
 import moment from 'moment';
 import { Search, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
+import FlatBlock from 'components/flatblock';
+import Modal from 'components/modal';
 import themeImage from './intro.jpg';
 import { Button } from '../button';
 import s from './intro.css';
@@ -18,6 +20,7 @@ const model = {
             cityTo: null,
             dateTime: null,
         },
+        flatblock: null,
     },
 };
 
@@ -26,6 +29,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
         tree: BaobabPropTypes.cursor.isRequired,
         token: PropTypes.string,
         services: PropTypes.shape({
+            getFlatpageService: PropTypes.func.isRequired,
             getCitiesService: PropTypes.func.isRequired,
         }).isRequired,
     },
@@ -53,7 +57,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
 
     renderSearchForm() {
         const { token, services, tree } = this.props;
-        const { getCitiesService } = services;
+        const { getCitiesService, getFlatpageService } = services;
         const citiesCursor = tree.cities;
         const formCursor = tree.searchForm;
 
@@ -99,6 +103,18 @@ export const HomeIntroSection = schema(model)(createReactClass({
                         </div>
                     </DateTimePicker>
                     <Button to={token ? '/app' : '/search'} className={s.button}>Search a ride</Button>
+
+                    <Modal
+                        header={'header!'}
+                        closeModal={() => {}}
+                        closable={true}>
+                        <div>
+                            <FlatBlock
+                                tree={this.props.tree.flatblock}
+                                service={getFlatpageService}
+                                slug="index" />
+                        </div>
+                    </Modal>
                 </div>
             </div>
         );

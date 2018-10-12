@@ -2,6 +2,7 @@ import {
     buildGetService, defaultHeaders
 } from './base';
 
+
 export function getFlatpageService(handler) {
     return (cursor, slug) => {
         const service = buildGetService(
