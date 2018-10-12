@@ -5,34 +5,26 @@ import createReactClass from 'create-react-class';
 
 export default createReactClass({
     displayName: 'Portal',
+    node: null,
 
-    componentDidMount() {
+    componentWillMount() {
         this.node = document.createElement('div');
         this.node.className = 'portal';
         document.body.appendChild(this.node);
-        this.renderPortal();
-    },
-
-    componentDidUpdate() {
-        this.renderPortal();
     },
 
     componentWillUnmount() {
-        ReactDOM.unmountComponentAtNode(this.node);
         document.body.removeChild(this.node);
     },
 
-    node: {},
-
-    renderPortal() {
-        ReactDOM.unstable_renderSubtreeIntoContainer(
-            this,
-            this.props.children,
-            this.node,
-        );
-    },
-
     render() {
-        return null;
+        if (this.node) {
+            return ReactDOM.createPortal(
+                this.props.children,
+                this.node
+            );
+        } else {
+            return null;
+        }
     },
 });
