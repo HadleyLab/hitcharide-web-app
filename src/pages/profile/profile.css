@@ -25,7 +25,7 @@
     width: 90px;
     height: 90px;
     border-radius: 50%;
-    background-color: #CADEF3;
+    background-color: rgba(#CADEF3, .3);
     color: #4263CA;
     font-size: 12px;
     line-height: 14px;
@@ -237,4 +237,8 @@
 
 .licensePlate {
     padding-left: 15px;
+}
+
+.link {
+    color: #4263CA;
 }

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import { Loader, ServiceContext } from 'components';
-import { AddCarPage } from 'pages';
+import { AddCarPage, ReviewsPage } from 'pages';
 import { Route } from 'react-router-dom';
 import { EditProfilePage } from './edit';
 import { ProfileContent } from './profile-content';
@@ -77,6 +77,18 @@ export const YourProfilePage = createReactClass({
                                             tree={this.props.tree.select('editProfile')}
                                             profileCursor={this.props.tree.profile.data}
                                             carsCursor={this.props.tree.cars}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    exact
+                                    path={`${url}/reviews`}
+                                    render={(props) => (
+                                        <ReviewsPage
+                                            {...props}
+                                            services={services}
+                                            tree={this.props.tree.select('userReviews')}
+                                            profile={this.props.tree.profile.data.get()}
                                         />
                                     )}
                                 />

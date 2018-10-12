@@ -15,6 +15,7 @@ export const ProfileContent = createReactClass({
 
     propTypes: {
         profile: PropTypes.shape().isRequired,
+        match: PropTypes.shape().isRequired,
         cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
         logout: PropTypes.func,
         isYourProfile: PropTypes.bool,
@@ -129,7 +130,8 @@ export const ProfileContent = createReactClass({
     },
 
     renderReviewsInfo() {
-        const { value: rating, count: reviewsCount } = this.props.profile.rating;
+        const { match, profile } = this.props;
+        const { value: rating, count: reviewsCount } = profile.rating;
 
         return (
             <div className={classNames(s.infoField, s.ratingWrapper)}>
@@ -143,9 +145,9 @@ export const ProfileContent = createReactClass({
                     />
                     <div className={s.ratingValue}>{`${rating}/5`}</div>
                 </div>
-                <span className={s.review}>
+                <Link to={`${match.url}/reviews`} className={s.link}>
                     {`${reviewsCount} ${reviewsCount === 1 ? 'review' : 'reviews'}`}
-                </span>
+                </Link>
             </div>
         );
     },
