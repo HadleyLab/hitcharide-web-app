@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import createReactClass from 'create-react-class';
 import { Flex, Button } from 'antd-mobile';
-import { Title } from 'components';
+import { Title, Stars } from 'components';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
-import { StarIcon, HappinessIcon } from 'components/icons';
+import { HappinessIcon } from 'components/icons';
 import s from './profile.css';
 
 export const ProfileContent = createReactClass({
@@ -106,53 +106,46 @@ export const ProfileContent = createReactClass({
         );
     },
 
-    renderRate() {
-        const rate = 4.6;
-        const starsWidth = 90;
-
+    renderStatistics() {
         return (
-            <div className={s.rate}>
-                <div className={classNames(s.stars, s._blank)}>
-                    {_.map(_.range(0, 5), (star, index) => (
-                        <div className={s.star} key={`star-${index}`}>
-                            <StarIcon />
-                        </div>
-                    ))}
+            <div className={s.statistics}>
+                <div className={s.statisticsItem}>
+                    <div className={classNames(s.statisticsImage, s._car)} />
+                    <div className={s.statisticsTitle}>165</div>
+                    Total trips
                 </div>
-                <div
-                    className={classNames(s.stars, s._filled)}
-                    style={{ width: `${rate / 5 * starsWidth}px` }}
-                >
-                    {_.map(_.range(0, 5), (star, index) => (
-                        <div className={s.star} key={`star-${index}`}>
-                            <StarIcon color="#007AFF" />
-                        </div>
-                    ))}
+                <div className={s.statisticsItem}>
+                    <div className={classNames(s.statisticsImage, s._happiness)} />
+                    <div className={s.statisticsTitle}>163</div>
+                    Completed
                 </div>
-                <div className={s.rateValue}>{`${rate}/5`}</div>
+                <div className={s.statisticsItem}>
+                    <div className={classNames(s.statisticsImage, s._sadness)} />
+                    <div className={s.statisticsTitle}>2</div>
+                    Cancelled
+                </div>
             </div>
         );
     },
 
     renderReviewsInfo() {
+        const { value: rating, count: reviewsCount } = this.props.profile.rating;
+
         return (
-            <div>
-                <div className={classNames(s.infoField, s.rateWrapper)}>
-                    {this.renderRate()}
-                    <span className={s.review}>104 review</span>
+            <div className={classNames(s.infoField, s.ratingWrapper)}>
+                <div className={s.starsWrapper}>
+                    <Stars
+                        rating={rating}
+                        className={s.stars}
+                        blankColor="#C4C4C4"
+                        fillColor="#007AFF"
+                        small
+                    />
+                    <div className={s.ratingValue}>{`${rating}/5`}</div>
                 </div>
-                <div className={s.infoField}>
-                    Number of trips
-                    <span className={s.infoValue}>112</span>
-                </div>
-                <div className={s.infoField}>
-                    Number of completed trips
-                    <span className={s.infoValue}>98</span>
-                </div>
-                <div className={s.infoField}>
-                    Number of canceled trips
-                    <span className={s.infoValue}>14</span>
-                </div>
+                <span className={s.review}>
+                    {`${reviewsCount} ${reviewsCount === 1 ? 'review' : 'reviews'}`}
+                </span>
             </div>
         );
     },
@@ -181,9 +174,8 @@ export const ProfileContent = createReactClass({
                         {age ? ` (${age} years)` : null}
                     </div>
                 </div>
-                {/*
+                {this.renderStatistics()}
                 {this.renderReviewsInfo()}
-                */}
                 {shortDesc ? (
                     <div className={s.section}>
                         <Title>{isYourProfile ? 'About you' : 'About user'}</Title>

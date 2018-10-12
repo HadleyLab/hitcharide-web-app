@@ -4,7 +4,7 @@ import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import { Loader, Title, ClickableStars } from 'components';
+import { Loader, Title, Stars } from 'components';
 import { validateForm } from 'components/utils';
 import { Redirect } from 'react-router-dom';
 import { HappinessIcon } from 'components/icons';
@@ -231,7 +231,7 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
                         {`${firstName}`}
                     </div>
                     <div className={s.stars}>
-                        <ClickableStars
+                        <Stars
                             rating={rating}
                             onChange={(value) => {
                                 formCursor.select(index, 'rating').set(value);

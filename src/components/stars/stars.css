@@ -14,7 +14,7 @@
         left: 0;
     }
 
-    &._big {
+    .container._big & {
         height: 30px;
         margin: 0 -1px;
     }
@@ -30,7 +30,7 @@
         display: block;
     }
 
-    .stars._big & {
+    .container._big & {
         margin: 0 1px;
         width: 30px;
         min-width: 30px;
@@ -40,11 +40,11 @@
 }
 
 @media screen and (max-width: 320px) {
-    .stars._big {
+    .container._big .stars {
         height: 22px;
     }
 
-    .stars._big .star {
+    .container._big .star {
         width: 22px;
         min-width: 22px;
         height: 22px;

@@ -7,64 +7,53 @@ import { StarIcon } from 'components/icons';
 import s from './stars.css';
 
 export const Stars = createReactClass({
-    propTypes: {},
-
-    render() {
-        const rate = 4.6;
-        const starsWidth = 90;
-
-        return (
-            <div className={s.container}>
-                <div className={classNames(s.stars, s._blank)}>
-                    {_.map(_.range(0, 5), (star, index) => (
-                        <div className={s.star} key={`star-${index}`}>
-                            <StarIcon />
-                        </div>
-                    ))}
-                </div>
-                <div
-                    className={classNames(s.stars, s._filled)}
-                    style={{ width: `${rate / 5 * starsWidth}px` }}
-                >
-                    {_.map(_.range(0, 5), (star, index) => (
-                        <div className={s.star} key={`star-${index}`}>
-                            <StarIcon color="#007AFF" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    },
-});
-
-export const ClickableStars = createReactClass({
     propTypes: {
         rating: PropTypes.number,
+        className: PropTypes.string,
         onChange: PropTypes.func,
         clickable: PropTypes.bool,
+        small: PropTypes.bool,
+        blankColor: PropTypes.string,
+        fillColor: PropTypes.string,
     },
 
     getDefaultProps() {
         return {
             rating: 0,
+            className: null,
             onChange: null,
             clickable: false,
+            small: false,
+            blankColor: '#e5eff9',
+            fillColor: '#4263CA',
         };
     },
 
     getInitialState() {
         return {
             value: this.props.rating,
-            starsWidth: 160,
+            starsWidth: this.props.small ? 90 : 160,
         };
     },
 
     componentDidMount() {
+        const { small } = this.props;
+
+        if (small) {
+            return;
+        }
+
         this.checkWindowSize();
         window.addEventListener('resize', this.checkWindowSize, false);
     },
 
     componentWillUnmount() {
+        const { small } = this.props;
+
+        if (small) {
+            return;
+        }
+
         window.removeEventListener('resize', this.checkWindowSize);
     },
 
@@ -88,24 +77,39 @@ export const ClickableStars = createReactClass({
         this.props.onChange(value);
     },
 
+    getBlankColor(index) {
+        const { small, blankColor } = this.props;
+
+        if (!small && index === 0) {
+            return '#CADEF3';
+        }
+
+        return blankColor;
+    },
+
     render() {
         const { value, starsWidth } = this.state;
+        const { className, small, fillColor } = this.props;
 
         return (
-            <div className={s.container}>
-                <div className={classNames(s.stars, s._big, s._blank)}>
+            <div
+                className={classNames(s.container, className, {
+                    [s._big]: !small,
+                })}
+            >
+                <div className={classNames(s.stars, s._blank)}>
                     {_.map(_.range(0, 5), (star, index) => (
                         <div
                             className={s.star}
                             key={`star-blank-${index}`}
                             onClick={() => this.onStarClick(index)}
                         >
-                            <StarIcon color={index === 0 ? '#CADEF3' : '#e5eff9'} />
+                            <StarIcon color={this.getBlankColor(index)} />
                         </div>
                     ))}
                 </div>
                 <div
-                    className={classNames(s.stars, s._big, s._filled)}
+                    className={classNames(s.stars, s._filled)}
                     style={{ width: `${value / 5 * starsWidth}px` }}
                 >
                     {_.map(_.range(0, 5), (star, index) => (
@@ -114,7 +118,7 @@ export const ClickableStars = createReactClass({
                             key={`star-${index}`}
                             onClick={() => this.onStarClick(index)}
                         >
-                            <StarIcon color="#4263CA" />
+                            <StarIcon color={fillColor} />
                         </div>
                     ))}
                 </div>
