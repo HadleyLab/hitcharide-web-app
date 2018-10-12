@@ -19,6 +19,7 @@ import {
     rideComplainService, rideDeleteService, bookingCancelService,
 } from './rides.js';
 import { addReviewService, getReviewsListService } from './reviews.js';
+import { getFlatpageService } from './flatpages.js';
 
 export default {
     signUpService,
@@ -55,4 +56,5 @@ export default {
     bookingCancelService,
     addReviewService,
     getReviewsListService,
+    getFlatpageService,
 };
