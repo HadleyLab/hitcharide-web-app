@@ -21,6 +21,7 @@ const model = {
             dateTime: null,
         },
         flatblock: null,
+        modalShow: false,
     },
 };
 
@@ -104,17 +105,20 @@ export const HomeIntroSection = schema(model)(createReactClass({
                     </DateTimePicker>
                     <Button to={token ? '/app' : '/search'} className={s.button}>Search a ride</Button>
 
-                    <Modal
-                        header={'header!'}
-                        closeModal={() => {}}
-                        closable={true}>
-                        <div>
-                            <FlatBlock
-                                tree={this.props.tree.flatblock}
-                                service={getFlatpageService}
-                                slug="index" />
-                        </div>
-                    </Modal>
+                    {/*<div onClick={() => {this.props.tree.modalShow.set(true)}}>OPEN!</div>*/}
+
+                    {/*{this.props.tree.modalShow.get() ?*/}
+                        {/*<Modal*/}
+                            {/*header={'header!'}*/}
+                            {/*closeModal={() => {this.props.tree.modalShow.set(false)}}*/}
+                            {/*closable={true}>*/}
+                            {/*<div>*/}
+                                {/*<FlatBlock*/}
+                                    {/*tree={this.props.tree.flatblock}*/}
+                                    {/*service={getFlatpageService}*/}
+                                    {/*slug="index" />*/}
+                            {/*</div>*/}
+                        {/*</Modal> : null}*/}
                 </div>
             </div>
         );

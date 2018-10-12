@@ -3,7 +3,6 @@ import classNames from 'classnames';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import Portal from 'components/portal';
-import ModalContext from './modal-context';
 import s from './modal.css';
 
 
@@ -13,9 +12,9 @@ export default createReactClass({
     propTypes: {
         closeable: PropTypes.bool,
         closeModal: PropTypes.func.isRequired,
-        header: PropTypes.any.isRequired, // eslint-disable-line
-        children: PropTypes.any.isRequired, // eslint-disable-line
-        footer: PropTypes.any, // eslint-disable-line
+        header: PropTypes.any.isRequired,
+        children: PropTypes.any.isRequired,
+        footer: PropTypes.any,
         mode: PropTypes.string,
         zIndex: PropTypes.number,
         bodyClass: PropTypes.string,
@@ -44,46 +43,39 @@ export default createReactClass({
 
         return (
             <Portal>
-                <ModalContext
-                    modal={this.modal}
+                <div
+                    className={s.modal}
+                    style={{ zIndex }}
+                    ref={(ref) => { this.modal = ref; }}
                 >
-                    <div
-                        className={classNames(s.modal, {
-                            [s._full]: mode === 'full',
-                            [s._middle]: mode === 'middle',
-                        })}
-                        style={{ zIndex }}
-                        ref={(ref) => { this.modal = ref; }}
-                    >
-                        <div className={s.wrapper}>
-                            <div className={s.inner}>
-                                <div
-                                    className={s.bg}
-                                    onClick={closeable && closeModal}
-                                />
-                                <div className={s.content}>
-                                    <div className={s.header}>
-                                        {header}
-                                        {closeable ? (
-                                            <div
-                                                className={s.close}
-                                                onClick={closeModal}
-                                            />
-                                        ) : null}
-                                    </div>
-                                    <div className={classNames(s.body, defaultBodyClass)}>
-                                        {children}
-                                        {footer ? (
-                                            <div className={s.footer}>
-                                                {footer}
-                                            </div>
-                                        ) : null}
-                                    </div>
+                    <div className={s.wrapper}>
+                        <div className={s.inner}>
+                            <div
+                                className={s.bg}
+                                onClick={closeable && closeModal}
+                            />
+                            <div className={s.content}>
+                                <div className={s.header}>
+                                    {header}
+                                    {closeable ? (
+                                        <div
+                                            className={s.close}
+                                            onClick={closeModal}
+                                        />
+                                    ) : null}
+                                </div>
+                                <div className={classNames(s.body, defaultBodyClass)}>
+                                    {children}
+                                    {footer ? (
+                                        <div className={s.footer}>
+                                            {footer}
+                                        </div>
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
                     </div>
-                </ModalContext>
+                </div>
             </Portal>
         );
     },
