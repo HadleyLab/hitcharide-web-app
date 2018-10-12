@@ -12,10 +12,9 @@ export default createReactClass({
     propTypes: {
         closeable: PropTypes.bool,
         closeModal: PropTypes.func.isRequired,
-        header: PropTypes.any.isRequired,
-        children: PropTypes.any.isRequired,
-        footer: PropTypes.any,
-        mode: PropTypes.string,
+        header: PropTypes.node.isRequired,
+        children: PropTypes.node.isRequired,
+        footer: PropTypes.node,
         zIndex: PropTypes.number,
         bodyClass: PropTypes.string,
     },
@@ -38,7 +37,7 @@ export default createReactClass({
     originalBodyOverflow: null,
 
     render() {
-        const { mode, zIndex, closeable, closeModal, header, footer, children, bodyClass } = this.props;
+        const { zIndex, closeable, closeModal, header, footer, children, bodyClass } = this.props;
         const defaultBodyClass = typeof bodyClass === 'undefined' ? s.defaultBody : this.props.bodyClass;
 
         return (

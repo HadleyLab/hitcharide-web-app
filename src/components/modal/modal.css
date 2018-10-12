@@ -10,9 +10,6 @@
   background-color: rgba(#002145, .65);
   transform: translateZ(0);
   z-index: 100;
-  &._full {
-    background-color: #fff;
-  }
 }
 
 .wrapper {
@@ -40,9 +37,6 @@
   padding: 30px 0;
   font-size: 14px;
   text-align: center;
-  .modal._full & {
-    padding: 0;
-  }
 }
 
 .content {
