@@ -1,0 +1,53 @@
+.container {
+    display: flex;
+    position: relative;
+}
+
+.stars {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    overflow: hidden;
+
+    &._filled {
+        position: absolute;
+        left: 0;
+    }
+
+    &._big {
+        height: 30px;
+        margin: 0 -1px;
+    }
+}
+
+.star {
+    width: 18px;
+    min-width: 18px;
+    height: 18px;
+    min-height: 18px;
+
+    svg {
+        display: block;
+    }
+
+    .stars._big & {
+        margin: 0 1px;
+        width: 30px;
+        min-width: 30px;
+        height: 30px;
+        min-height: 30px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .stars._big {
+        height: 22px;
+    }
+
+    .stars._big .star {
+        width: 22px;
+        min-width: 22px;
+        height: 22px;
+        min-height: 22px;
+    }
+}

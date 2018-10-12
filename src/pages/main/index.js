@@ -11,7 +11,7 @@ import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
-    RideRequestDetailsPage,
+    RideRequestDetailsPage, RateDriverAndPassengersScreen,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
@@ -151,8 +151,8 @@ const MainPageContent = createReactClass({
         return suggestAndBookingRights;
     },
 
-    showMessage(creationRights) {
-        Modal.alert('Create a ride', creationRights.message, [
+    showMessage(creationRights, title) {
+        Modal.alert(title || 'Create a ride', creationRights.message, [
             { text: 'Cancel', onPress: () => null },
             {
                 text: 'Edit profile',
@@ -241,6 +241,17 @@ const MainPageContent = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('ride')}
                                         profile={profile.data}
+                                        onBookRide={(bookRide) => {
+                                            const userRights = this.checkIfUserCanBeDriver(userType);
+
+                                            if (!userRights.allowed) {
+                                                this.showMessage(userRights, 'Book a ride');
+
+                                                return;
+                                            }
+
+                                            bookRide();
+                                        }}
                                     />
                                 )}
                             />
@@ -250,6 +261,16 @@ const MainPageContent = createReactClass({
                                     <RideRequestDetailsPage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('rideRequest')}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/rate/:pk`}
+                                render={(props) => (
+                                    <RateDriverAndPassengersScreen
+                                        {..._.merge(this.props, props)}
+                                        tree={this.props.tree.select('ride')}
+                                        profile={profile.data}
                                     />
                                 )}
                             />

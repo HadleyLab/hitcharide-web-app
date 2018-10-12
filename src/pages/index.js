@@ -15,3 +15,4 @@ export { NewRidePage } from './new-ride';
 export { AddCarPage } from './add-car';
 export { RideDetailsPage } from './ride-details';
 export { RideRequestDetailsPage } from './ride-details/request';
+export { RateDriverAndPassengersScreen } from './ride-details/rate-driver-passengers';
