@@ -286,11 +286,15 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
         return (
             <Button
-                type="ghost"
+                type="primary"
+                style={{
+                    backgroundColor: '#4263CA',
+                    borderColor: '#4263CA',
+                }}
                 inline
                 onClick={() => history.push(`/app/rate/${pk}`)}
             >
-                Rate
+                Rate the ride
             </Button>
         );
     },
@@ -302,6 +306,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const amIPassenger = this.checkIfIAmPassenger();
         const { ride } = tree;
         const ridePk = ride.data.pk;
+        const isRideCompleted = ride.data.status === 'completed';
 
         if (ride.data.status === 'canceled') {
             return (
@@ -323,7 +328,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
             return (
                 <div className={classNames(s.footer, s._passenger)}>
-                    {this.renderRateButton()}
+                    {isRideCompleted ? this.renderRateButton() : null}
                     {isBookingPayed && canBeCanceled ? (
                         <Button
                             type="primary"
@@ -386,7 +391,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         if (amIDriver) {
             return (
                 <div className={s.footer}>
-                    {this.renderRateButton()}
+                    {isRideCompleted ? this.renderRateButton() : null}
                     {!isRideStarted ? (
                         <Button
                             type="ghost"

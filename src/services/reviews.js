@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { buildGetService, buildPostService, defaultHeaders } from './base';
+import {
+    buildGetService, buildPostService, defaultHeaders, paramsToString,
+} from './base';
 
 export function addReviewService(handler, token) {
     const headers = {
@@ -19,18 +21,18 @@ export function addReviewService(handler, token) {
     };
 }
 
-// export function getReviesListService(handler, token) {
-//     const headers = {
-//         Authorization: `JWT ${token}`,
-//     };
-//
-//     return (cursor) => {
-//         const service = buildGetService(
-//             '/rides/car/',
-//             _.identity,
-//             _.merge({}, defaultHeaders, headers)
-//         );
-//
-//         return service(handler, cursor);
-//     };
-// }
+export function getReviewsListService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, params) => {
+        const service = buildGetService(
+            `/reviews/${paramsToString(params)}`,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
+    };
+}

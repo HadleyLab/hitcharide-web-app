@@ -269,7 +269,8 @@ const MainPageContent = createReactClass({
                                 render={(props) => (
                                     <RateDriverAndPassengersScreen
                                         {..._.merge(this.props, props)}
-                                        tree={this.props.tree.select('ride')}
+                                        tree={this.props.tree.select('reviews')}
+                                        rideCursor={this.props.tree.select('ride', 'ride')}
                                         profile={profile.data}
                                     />
                                 )}

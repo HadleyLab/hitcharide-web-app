@@ -4,9 +4,7 @@ import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
-import {
-    Loader, Title, ClickableStars, Error,
-} from 'components';
+import { Loader, Title, ClickableStars } from 'components';
 import { validateForm } from 'components/utils';
 import { Redirect } from 'react-router-dom';
 import { HappinessIcon } from 'components/icons';
@@ -20,63 +18,131 @@ const validationSchema = yup.array().of(
         ride: yup.number().nullable().required(),
         subject: yup.string().ensure().required(),
         rating: yup.number().nullable().required(),
-        comment: yup.string().ensure().required(),
+        comment: yup.string().ensure(),
     })
 );
 
 const DRIVER = 1;
 const PASSENGER = 2;
 
-export const RateDriverAndPassengersScreen = schema({})(createReactClass({
+const modal = {
+    reviews: {},
+    reviewsForm: {},
+    addReviewsErrors: {},
+    addReviewsResult: {},
+};
+
+export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        rideCursor: BaobabPropTypes.cursor.isRequired,
         profile: PropTypes.shape().isRequired,
         match: PropTypes.shape().isRequired,
+        history: PropTypes.shape().isRequired,
         services: PropTypes.shape({
             getRideService: PropTypes.func.isRequired,
             addReviewService: PropTypes.func.isRequired,
+            getReviewsListService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
     getInitialState() {
         return {
             userType: null,
-            passengers: [],
-            driver: null,
+            users: [],
         };
     },
 
-    componentDidMount() {
-        this.loadRide();
+    async componentDidMount() {
+        await this.loadRide();
+        this.checkUserType();
+        await this.loadReviews();
+    },
+
+    componentWillUnmount() {
+        this.props.tree.set({});
     },
 
     async loadRide() {
-        const { tree, match } = this.props;
+        const { match, rideCursor } = this.props;
         const { getRideService } = this.props.services;
 
-        if (!tree.ride.get()) {
-            await getRideService(tree.ride, match.params.pk);
+        if (!rideCursor.get()) {
+            await getRideService(rideCursor, match.params.pk);
         }
-
-        this.getReviewData();
     },
 
-    getReviewData() {
-        const { profile } = this.props;
-        const { car, bookings, pk } = this.props.tree.ride.data.get();
+    async loadReviews() {
+        const { tree, match, profile } = this.props;
+        const { pk: ride } = match.params;
+        const { getReviewsListService } = this.props.services;
+        const result = await getReviewsListService(tree.reviews, { ride, author: profile.pk });
+
+        if (result.status === 'Succeed') {
+            if (result.data.length) {
+                tree.reviewsForm.set(result.data);
+                this.getUsers();
+            } else {
+                this.perepareReviewsData();
+            }
+        }
+    },
+
+    checkUserType() {
+        const { profile, rideCursor } = this.props;
+        const { car, bookings } = rideCursor.data.get();
         const amIDriver = car.owner.pk === profile.pk;
         const amIPassenger = _.filter(bookings, ({ client }) => client.pk === profile.pk).length;
-        const reviewsCursor = this.props.tree.select('reviews');
-        reviewsCursor.set([]);
 
         if (amIDriver) {
-            const passengers = _.map(bookings,
-                ({ client, seatsCount }) => _.merge({ bookedSeatsCount: seatsCount }, client));
+            this.setState({ userType: 'driver' });
+
+            return;
+        }
+
+        if (amIPassenger) {
+            this.setState({ userType: 'passenger' });
+
+            return;
+        }
+
+        this.setState({ userType: 'guest' });
+    },
+
+    getUsers() {
+        const reviews = this.props.tree.reviews.data.get();
+        const { userType } = this.state;
+        const { car, bookings } = this.props.rideCursor.data.get();
+
+        if (userType === 'driver') {
+            const passengers = _.map(bookings, ({ client }) => {
+                const review = _.find(reviews, { subject: client.pk });
+                const data = review ? _.pick(review, ['rating', 'comment']) : { rating: null, comment: null };
+
+                return _.merge({}, client, data);
+            });
+            this.setState({ users: passengers });
+        }
+
+        if (userType === 'passenger') {
+            const review = _.find(reviews, { subject: car.owner.pk });
+            const data = review ? _.pick(review, ['rating', 'comment']) : { rating: null, comment: null };
 
             this.setState({
-                userType: 'driver',
-                passengers,
+                users: [_.merge({}, car.owner, data)],
             });
+        }
+    },
+
+    perepareReviewsData() {
+        const { userType } = this.state;
+        const { car, bookings, pk } = this.props.rideCursor.data.get();
+        const reviewsCursor = this.props.tree.select('reviewsForm');
+        reviewsCursor.set([]);
+        this.getUsers();
+
+        if (userType === 'driver') {
+            const passengers = _.map(bookings, 'client');
 
             _.forEach(passengers, (passenger) => {
                 reviewsCursor.push({
@@ -87,13 +153,9 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
                     comment: null,
                 });
             });
-
-            return;
         }
 
-        if (amIPassenger) {
-            this.setState({ userType: 'passenger', driver: car.owner });
-
+        if (userType === 'passenger') {
             reviewsCursor.push({
                 authorType: PASSENGER,
                 ride: pk,
@@ -101,21 +163,17 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
                 rating: null,
                 comment: null,
             });
-
-            return;
         }
-
-        this.setState({ userType: 'guest' });
     },
 
     async onSubmit() {
         const { addReviewService } = this.props.services;
-        const formCursor = this.props.tree.reviews;
-        const errorsCursor = this.props.tree.reviewsErrors;
+        const formCursor = this.props.tree.reviewsForm;
+        const errorsCursor = this.props.tree.addReviewsErrors;
         const data = formCursor.get();
         const validationResult = await validateForm(validationSchema, data);
         const { isDataValid } = validationResult;
-        const resultCursor = this.props.tree.reviewsResult;
+        const resultCursor = this.props.tree.addReviewsResult;
         resultCursor.set([]);
 
         if (!isDataValid) {
@@ -128,13 +186,31 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
             const reviews = formCursor.get();
             await Promise.all(_.map(reviews,
                 (review, index) => addReviewService(resultCursor.select(index), review)))
-                .catch((errors) => errorsCursor.set(errors));
+                .then(() => this.props.history.goBack());
         }
     },
 
+    renderTitle() {
+        const { userType } = this.state;
+
+        if (userType === 'driver') {
+            return <Title>Rate passengers</Title>;
+        }
+
+        if (userType === 'passenger') {
+            return <Title>Rate the driver</Title>;
+        }
+
+        return null;
+    },
+
     renderSubject(subject, index) {
-        const formCursor = this.props.tree.reviews;
-        const { firstName, bookedSeatsCount, photo } = subject;
+        const { reviews } = this.props.tree.get();
+        const formCursor = this.props.tree.reviewsForm;
+        const hasReviews = reviews && reviews.data && reviews.data.length;
+        const {
+            firstName, photo, rating, comment,
+        } = subject;
 
         return (
             <div
@@ -153,19 +229,20 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
                             )}
                         </div>
                         {`${firstName}`}
-                        {bookedSeatsCount > 1 ? (
-                            <span className={s.seatsCount}>{` +${bookedSeatsCount - 1}`}</span>
-                        ) : null}
                     </div>
                     <div className={s.stars}>
                         <ClickableStars
+                            rating={rating}
                             onChange={(value) => {
                                 formCursor.select(index, 'rating').set(value);
+                                this.props.tree.addReviewsErrors.set({});
                             }}
+                            clickable={!hasReviews}
                         />
                     </div>
                 </div>
                 <textarea
+                    defaultValue={comment}
                     placeholder={`Review about ${firstName}`}
                     className={s.textarea}
                     onChange={(e) => {
@@ -177,12 +254,27 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
     },
 
     renderFooter() {
+        const { reviews } = this.props.tree.get();
+        const { userType } = this.state;
+        const errors = this.props.tree.addReviewsErrors.get();
+        const hasError = !_.isEmpty(errors);
+
+        if (!reviews || reviews.status !== 'Succeed') {
+            return null;
+        }
+
+        if (reviews && reviews.data && reviews.data.length) {
+            return null;
+        }
+
         return (
             <div>
-                <Error
-                    form={{}}
-                    errors={this.props.tree.reviewsErrors.get()}
-                />
+                {hasError ? (
+                    <div className={s.error}>
+                        {userType === 'driver' ? 'Rate all passengers' : null}
+                        {userType === 'passenger' ? 'Rate the driver' : null}
+                    </div>
+                ) : null}
                 <div className={s.footer}>
                     <Button
                         type="primary"
@@ -197,64 +289,36 @@ export const RateDriverAndPassengersScreen = schema({})(createReactClass({
         );
     },
 
-    renderPassengersRateForm() {
-        const { passengers } = this.state;
+    renderForm() {
+        const { users } = this.state;
 
         return (
-            <div className={s.container}>
-                <Title>Rate passengers</Title>
-                {_.map(passengers, (passenger, index) => this.renderSubject(passenger, index))}
-                {this.renderFooter()}
+            <div className={s.reviews}>
+                {_.map(users, (user, index) => this.renderSubject(user, index))}
             </div>
         );
-    },
-
-    renderDriverRateForm() {
-        const { driver } = this.state;
-
-        return (
-            <div className={s.container}>
-                <Title>Rate the driver</Title>
-                {this.renderSubject(driver)}
-                {this.renderFooter()}
-            </div>
-        );
-    },
-
-    renderContent() {
-        const isDriver = this.state.userType === 'driver';
-
-        if (isDriver) {
-            return this.renderPassengersRateForm();
-        }
-
-        return this.renderDriverRateForm();
     },
 
     render() {
-        console.log('tree', this.props.tree.get());
         const { userType } = this.state;
         const { pk: ridePk } = this.props.match.params;
-        const tree = this.props.tree.get();
-        const isRideLoaded = tree && tree.ride && tree.ride.status === 'Succeed';
+        const reviews = this.props.tree.select('reviews').get();
+        const ride = this.props.rideCursor.get();
+        const isRideLoaded = reviews && ride && ride.status === 'Succeed' && reviews.status === 'Succeed';
 
-        if (isRideLoaded) {
-            const { status } = tree.ride.data;
-
-            // console.log('this.props.tree.reviews', this.props.tree.reviews.get());
-
-            // if (status !== 'completed') {
-            //     return <Redirect to={`/app/ride/${ridePk}`} />;
-            // }
-        }
-
-        if (userType === 'guest') {
+        if (userType === 'guest' || (isRideLoaded && ride.data.status !== 'completed')) {
             return <Redirect to={`/app/ride/${ridePk}`} />;
         }
 
         return (
             <Loader isLoaded={isRideLoaded}>
-                {isRideLoaded && userType ? this.renderContent() : null}
+                {isRideLoaded && userType ? (
+                    <div className={s.container}>
+                        {this.renderTitle()}
+                        {this.renderForm()}
+                        {this.renderFooter()}
+                    </div>
+                ) : null}
             </Loader>
         );
     },

@@ -39,12 +39,22 @@ export const Stars = createReactClass({
 
 export const ClickableStars = createReactClass({
     propTypes: {
-        onChange: PropTypes.func.isRequired,
+        rating: PropTypes.number,
+        onChange: PropTypes.func,
+        clickable: PropTypes.bool,
+    },
+
+    getDefaultProps() {
+        return {
+            rating: 0,
+            onChange: null,
+            clickable: false,
+        };
     },
 
     getInitialState() {
         return {
-            value: 0,
+            value: this.props.rating,
             starsWidth: 160,
         };
     },
@@ -68,6 +78,11 @@ export const ClickableStars = createReactClass({
 
     onStarClick(index) {
         const value = index + 1;
+        const { clickable } = this.props;
+
+        if (!clickable) {
+            return;
+        }
 
         this.setState({ value });
         this.props.onChange(value);
