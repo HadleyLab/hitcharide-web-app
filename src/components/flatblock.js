@@ -3,6 +3,8 @@ import createReactClass from 'create-react-class';
 import BaobabPropTypes from 'baobab-prop-types';
 import PropTypes from 'prop-types';
 import schema from 'libs/state';
+import { Loader } from 'components';
+
 
 const model = {
     content: null,
@@ -25,18 +27,14 @@ export default schema(model)(createReactClass({
 
     render() {
         const content = this.props.tree.content.get();
-        console.log(content);
+        const isLoaded = content && content.status === 'Succeed';
 
-        if (content && content.status === 'Succeed') {
-            return (
-                <div dangerouslySetInnerHTML={{__html: content.data.content}}/>
-            )
-        } else {
-            return (
-                <div>
-                    Loading...
-                </div>
-            )
-        }
+        return (
+            <Loader isLoaded={isLoaded}>
+                {isLoaded ? (
+                    <div dangerouslySetInnerHTML={{__html: content.data.content}}/>
+                ) : null }
+            </Loader>
+        );
     }
 }));
