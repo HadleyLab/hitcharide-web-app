@@ -8,6 +8,30 @@ import { Route } from 'react-router-dom';
 import { EditProfilePage } from './edit';
 import { ProfileContent } from './profile-content';
 
+const YourProfileContent = createReactClass({
+    propTypes: {
+        tree: BaobabPropTypes.cursor.isRequired,
+        services: PropTypes.shape({
+            getMyProfileService: PropTypes.func.isRequired,
+        }).isRequired,
+    },
+
+    async componentDidMount() {
+        const { getMyProfileService } = this.props.services;
+
+        const result = await getMyProfileService(this.props.tree.currentProfile);
+
+        if (result.status === 'Succeed') {
+            this.props.tree.profile.set(result);
+            this.props.tree.currentProfile.unset();
+        }
+    },
+
+    render() {
+        return <ProfileContent {...this.props} />;
+    },
+});
+
 export const YourProfilePage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
@@ -34,7 +58,7 @@ export const YourProfilePage = createReactClass({
                                     exact
                                     path={url}
                                     render={() => (
-                                        <ProfileContent
+                                        <YourProfileContent
                                             {...this.props}
                                             profile={profile.data}
                                             cars={cars.data}

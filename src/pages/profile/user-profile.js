@@ -25,12 +25,12 @@ export const UserProfilePage = createReactClass({
 
     render() {
         const profile = this.props.tree.get();
-        const isRideLoaded = profile && profile.status === 'Succeed';
+        const isLoaded = profile && profile.status === 'Succeed';
         const { url } = this.props.match;
 
         return (
-            <Loader isLoaded={isRideLoaded}>
-                {isRideLoaded ? (
+            <Loader isLoaded={isLoaded}>
+                {isLoaded ? (
                     <ServiceContext.Consumer>
                         {(services) => (
                             <div>
