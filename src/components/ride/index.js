@@ -43,13 +43,14 @@ export class RideItem extends React.Component {
     renderRideInfo() {
         const { data, history, authorType } = this.props;
         const {
-            pk, dateTime: date, hasMyReviews, rating,
+            pk, dateTime: date, hasMyReviews, rating, bookings,
         } = data;
         const isRideStarted = checkIfRideStarted(date);
+        const canBeRated = isRideStarted && bookings.length;
 
         const price = authorType === 'driver' ? data.price : data.priceWithFee;
 
-        if (isRideStarted && !hasMyReviews) {
+        if (canBeRated && !hasMyReviews) {
             return (
                 <div
                     className={s.info}
@@ -63,7 +64,7 @@ export class RideItem extends React.Component {
             );
         }
 
-        if (isRideStarted && hasMyReviews) {
+        if (canBeRated && hasMyReviews) {
             const { value, count } = rating;
 
             return (
@@ -91,14 +92,15 @@ export class RideItem extends React.Component {
             data, history, icon, onClick, preventRedirect,
         } = this.props;
         const {
-            cityFrom, cityTo, pk, dateTime: date, hasMyReviews,
+            cityFrom, cityTo, pk, dateTime: date, hasMyReviews, bookings,
         } = data;
         const isRideStarted = checkIfRideStarted(date);
+        const canBeRated = isRideStarted && bookings.length;
 
         return (
             <div
                 className={classNames(s.ride, {
-                    [s._highlight]: isRideStarted && !hasMyReviews,
+                    [s._highlight]: canBeRated && !hasMyReviews,
                 })}
                 onClick={() => {
                     if (onClick && preventRedirect) {

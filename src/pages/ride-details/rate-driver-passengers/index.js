@@ -304,9 +304,9 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         const reviews = this.props.tree.select('reviews').get();
         const ride = this.props.rideCursor.get();
         const isRideLoaded = reviews && ride && ride.status === 'Succeed' && reviews.status === 'Succeed';
-        const isRideStarted = isRideLoaded && checkIfRideStarted(ride.data.dateTime);
+        const canBeRated = isRideLoaded && checkIfRideStarted(ride.data.dateTime) && ride.data.bookings.length;
 
-        if (userType === 'guest' || (isRideLoaded && !isRideStarted)) {
+        if (userType === 'guest' || (isRideLoaded && !canBeRated)) {
             return <Redirect to={`/app/ride/${ridePk}`} />;
         }
 

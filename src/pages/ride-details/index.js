@@ -342,6 +342,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
         const { bookings, dateTime } = ride.data;
         const isRideStarted = checkIfRideStarted(dateTime);
+        const canBeRated = isRideStarted && bookings.length;
 
         if (amIPassenger) {
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
@@ -352,7 +353,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
             return (
                 <div className={classNames(s.footer, s._passenger)}>
-                    {isRideStarted ? this.renderRateButton() : null}
+                    {canBeRated ? this.renderRateButton() : null}
                     {isBookingPayed && canBeCanceled ? (
                         <Button
                             type="primary"
@@ -415,7 +416,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         if (amIDriver) {
             return (
                 <div className={s.footer}>
-                    {isRideStarted ? this.renderRateButton() : null}
+                    {canBeRated ? this.renderRateButton() : null}
                     {!isRideStarted ? (
                         <Button
                             type="ghost"

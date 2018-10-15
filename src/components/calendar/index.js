@@ -179,7 +179,7 @@ export class Calendar extends React.Component {
                                         ) : null}
                                         {isActive ? (
                                             <div className={s.resetDate}>
-                                                <ResetFilledIcon color="#8d8d90" />
+                                                <ResetFilledIcon color="#babbbc" />
                                             </div>
                                         ) : null}
                                     </div>

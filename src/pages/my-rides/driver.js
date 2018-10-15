@@ -98,19 +98,20 @@ export const MyRidesList = schema(model)(createReactClass({
 
         _.forEach(rides, (ride) => {
             const {
-                availableNumberOfSeats, numberOfSeats, dateTime, hasMyReviews,
+                availableNumberOfSeats, numberOfSeats, dateTime, hasMyReviews, bookings,
             } = ride;
             const isRideStarted = checkIfRideStarted(dateTime);
+            const canBeRated = isRideStarted && bookings.length;
             const date = moment(dateTime).format('YYYY-MM-DD');
 
-            if (isRideStarted && !hasMyReviews) {
+            if (canBeRated && !hasMyReviews) {
                 const path = [date, 'withoutReviews'];
 
                 this.setValue(data, path);
                 return;
             }
 
-            if (isRideStarted && hasMyReviews) {
+            if (isRideStarted) {
                 const path = [date, 'passed'];
 
                 this.setValue(data, path);

@@ -115,15 +115,16 @@ export const MyBookingsList = schema(model)(createReactClass({
             const { dateTime, hasMyReviews } = ride;
             const date = moment(dateTime).format('YYYY-MM-DD');
             const isRideStarted = checkIfRideStarted(dateTime);
+            const canBeRated = isRideStarted && bookings.length;
 
-            if (isRideStarted && !hasMyReviews) {
+            if (canBeRated && !hasMyReviews) {
                 const path = [date, 'withoutReviews'];
 
                 this.setValue(data, path);
                 return;
             }
 
-            if (isRideStarted && hasMyReviews) {
+            if (isRideStarted) {
                 const path = [date, 'passed'];
 
                 this.setValue(data, path);
