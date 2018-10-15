@@ -233,7 +233,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                             {`${car.owner.firstName} ${car.owner.lastName}`}
                             {!isMe ? (
                                 <span className={s.rating}>
-                                    {`${car.owner.rating.value}/5`}
+                                    {`${_.round(car.owner.rating.value, 2)}/5`}
                                 </span>
                             ) : null}
                         </Link>
@@ -280,7 +280,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                             {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
                             {!isMe ? (
                                 <span className={s.rating}>
-                                    {`${client.rating.value}/5`}
+                                    {`${_.round(client.rating.value, 2)}/5`}
                                 </span>
                             ) : null}
                         </Link>

@@ -42,14 +42,12 @@ export class RideItem extends React.Component {
 
     renderRideInfo() {
         const { data, history, authorType } = this.props;
-        const { pk, dateTime: date, hasMyReviews } = data;
+        const {
+            pk, dateTime: date, hasMyReviews, rating,
+        } = data;
         const isRideStarted = checkIfRideStarted(date);
 
         const price = authorType === 'driver' ? data.price : data.priceWithFee;
-
-        if (isRideStarted && hasMyReviews) {
-            return null;
-        }
 
         if (isRideStarted && !hasMyReviews) {
             return (
@@ -61,6 +59,19 @@ export class RideItem extends React.Component {
                     }}
                 >
                     <div className={s.link}>Rate it</div>
+                </div>
+            );
+        }
+
+        if (isRideStarted && hasMyReviews) {
+            const { value, count } = rating;
+
+            return (
+                <div className={s.info}>
+                    <span style={{ whiteSpace: 'nowrap' }}>{`${_.round(value, 2)}/5`}</span>
+                    <span className={s.gray}>
+                        {`${count} ${count === 1 ? 'review' : 'reviews'}`}
+                    </span>
                 </div>
             );
         }
