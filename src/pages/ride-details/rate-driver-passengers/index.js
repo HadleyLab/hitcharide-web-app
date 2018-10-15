@@ -5,7 +5,7 @@ import schema from 'libs/state';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { Loader, Title, Stars } from 'components';
-import { validateForm } from 'components/utils';
+import { validateForm, checkIfRideStarted } from 'components/utils';
 import { Redirect } from 'react-router-dom';
 import { HappinessIcon } from 'components/icons';
 import { Button } from 'antd-mobile';
@@ -27,7 +27,7 @@ const PASSENGER = 2;
 
 const modal = {
     reviews: {},
-    reviewsForm: {},
+    reviewsForm: [],
     addReviewsErrors: {},
     addReviewsResult: {},
 };
@@ -67,9 +67,7 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         const { match, rideCursor } = this.props;
         const { getRideService } = this.props.services;
 
-        if (!rideCursor.get()) {
-            await getRideService(rideCursor, match.params.pk);
-        }
+        await getRideService(rideCursor, match.params.pk);
     },
 
     async loadReviews() {
@@ -79,6 +77,8 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         const result = await getReviewsListService(tree.reviews, { ride, author: profile.pk });
 
         if (result.status === 'Succeed') {
+            this.props.tree.select('reviewsForm').set([]);
+
             if (result.data.length) {
                 tree.reviewsForm.set(result.data);
                 this.getUsers();
@@ -138,7 +138,6 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         const { userType } = this.state;
         const { car, bookings, pk } = this.props.rideCursor.data.get();
         const reviewsCursor = this.props.tree.select('reviewsForm');
-        reviewsCursor.set([]);
         this.getUsers();
 
         if (userType === 'driver') {
@@ -305,8 +304,9 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         const reviews = this.props.tree.select('reviews').get();
         const ride = this.props.rideCursor.get();
         const isRideLoaded = reviews && ride && ride.status === 'Succeed' && reviews.status === 'Succeed';
+        const isRideStarted = isRideLoaded && checkIfRideStarted(ride.data.dateTime);
 
-        if (userType === 'guest' || (isRideLoaded && ride.data.status !== 'completed')) {
+        if (userType === 'guest' || (isRideLoaded && !isRideStarted)) {
             return <Redirect to={`/app/ride/${ridePk}`} />;
         }
 

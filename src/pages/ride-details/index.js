@@ -12,6 +12,7 @@ import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
+import { checkIfRideStarted } from 'components/utils';
 import { Timer } from './timer';
 import s from './ride-details.css';
 
@@ -340,7 +341,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         }
 
         const { bookings, dateTime } = ride.data;
-        const isRideStarted = moment().utc().isSameOrAfter(moment(dateTime).utc(), 'minute');
+        const isRideStarted = checkIfRideStarted(dateTime);
 
         if (amIPassenger) {
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);

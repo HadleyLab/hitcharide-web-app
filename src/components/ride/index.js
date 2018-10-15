@@ -1,7 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import moment from 'moment';
+import { checkIfRideStarted } from 'components/utils';
 import { DriverIcon, TravelerIcon } from 'components/icons';
 import s from './ride.css';
 
@@ -43,14 +45,17 @@ export class RideItem extends React.Component {
             data, history, icon, authorType, onClick, preventRedirect,
         } = this.props;
         const {
-            cityFrom, cityTo, pk, dateTime: date,
+            cityFrom, cityTo, pk, dateTime: date, hasMyReviews,
         } = data;
+        const isRideStarted = checkIfRideStarted(date);
 
         const price = authorType === 'driver' ? data.price : data.priceWithFee;
 
         return (
             <div
-                className={s.ride}
+                className={classNames(s.ride, {
+                    [s._highlight]: isRideStarted && !hasMyReviews,
+                })}
                 onClick={() => {
                     if (onClick && preventRedirect) {
                         onClick();
@@ -70,12 +75,24 @@ export class RideItem extends React.Component {
                     {`${cityFrom.name}, ${cityFrom.state.name}`}
                     <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
                 </div>
-                <div className={s.info}>
-                    <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
-                    <span className={s.gray}>
-                        {this.renderRideAdditionalInfo()}
-                    </span>
-                </div>
+                {isRideStarted && !hasMyReviews ? (
+                    <div
+                        className={s.info}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            history.push(`/app/rate/${pk}`);
+                        }}
+                    >
+                        <div className={s.link}>Rate it</div>
+                    </div>
+                ) : (
+                    <div className={s.info}>
+                        <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
+                        <span className={s.gray}>
+                            {this.renderRideAdditionalInfo()}
+                        </span>
+                    </div>
+                )}
             </div>
         );
     }

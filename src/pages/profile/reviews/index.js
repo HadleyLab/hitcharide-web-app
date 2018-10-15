@@ -1,6 +1,5 @@
 import React from 'react';
 import _ from 'lodash';
-// import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';

@@ -8,6 +8,7 @@ import { RideItem } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
 import { DriverIcon } from 'components/icons';
+import { checkIfRideStarted } from 'components/utils';
 import moment from 'moment';
 import s from './my-rides.css';
 
@@ -51,15 +52,8 @@ export const MyRidesList = schema(model)(createReactClass({
     },
 
     componentDidMount() {
-        const { history } = this.props;
-        const rides = this.props.tree.rides.get();
-
         if (!_.isEmpty(this.props.monthRange)) {
             this.loadRidesForCalendar();
-        }
-
-        if (history.action === 'POP' && !_.isEmpty(rides)) {
-            return;
         }
 
         this.props.tree.params.set(paginationParams);
@@ -144,9 +138,12 @@ export const MyRidesList = schema(model)(createReactClass({
     },
 
     getRideBadgeColor(ride) {
-        const { availableNumberOfSeats, numberOfSeats, status } = ride;
+        const {
+            availableNumberOfSeats, numberOfSeats, status, dateTime,
+        } = ride;
+        const isRideStarted = checkIfRideStarted(dateTime);
 
-        if (status === 'canceled') {
+        if (status === 'canceled' || isRideStarted) {
             return 'rgba(26, 27, 32, 0.3)';
         }
 
