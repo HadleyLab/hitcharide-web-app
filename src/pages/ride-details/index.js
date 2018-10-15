@@ -12,6 +12,7 @@ import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
+import { checkIfRideStarted } from 'components/utils';
 import { Timer } from './timer';
 import s from './ride-details.css';
 
@@ -26,6 +27,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         match: PropTypes.shape({
+            url: PropTypes.string.isRequired,
             params: PropTypes.shape({
                 pk: PropTypes.string.isRequired,
             }),
@@ -36,6 +38,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             bookRideService: PropTypes.func.isRequired,
         }).isRequired,
         history: PropTypes.shape().isRequired,
+        onBookRide: PropTypes.func.isRequired,
     },
 
     componentDidMount() {
@@ -207,10 +210,16 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderDriverInfo() {
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { car } = ride.data;
+        const { car, bookings } = ride.data;
         const isMe = profile.pk === car.owner.pk;
+        let isBookingPayed = false;
 
-        const rows = [
+        if (!isMe) {
+            const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
+            isBookingPayed = myBooking && myBooking.status === 'payed';
+        }
+
+        const rows = _.concat([
             {
                 title: 'Car',
                 content: `${car.brand} ${car.model} (${car.color})`,
@@ -222,11 +231,20 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${car.owner.pk}`} className={s.link}>
                             {`${car.owner.firstName} ${car.owner.lastName}`}
+                            {!isMe ? (
+                                <span className={s.rating}>
+                                    {`${_.round(car.owner.rating.value, 2)}/5`}
+                                </span>
+                            ) : null}
                         </Link>
                     </div>
                 ),
             },
-        ];
+        ],
+        !isMe && isBookingPayed ? {
+            title: 'Phone number',
+            content: `+ ${car.owner.phone}`,
+        } : []);
 
         return _.map(rows, (row, index) => (
             <div className={s.row} key={`ride-row-driver-${index}`}>
@@ -249,18 +267,27 @@ export const RideDetailsPage = schema(model)(createReactClass({
             );
         }
 
-        return _.map(bookings, ({ client, seatsCount }, index) => (
-            <div className={s.row} key={`ride-row-booking-${index}`}>
-                <span className={s.rowTitle}>Passenger</span>
-                <span className={s.rowContent}>
-                    <span className={s.you}>{profile.pk === client.pk ? '(You) ' : null}</span>
-                    <Link to={`/app/user/${client.pk}`} className={s.link}>
-                        {`${client.firstName} ${client.lastName}`}
-                        {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
-                    </Link>
-                </span>
-            </div>
-        ));
+        return _.map(bookings, ({ client, seatsCount }, index) => {
+            const isMe = profile.pk === client.pk;
+
+            return (
+                <div className={s.row} key={`ride-row-booking-${index}`}>
+                    <span className={s.rowTitle}>Passenger</span>
+                    <span className={s.rowContent}>
+                        <span className={s.you}>{isMe ? '(You) ' : null}</span>
+                        <Link to={`/app/user/${client.pk}`} className={s.link}>
+                            {`${client.firstName} ${client.lastName}`}
+                            {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
+                            {!isMe ? (
+                                <span className={s.rating}>
+                                    {`${_.round(client.rating.value, 2)}/5`}
+                                </span>
+                            ) : null}
+                        </Link>
+                    </span>
+                </div>
+            );
+        });
     },
 
     renderNumberOfSeats() {
@@ -275,6 +302,25 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 minValue={1}
                 maxValue={availableNumberOfSeats}
             />
+        );
+    },
+
+    renderRateButton() {
+        const { history, match } = this.props;
+        const { pk } = match.params;
+
+        return (
+            <Button
+                type="primary"
+                style={{
+                    backgroundColor: '#4263CA',
+                    borderColor: '#4263CA',
+                }}
+                inline
+                onClick={() => history.push(`/app/rate/${pk}`)}
+            >
+                Rate the ride
+            </Button>
         );
     },
 
@@ -294,17 +340,19 @@ export const RideDetailsPage = schema(model)(createReactClass({
             );
         }
 
+        const { bookings, dateTime } = ride.data;
+        const isRideStarted = checkIfRideStarted(dateTime);
+
         if (amIPassenger) {
-            const { bookings, dateTime } = ride.data;
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
             const isBookingPayed = myBooking.status === 'payed';
             const isBookingNotPayed = myBooking.status === 'created';
-            const isRideStarted = moment().utc().isSameOrAfter(moment(dateTime).utc(), 'minute');
             const dayBeforeRide = moment(dateTime).subtract(1, 'days').utc();
             const canBeCanceled = moment().utc().isSameOrBefore(dayBeforeRide, 'minute');
 
             return (
                 <div className={classNames(s.footer, s._passenger)}>
+                    {isRideStarted ? this.renderRateButton() : null}
                     {isBookingPayed && canBeCanceled ? (
                         <Button
                             type="primary"
@@ -367,25 +415,28 @@ export const RideDetailsPage = schema(model)(createReactClass({
         if (amIDriver) {
             return (
                 <div className={s.footer}>
-                    <Button
-                        type="ghost"
-                        inline
-                        onClick={() => {
-                            Modal.alert('Delete trip', 'Do you really want to delete this trip?', [
-                                {
-                                    text: 'YES',
-                                    onPress: () => history.push(`/app/delete-ride/${ridePk}`),
-                                    style: { color: '#4263CA' },
-                                },
-                                {
-                                    text: 'NO',
-                                    style: { color: '#4263CA' },
-                                },
-                            ]);
-                        }}
-                    >
-                        Delete trip
-                    </Button>
+                    {isRideStarted ? this.renderRateButton() : null}
+                    {!isRideStarted ? (
+                        <Button
+                            type="ghost"
+                            inline
+                            onClick={() => {
+                                Modal.alert('Delete trip', 'Do you really want to delete this trip?', [
+                                    {
+                                        text: 'YES',
+                                        onPress: () => history.push(`/app/delete-ride/${ridePk}`),
+                                        style: { color: '#4263CA' },
+                                    },
+                                    {
+                                        text: 'NO',
+                                        style: { color: '#4263CA' },
+                                    },
+                                ]);
+                            }}
+                        >
+                            Delete trip
+                        </Button>
+                    ) : null}
                 </div>
             );
         }
@@ -407,7 +458,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     <Button
                         type="primary"
                         inline
-                        onClick={this.bookRide}
+                        onClick={() => this.props.onBookRide(this.bookRide)}
                     >
                         Book it
                     </Button>

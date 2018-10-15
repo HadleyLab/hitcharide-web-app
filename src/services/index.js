@@ -18,6 +18,7 @@ import {
     getMyBookingsListService, getRideRequestService,
     rideComplainService, rideDeleteService, bookingCancelService,
 } from './rides.js';
+import { addReviewService, getReviewsListService } from './reviews.js';
 
 export default {
     signUpService,
@@ -52,4 +53,6 @@ export default {
     rideComplainService,
     rideDeleteService,
     bookingCancelService,
+    addReviewService,
+    getReviewsListService,
 };

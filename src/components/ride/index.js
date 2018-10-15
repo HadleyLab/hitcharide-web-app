@@ -1,7 +1,9 @@
 import React from 'react';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import moment from 'moment';
+import { checkIfRideStarted } from 'components/utils';
 import { DriverIcon, TravelerIcon } from 'components/icons';
 import s from './ride.css';
 
@@ -38,19 +40,66 @@ export class RideItem extends React.Component {
         );
     }
 
-    render() {
+    renderRideInfo() {
+        const { data, history, authorType } = this.props;
         const {
-            data, history, icon, authorType, onClick, preventRedirect,
-        } = this.props;
-        const {
-            cityFrom, cityTo, pk, dateTime: date,
+            pk, dateTime: date, hasMyReviews, rating,
         } = data;
+        const isRideStarted = checkIfRideStarted(date);
 
         const price = authorType === 'driver' ? data.price : data.priceWithFee;
 
+        if (isRideStarted && !hasMyReviews) {
+            return (
+                <div
+                    className={s.info}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        history.push(`/app/rate/${pk}`);
+                    }}
+                >
+                    <div className={s.link}>Rate it</div>
+                </div>
+            );
+        }
+
+        if (isRideStarted && hasMyReviews) {
+            const { value, count } = rating;
+
+            return (
+                <div className={s.info}>
+                    <span style={{ whiteSpace: 'nowrap' }}>{`${_.round(value, 2)}/5`}</span>
+                    <span className={s.gray}>
+                        {`${count} ${count === 1 ? 'review' : 'reviews'}`}
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div className={s.info}>
+                <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
+                <span className={s.gray}>
+                    {this.renderRideAdditionalInfo()}
+                </span>
+            </div>
+        );
+    }
+
+    render() {
+        const {
+            data, history, icon, onClick, preventRedirect,
+        } = this.props;
+        const {
+            cityFrom, cityTo, pk, dateTime: date, hasMyReviews,
+        } = data;
+        const isRideStarted = checkIfRideStarted(date);
+
         return (
             <div
-                className={s.ride}
+                className={classNames(s.ride, {
+                    [s._highlight]: isRideStarted && !hasMyReviews,
+                })}
                 onClick={() => {
                     if (onClick && preventRedirect) {
                         onClick();
@@ -70,12 +119,7 @@ export class RideItem extends React.Component {
                     {`${cityFrom.name}, ${cityFrom.state.name}`}
                     <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
                 </div>
-                <div className={s.info}>
-                    <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
-                    <span className={s.gray}>
-                        {this.renderRideAdditionalInfo()}
-                    </span>
-                </div>
+                {this.renderRideInfo()}
             </div>
         );
     }
