@@ -108,21 +108,23 @@ export const ProfileContent = createReactClass({
     },
 
     renderStatistics() {
+        const { canceled, completed } = this.props.profile.ridesStatistics;
+
         return (
             <div className={s.statistics}>
                 <div className={s.statisticsItem}>
                     <div className={classNames(s.statisticsImage, s._car)} />
-                    <div className={s.statisticsTitle}>165</div>
+                    <div className={s.statisticsTitle}>{completed + canceled}</div>
                     Total trips
                 </div>
                 <div className={s.statisticsItem}>
                     <div className={classNames(s.statisticsImage, s._happiness)} />
-                    <div className={s.statisticsTitle}>163</div>
+                    <div className={s.statisticsTitle}>{completed}</div>
                     Completed
                 </div>
                 <div className={s.statisticsItem}>
                     <div className={classNames(s.statisticsImage, s._sadness)} />
-                    <div className={s.statisticsTitle}>2</div>
+                    <div className={s.statisticsTitle}>{canceled}</div>
                     Cancelled
                 </div>
             </div>
