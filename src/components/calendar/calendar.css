@@ -95,6 +95,11 @@
         border: 1px solid #4263CA;
     }
 
+    &._withoutReviews:after {
+        content: '';
+        background-color: rgba(#CADEF3, .5);
+    }
+
     &._active {
         color: #fff;
 
@@ -130,6 +135,10 @@
     &._withBookings {
         background-color: #97B725;
     }
+
+    &._passed {
+        background-color: rgba(#1A1B20, .3);
+    }
 }
 
 .topMarkers {
@@ -146,6 +155,21 @@
 }
 
 .resetDate {
+    display: flex;
     width: 12px;
     height: 12px;
+}
+
+.withoutReviews {
+    min-width: 12px;
+    height: 12px;
+    font-size: 10px;
+    line-height: 15px;
+    color: #fff;
+    padding: 0 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #40A9FF;
+    border-radius: 6px;
 }

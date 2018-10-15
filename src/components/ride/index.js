@@ -40,16 +40,49 @@ export class RideItem extends React.Component {
         );
     }
 
+    renderRideInfo() {
+        const { data, history, authorType } = this.props;
+        const { pk, dateTime: date, hasMyReviews } = data;
+        const isRideStarted = checkIfRideStarted(date);
+
+        const price = authorType === 'driver' ? data.price : data.priceWithFee;
+
+        if (isRideStarted && hasMyReviews) {
+            return null;
+        }
+
+        if (isRideStarted && !hasMyReviews) {
+            return (
+                <div
+                    className={s.info}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        history.push(`/app/rate/${pk}`);
+                    }}
+                >
+                    <div className={s.link}>Rate it</div>
+                </div>
+            );
+        }
+
+        return (
+            <div className={s.info}>
+                <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
+                <span className={s.gray}>
+                    {this.renderRideAdditionalInfo()}
+                </span>
+            </div>
+        );
+    }
+
     render() {
         const {
-            data, history, icon, authorType, onClick, preventRedirect,
+            data, history, icon, onClick, preventRedirect,
         } = this.props;
         const {
             cityFrom, cityTo, pk, dateTime: date, hasMyReviews,
         } = data;
         const isRideStarted = checkIfRideStarted(date);
-
-        const price = authorType === 'driver' ? data.price : data.priceWithFee;
 
         return (
             <div
@@ -75,24 +108,7 @@ export class RideItem extends React.Component {
                     {`${cityFrom.name}, ${cityFrom.state.name}`}
                     <span className={s.gray}>{`${cityTo.name}, ${cityTo.state.name}`}</span>
                 </div>
-                {isRideStarted && !hasMyReviews ? (
-                    <div
-                        className={s.info}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            history.push(`/app/rate/${pk}`);
-                        }}
-                    >
-                        <div className={s.link}>Rate it</div>
-                    </div>
-                ) : (
-                    <div className={s.info}>
-                        <span style={{ whiteSpace: 'nowrap' }}>$ {parseFloat(price).toString()}</span>
-                        <span className={s.gray}>
-                            {this.renderRideAdditionalInfo()}
-                        </span>
-                    </div>
-                )}
+                {this.renderRideInfo()}
             </div>
         );
     }

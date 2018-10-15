@@ -145,7 +145,7 @@ export const ProfileContent = createReactClass({
                         fillColor="#007AFF"
                         small
                     />
-                    <div className={s.ratingValue}>{`${rating}/5`}</div>
+                    <div className={s.ratingValue}>{`${_.round(rating, 2)}/5`}</div>
                 </div>
                 {reviewsCount ? (
                     <Link to={`${match.url}/reviews`} className={s.link}>

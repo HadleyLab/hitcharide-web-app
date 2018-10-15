@@ -112,16 +112,40 @@ export const MyBookingsList = schema(model)(createReactClass({
         let data = {};
 
         _.forEach(bookings, ({ ride }) => {
-            const { dateTime } = ride;
+            const { dateTime, hasMyReviews } = ride;
             const date = moment(dateTime).format('YYYY-MM-DD');
-            const path = [date, 'withBookings'];
+            const isRideStarted = checkIfRideStarted(dateTime);
 
+            if (isRideStarted && !hasMyReviews) {
+                const path = [date, 'withoutReviews'];
+
+                this.setValue(data, path);
+                return;
+            }
+
+            if (isRideStarted && hasMyReviews) {
+                const path = [date, 'passed'];
+
+                this.setValue(data, path);
+                return;
+            }
+
+            const path = [date, 'withBookings'];
             this.setValue(data, path);
         });
 
         _.forEach(rideRequests, (ride) => {
             const { dateTime } = ride;
             const date = moment(dateTime).format('YYYY-MM-DD');
+            const isRideStarted = checkIfRideStarted(dateTime);
+
+            if (isRideStarted) {
+                const path = [date, 'passed'];
+
+                this.setValue(data, path);
+                return;
+            }
+
             const path = [date, 'withoutBookings'];
 
             this.setValue(data, path);
@@ -232,12 +256,20 @@ export const MyBookingsList = schema(model)(createReactClass({
                         );
                     }
 
+                    const isRideStarted = checkIfRideStarted(ride.dateTime);
+
                     return (
                         <RideRequestItem
                             key={`ride-request-${index}`}
                             data={ride}
                             history={this.props.history}
-                            icon={<TravelerIcon color="#F5222D" />}
+                            icon={(
+                                <TravelerIcon
+                                    color={isRideStarted
+                                        ? 'rgba(26, 27, 32, 0.3)'
+                                        : '#F5222D'}
+                                />
+                            )}
                         />
                     );
                 })}
