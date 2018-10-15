@@ -147,9 +147,11 @@ export const ProfileContent = createReactClass({
                     />
                     <div className={s.ratingValue}>{`${rating}/5`}</div>
                 </div>
-                <Link to={`${match.url}/reviews`} className={s.link}>
-                    {`${reviewsCount} ${reviewsCount === 1 ? 'review' : 'reviews'}`}
-                </Link>
+                {reviewsCount ? (
+                    <Link to={`${match.url}/reviews`} className={s.link}>
+                        {`${reviewsCount} ${reviewsCount === 1 ? 'review' : 'reviews'}`}
+                    </Link>
+                ) : null}
             </div>
         );
     },

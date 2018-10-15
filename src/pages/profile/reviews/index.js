@@ -7,6 +7,7 @@ import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { Loader, Stars } from 'components';
 import { HappinessIcon } from 'components/icons';
+import moment from 'moment';
 import s from './reviews.css';
 
 const modal = {
@@ -46,6 +47,42 @@ export const ReviewsPage = schema(modal)(createReactClass({
         return 'Passenger';
     },
 
+    getReviewDate(date) {
+        if (moment(date).year() === moment().year()) {
+            return moment(date).format('MMM D');
+        }
+
+        return moment(date).format('MMM D YYYY');
+    },
+
+    renderStatistics() {
+        const reviews = this.props.tree.select('reviews').get('data');
+        const groupedRatings = _.groupBy(reviews, 'rating');
+
+        return (
+            <div className={s.statistics}>
+                {_.map(_.range(1, 6), (item, index) => {
+                    const count = groupedRatings[item] ? groupedRatings[item].length : 0;
+
+                    return (
+                        <div className={s.statisticsItem} key={`statistics-${index}`}>
+                            <Stars
+                                rating={item}
+                                className={s.stars}
+                                blankColor="#C4C4C4"
+                                fillColor="#007AFF"
+                                small
+                            />
+                            <div className={s.statisticsCount}>
+                                {`${count} ${count === 1 ? 'review' : 'reviews'}`}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    },
+
     renderReviews() {
         const reviews = this.props.tree.reviews.data.get();
         const filteredReviews = _.filter(reviews, ({ comment }) => !!comment);
@@ -55,7 +92,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
                 {_.map(filteredReviews, (review, index) => {
                     const {
                         author: { firstName, lastName, photo },
-                        comment, authorType, rating,
+                        comment, authorType, rating, created,
                     } = review;
 
                     return (
@@ -84,6 +121,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
                                         fillColor="#007AFF"
                                         small
                                     />
+                                    {this.getReviewDate(created)}
                                 </div>
                             </div>
                             <div className={s.comment}>{comment}</div>
@@ -102,6 +140,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
             <Loader isLoaded={isLoaded}>
                 {isLoaded ? (
                     <div className={s.container}>
+                        {this.renderStatistics()}
                         {this.renderReviews()}
                     </div>
                 ) : null}
