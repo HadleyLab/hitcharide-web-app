@@ -118,3 +118,8 @@
     align-items: center;
     height: 42px;
 }
+
+.rating {
+    margin-left: 15px;
+    color: #1A1B20;
+}

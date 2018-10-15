@@ -61,23 +61,25 @@ const MainPageContent = createReactClass({
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
 
-        this.loadProfileData(() => {
-            const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
+        this.loadProfileData();
+    },
 
-            if (!checkIfUserCanBeDriver.allowed) {
-                this.props.tree.userType.set('passenger');
-                setUserType('passenger');
-            }
+    checkUserRights() {
+        const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-            this.props.tree.userType.set(getUserType() || 'passenger');
-        });
+        if (!checkIfUserCanBeDriver.allowed) {
+            this.props.tree.userType.set('passenger');
+            setUserType('passenger');
+        }
+
+        this.props.tree.userType.set(getUserType() || 'passenger');
     },
 
     loadProfileData() {
         const tree = this.props.tree.get();
 
         if (!tree) {
-            this.props.loadProfileData();
+            this.props.loadProfileData(this.checkUserRights);
 
             return;
         }
@@ -86,7 +88,7 @@ const MainPageContent = createReactClass({
 
         if (_.isEmpty(profile) || _.isEmpty(cars)
             || profile.status === 'Failure' || cars.status === 'Failure') {
-            this.props.loadProfileData();
+            this.props.loadProfileData(this.checkUserRights);
         }
     },
 

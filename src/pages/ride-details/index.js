@@ -209,10 +209,16 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderDriverInfo() {
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { car } = ride.data;
+        const { car, bookings } = ride.data;
         const isMe = profile.pk === car.owner.pk;
+        let isBookingPayed = false;
 
-        const rows = [
+        if (!isMe) {
+            const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
+            isBookingPayed = myBooking && myBooking.status === 'payed';
+        }
+
+        const rows = _.concat([
             {
                 title: 'Car',
                 content: `${car.brand} ${car.model} (${car.color})`,
@@ -224,11 +230,20 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${car.owner.pk}`} className={s.link}>
                             {`${car.owner.firstName} ${car.owner.lastName}`}
+                            {!isMe ? (
+                                <span className={s.rating}>
+                                    {`${car.owner.rating.value}/5`}
+                                </span>
+                            ) : null}
                         </Link>
                     </div>
                 ),
             },
-        ];
+        ],
+        !isMe && isBookingPayed ? {
+            title: 'Phone number',
+            content: `+ ${car.owner.phone}`,
+        } : []);
 
         return _.map(rows, (row, index) => (
             <div className={s.row} key={`ride-row-driver-${index}`}>
@@ -251,18 +266,27 @@ export const RideDetailsPage = schema(model)(createReactClass({
             );
         }
 
-        return _.map(bookings, ({ client, seatsCount }, index) => (
-            <div className={s.row} key={`ride-row-booking-${index}`}>
-                <span className={s.rowTitle}>Passenger</span>
-                <span className={s.rowContent}>
-                    <span className={s.you}>{profile.pk === client.pk ? '(You) ' : null}</span>
-                    <Link to={`/app/user/${client.pk}`} className={s.link}>
-                        {`${client.firstName} ${client.lastName}`}
-                        {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
-                    </Link>
-                </span>
-            </div>
-        ));
+        return _.map(bookings, ({ client, seatsCount }, index) => {
+            const isMe = profile.pk === client.pk;
+
+            return (
+                <div className={s.row} key={`ride-row-booking-${index}`}>
+                    <span className={s.rowTitle}>Passenger</span>
+                    <span className={s.rowContent}>
+                        <span className={s.you}>{isMe ? '(You) ' : null}</span>
+                        <Link to={`/app/user/${client.pk}`} className={s.link}>
+                            {`${client.firstName} ${client.lastName}`}
+                            {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
+                            {!isMe ? (
+                                <span className={s.rating}>
+                                    {`${client.rating.value}/5`}
+                                </span>
+                            ) : null}
+                        </Link>
+                    </span>
+                </div>
+            );
+        });
     },
 
     renderNumberOfSeats() {
