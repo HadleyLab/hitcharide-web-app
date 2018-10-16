@@ -154,6 +154,7 @@ export class Calendar extends React.Component {
                             const isCurrentMonth = day.isSame(currentMonth, 'month');
                             const formattedDay = moment(day).format('YYYY-MM-DD');
                             const isActive = activeDate && day.isSame(activeDate, 'day');
+                            const withoutReviews = _.get(data, [formattedDay, 'withoutReviews']);
 
                             return (
                                 <div
@@ -162,6 +163,7 @@ export class Calendar extends React.Component {
                                         [s._otherMonth]: !isCurrentMonth,
                                         [s._today]: day.isSame(moment(), 'day'),
                                         [s._active]: isActive,
+                                        [s._withoutReviews]: withoutReviews,
                                     })}
                                     onClick={() => {
                                         if (!isCurrentMonth) {
@@ -172,14 +174,20 @@ export class Calendar extends React.Component {
                                     }}
                                 >
                                     <div className={s.topMarkers}>
+                                        {withoutReviews && !isActive ? (
+                                            <div className={s.withoutReviews}>{withoutReviews}</div>
+                                        ) : null}
                                         {isActive ? (
                                             <div className={s.resetDate}>
-                                                <ResetFilledIcon color="#8d8d90" />
+                                                <ResetFilledIcon color="#babbbc" />
                                             </div>
                                         ) : null}
                                     </div>
                                     {moment(day).format('D')}
                                     <div className={s.bottomMarkers}>
+                                        {_.get(data, [formattedDay, 'passed']) ? (
+                                            <div className={classNames(s.marker, s._passed)} />
+                                        ) : null}
                                         {_.get(data, [formattedDay, 'withoutBookings']) ? (
                                             <div className={classNames(s.marker, s._withoutBookings)} />
                                         ) : null}

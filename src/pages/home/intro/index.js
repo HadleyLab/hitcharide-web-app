@@ -6,7 +6,7 @@ import createReactClass from 'create-react-class';
 import moment from 'moment';
 import { Search, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
-import themeImage from './intro.png';
+import themeImage from './intro.jpg';
 import { Button } from '../button';
 import s from './intro.css';
 

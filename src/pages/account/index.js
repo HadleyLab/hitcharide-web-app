@@ -9,8 +9,8 @@ import {
     SocialAuthPage, SocialAuthErrorPage,
     ResetPasswordPage, SetNewPasswordPage,
 } from 'pages';
-import themeImage from 'components/images/theme.png';
 import logoIcon from 'components/icons/logo.svg';
+import themeImage from './images/theme.jpg';
 import s from './account.css';
 
 const AccountMenu = createReactClass({

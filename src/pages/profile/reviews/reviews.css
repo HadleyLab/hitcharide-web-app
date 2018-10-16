@@ -1,0 +1,99 @@
+.container {
+    padding: 15px 0 25px;
+}
+
+.reviews {
+    padding-top: 25px;
+}
+
+.review {
+    position: relative;
+    margin-bottom: 25px;
+    padding: 0 15px;
+
+    &:after {
+        content: '';
+        position: absolute;
+        left: 15px;
+        right: 0;
+        height: 1px;
+        background-color: #ddd;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    color: #C4C4C4;
+    font-size: 17px;
+    line-height: 17px;
+}
+
+.userInfo {
+    display: flex;
+}
+
+.photo {
+    min-width: 45px;
+    width: 45px;
+    height: 45px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+    background-color: rgba(#CADEF3, .3);
+    margin-right: 15px;
+}
+
+.defaultPhoto {
+    min-width: 45px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: rgba(#CADEF3, .3);
+    padding: 12px;
+    margin-right: 15px;
+
+    svg {
+        opacity: .5;
+    }
+}
+
+.name {
+    padding-top: 5px;
+    margin-bottom: 5px;
+    color: #4263CA;
+}
+
+.rating {
+    padding-top: 5px;
+    margin-left: 15px;
+    text-align: right;
+}
+
+.stars {
+    margin-bottom: 3px;
+}
+
+.comment {
+    padding: 12px 0 6px;
+    font-size: 17px;
+    line-height: 25px;
+}
+
+.statistics {
+    padding: 0 15px;
+}
+
+.statisticsItem {
+    height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.statisticsCount {
+    color: #4263CA;
+    font-size: 17px;
+    line-height: 17px;
+}

@@ -8,6 +8,7 @@ import { RideRequestItem, RideItem, Title } from 'components';
 import schema from 'libs/state';
 import { Button, Icon } from 'antd-mobile';
 import { TravelerIcon } from 'components/icons';
+import { checkIfRideStarted } from 'components/utils';
 import moment from 'moment';
 import s from './my-rides.css';
 
@@ -56,15 +57,8 @@ export const MyBookingsList = schema(model)(createReactClass({
     },
 
     componentDidMount() {
-        const { history } = this.props;
-        const { bookings, rideRequests } = this.props.tree.get();
-
         if (!_.isEmpty(this.props.monthRange)) {
             this.loadRidesForCalendar();
-        }
-
-        if (history.action === 'POP' && !_.isEmpty(bookings) && !_.isEmpty(rideRequests)) {
-            return;
         }
 
         this.resetParams();
@@ -118,16 +112,41 @@ export const MyBookingsList = schema(model)(createReactClass({
         let data = {};
 
         _.forEach(bookings, ({ ride }) => {
-            const { dateTime } = ride;
+            const { dateTime, hasMyReviews } = ride;
             const date = moment(dateTime).format('YYYY-MM-DD');
-            const path = [date, 'withBookings'];
+            const isRideStarted = checkIfRideStarted(dateTime);
+            const canBeRated = isRideStarted && bookings.length;
 
+            if (canBeRated && !hasMyReviews) {
+                const path = [date, 'withoutReviews'];
+
+                this.setValue(data, path);
+                return;
+            }
+
+            if (isRideStarted) {
+                const path = [date, 'passed'];
+
+                this.setValue(data, path);
+                return;
+            }
+
+            const path = [date, 'withBookings'];
             this.setValue(data, path);
         });
 
         _.forEach(rideRequests, (ride) => {
             const { dateTime } = ride;
             const date = moment(dateTime).format('YYYY-MM-DD');
+            const isRideStarted = checkIfRideStarted(dateTime);
+
+            if (isRideStarted) {
+                const path = [date, 'passed'];
+
+                this.setValue(data, path);
+                return;
+            }
+
             const path = [date, 'withoutBookings'];
 
             this.setValue(data, path);
@@ -218,6 +237,8 @@ export const MyBookingsList = schema(model)(createReactClass({
             >
                 {_.map(rides, (ride, index) => {
                     if (type === 'bookings') {
+                        const isRideStarted = checkIfRideStarted(ride.ride.dateTime);
+
                         return (
                             <RideItem
                                 key={`ride-booking-${index}`}
@@ -225,17 +246,31 @@ export const MyBookingsList = schema(model)(createReactClass({
                                 history={this.props.history}
                                 authorType="passenger"
                                 userPk={this.props.userPk}
-                                icon={<TravelerIcon color="#97B725" />}
+                                icon={(
+                                    <TravelerIcon
+                                        color={isRideStarted
+                                            ? 'rgba(26, 27, 32, 0.3)'
+                                            : '#97B725'}
+                                    />
+                                )}
                             />
                         );
                     }
+
+                    const isRideStarted = checkIfRideStarted(ride.dateTime);
 
                     return (
                         <RideRequestItem
                             key={`ride-request-${index}`}
                             data={ride}
                             history={this.props.history}
-                            icon={<TravelerIcon color="#F5222D" />}
+                            icon={(
+                                <TravelerIcon
+                                    color={isRideStarted
+                                        ? 'rgba(26, 27, 32, 0.3)'
+                                        : '#F5222D'}
+                                />
+                            )}
                         />
                     );
                 })}

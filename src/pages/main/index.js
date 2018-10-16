@@ -11,7 +11,7 @@ import { Route } from 'react-router-dom';
 import {
     SearchPage, MyRidesPage, NewRidePage,
     YourProfilePage, RideDetailsPage, UserProfilePage,
-    RideRequestDetailsPage,
+    RideRequestDetailsPage, RateDriverAndPassengersScreen,
 } from 'pages';
 import { getUserType, setUserType } from 'components/utils';
 import { AddIcon, RouteIcon, SearchIcon } from 'components/icons';
@@ -61,23 +61,25 @@ const MainPageContent = createReactClass({
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
 
-        this.loadProfileData(() => {
-            const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
+        this.loadProfileData();
+    },
 
-            if (!checkIfUserCanBeDriver.allowed) {
-                this.props.tree.userType.set('passenger');
-                setUserType('passenger');
-            }
+    checkUserRights() {
+        const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
-            this.props.tree.userType.set(getUserType() || 'passenger');
-        });
+        if (!checkIfUserCanBeDriver.allowed) {
+            this.props.tree.userType.set('passenger');
+            setUserType('passenger');
+        }
+
+        this.props.tree.userType.set(getUserType() || 'passenger');
     },
 
     loadProfileData() {
         const tree = this.props.tree.get();
 
         if (!tree) {
-            this.props.loadProfileData();
+            this.props.loadProfileData(this.checkUserRights);
 
             return;
         }
@@ -86,7 +88,7 @@ const MainPageContent = createReactClass({
 
         if (_.isEmpty(profile) || _.isEmpty(cars)
             || profile.status === 'Failure' || cars.status === 'Failure') {
-            this.props.loadProfileData();
+            this.props.loadProfileData(this.checkUserRights);
         }
     },
 
@@ -151,8 +153,8 @@ const MainPageContent = createReactClass({
         return suggestAndBookingRights;
     },
 
-    showMessage(creationRights) {
-        Modal.alert('Create a ride', creationRights.message, [
+    showMessage(creationRights, title) {
+        Modal.alert(title || 'Create a ride', creationRights.message, [
             { text: 'Cancel', onPress: () => null },
             {
                 text: 'Edit profile',
@@ -241,6 +243,17 @@ const MainPageContent = createReactClass({
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('ride')}
                                         profile={profile.data}
+                                        onBookRide={(bookRide) => {
+                                            const userRights = this.checkIfUserCanBeDriver(userType);
+
+                                            if (!userRights.allowed) {
+                                                this.showMessage(userRights, 'Book a ride');
+
+                                                return;
+                                            }
+
+                                            bookRide();
+                                        }}
                                     />
                                 )}
                             />
@@ -250,6 +263,17 @@ const MainPageContent = createReactClass({
                                     <RideRequestDetailsPage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('rideRequest')}
+                                    />
+                                )}
+                            />
+                            <Route
+                                path={`${url}/rate/:pk`}
+                                render={(props) => (
+                                    <RateDriverAndPassengersScreen
+                                        {..._.merge(this.props, props)}
+                                        tree={this.props.tree.select('reviews')}
+                                        rideCursor={this.props.tree.select('ride', 'ride')}
+                                        profile={profile.data}
                                     />
                                 )}
                             />

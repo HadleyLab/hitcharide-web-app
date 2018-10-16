@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 import { Toast } from 'antd-mobile';
 
 /* Form validation */
@@ -88,4 +89,8 @@ export function checkIfValueEmpty(value) {
     }
 
     return false;
+}
+
+export function checkIfRideStarted(date) {
+    return moment().utc().isSameOrAfter(moment(date).utc(), 'minute');
 }
