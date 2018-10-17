@@ -202,6 +202,16 @@ export const EditProfilePage = schema(model)(createReactClass({
         if (result.status === 'Succeed') {
             await getCarListService(this.props.carsCursor);
         }
+
+        if (result.status === 'Failure') {
+            Modal.alert('Removing car error', result.error.data.detail,
+                [
+                    {
+                        text: 'OK',
+                        style: { color: '#4263CA' },
+                    },
+                ]);
+        }
     },
 
     renderCarsList() {
