@@ -110,7 +110,9 @@ export class Search extends React.Component {
 
     onItemClick(item) {
         this.selectValue(item);
-        this.setState({ focused: false });
+        this.onBlurTimeout = setTimeout(() => {
+            this.resetCities();
+        }, 200);
     }
 
     onFocus() {
