@@ -45,6 +45,7 @@
 }
 
 .section {
+    position: relative;
     margin-top: 25px;
 }
 
@@ -272,6 +273,10 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-color: #fff;
+
+    .section._photo & {
+        top: 3px;
+    }
 }
 
 .footer {

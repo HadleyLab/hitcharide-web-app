@@ -423,10 +423,51 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
-    render() {
+    renderPhoto() {
         const formCursor = this.props.tree.form;
-        const { phone } = this.props.tree.form.get() || '';
+        const errorsCursor = this.props.tree.errors;
         const photo = formCursor.get('photo');
+        const errorProps = this.checkInputError('photo');
+
+        return (
+            <div className={classNames(s.section, s._photo)}>
+                <Title>Photo</Title>
+                <div
+                    className={classNames(s.photoPicker, {
+                        [s._empty]: !photo,
+                    })}
+                >
+                    <div
+                        className={s.photo}
+                        style={{ backgroundImage: photo ? `url(${photo})` : null }}
+                    />
+                    <input
+                        className={s.photoInput}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            errorsCursor.select('photo').set(null);
+                            this.handleFileChange(e.target.files);
+                        }}
+                    />
+                </div>
+                {errorProps.error
+                    ? (
+                        <div
+                            className={s.warning}
+                            style={{ backgroundImage: `url(${warningIcon})` }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                errorProps.onErrorClick();
+                            }}
+                        />
+                    ) : null}
+            </div>
+        );
+    },
+
+    render() {
+        const { phone } = this.props.tree.form.get() || '';
 
         return (
             <div>
@@ -439,25 +480,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         <div className={s.text}>Last name</div>
                     </Input>
                 </div>
-                <div className={s.section}>
-                    <Title>Photo</Title>
-                    <div
-                        className={classNames(s.photoPicker, {
-                            [s._empty]: !photo,
-                        })}
-                    >
-                        <div
-                            className={s.photo}
-                            style={{ backgroundImage: photo ? `url(${photo})` : null }}
-                        />
-                        <input
-                            className={s.photoInput}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => this.handleFileChange(e.target.files)}
-                        />
-                    </div>
-                </div>
+                {this.renderPhoto()}
                 <div className={s.moreInfo}>
                     {this.renderAboutInput()}
                     <div className={s.section}>
