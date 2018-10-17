@@ -15,6 +15,8 @@ import { AddFilledIcon } from 'components/icons';
 import warningIcon from 'components/icons/warning.svg';
 import minusIcon from 'components/icons/minus-circle.svg';
 import arrowIcon from 'components/icons/arrow-right.svg';
+import moment from 'moment';
+import timezone from 'moment-timezone'; // eslint-disable-line
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -94,7 +96,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     prepareData() {
         const formCursor = this.props.tree.form;
-        const formFields = formCursor.get();
+        const formFields = _.merge({}, formCursor.get(), { timezone: moment.tz.guess() });
         const oldProfile = this.props.profileCursor.get();
         const { photo } = this.state;
 
