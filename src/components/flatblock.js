@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import schema from 'libs/state';
 import { Loader } from 'components';
 
-
 const model = {
     content: null,
 };
@@ -25,6 +24,10 @@ export default schema(model)(createReactClass({
         service(tree.content, slug);
     },
 
+    componentWillUnmount() {
+        this.props.tree.content.set(null);
+    },
+
     render() {
         const content = this.props.tree.content.get();
         const isLoaded = content && content.status === 'Succeed';
@@ -32,9 +35,9 @@ export default schema(model)(createReactClass({
         return (
             <Loader isLoaded={isLoaded}>
                 {isLoaded ? (
-                    <div dangerouslySetInnerHTML={{__html: content.data.content}}/>
+                    <div dangerouslySetInnerHTML={{ __html: content.data.content }} /> // eslint-disable-line
                 ) : null }
             </Loader>
         );
-    }
+    },
 }));

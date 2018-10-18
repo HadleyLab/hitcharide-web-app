@@ -1,11 +1,14 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import createReactClass from 'create-react-class';
 
-
 export default createReactClass({
     displayName: 'Portal',
-    node: null,
+
+    propTypes: {
+        children: PropTypes.node.isRequired,
+    },
 
     componentWillMount() {
         this.node = document.createElement('div');
@@ -17,14 +20,16 @@ export default createReactClass({
         document.body.removeChild(this.node);
     },
 
+    node: null,
+
     render() {
         if (this.node) {
             return ReactDOM.createPortal(
                 this.props.children,
                 this.node
             );
-        } else {
-            return null;
         }
+
+        return null;
     },
 });

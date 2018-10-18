@@ -1,28 +1,16 @@
 import React from 'react';
-import classNames from 'classnames';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import Portal from 'components/portal';
 import s from './modal.css';
 
-
 export default createReactClass({
     displayName: 'Modal',
 
     propTypes: {
-        closeable: PropTypes.bool,
         closeModal: PropTypes.func.isRequired,
         header: PropTypes.node.isRequired,
         children: PropTypes.node.isRequired,
-        footer: PropTypes.node,
-        zIndex: PropTypes.number,
-        bodyClass: PropTypes.string,
-    },
-
-    getDefaultProps() {
-        return {
-            closeable: true,
-        };
     },
 
     componentDidMount() {
@@ -37,39 +25,27 @@ export default createReactClass({
     originalBodyOverflow: null,
 
     render() {
-        const { zIndex, closeable, closeModal, header, footer, children, bodyClass } = this.props;
-        const defaultBodyClass = typeof bodyClass === 'undefined' ? s.defaultBody : this.props.bodyClass;
+        const { closeModal, header, children } = this.props;
 
         return (
             <Portal>
-                <div
-                    className={s.modal}
-                    style={{ zIndex }}
-                    ref={(ref) => { this.modal = ref; }}
-                >
+                <div className={s.modal}>
                     <div className={s.wrapper}>
                         <div className={s.inner}>
                             <div
                                 className={s.bg}
-                                onClick={closeable && closeModal}
+                                onClick={closeModal}
                             />
                             <div className={s.content}>
                                 <div className={s.header}>
                                     {header}
-                                    {closeable ? (
-                                        <div
-                                            className={s.close}
-                                            onClick={closeModal}
-                                        />
-                                    ) : null}
+                                    <div
+                                        className={s.close}
+                                        onClick={closeModal}
+                                    />
                                 </div>
-                                <div className={classNames(s.body, defaultBodyClass)}>
+                                <div className={s.body}>
                                     {children}
-                                    {footer ? (
-                                        <div className={s.footer}>
-                                            {footer}
-                                        </div>
-                                    ) : null}
                                 </div>
                             </div>
                         </div>

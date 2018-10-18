@@ -6,8 +6,6 @@ import createReactClass from 'create-react-class';
 import moment from 'moment';
 import { Search, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
-import FlatBlock from 'components/flatblock';
-import Modal from 'components/modal';
 import themeImage from './intro.jpg';
 import { Button } from '../button';
 import s from './intro.css';
@@ -20,8 +18,6 @@ const model = {
             cityTo: null,
             dateTime: null,
         },
-        flatblock: null,
-        modalShow: false,
     },
 };
 
@@ -58,7 +54,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
 
     renderSearchForm() {
         const { token, services, tree } = this.props;
-        const { getCitiesService, getFlatpageService } = services;
+        const { getCitiesService } = services;
         const citiesCursor = tree.cities;
         const formCursor = tree.searchForm;
 
@@ -104,21 +100,6 @@ export const HomeIntroSection = schema(model)(createReactClass({
                         </div>
                     </DateTimePicker>
                     <Button to={token ? '/app' : '/search'} className={s.button}>Search a ride</Button>
-
-                    {/*<div onClick={() => {this.props.tree.modalShow.set(true)}}>OPEN!</div>*/}
-
-                    {/*{this.props.tree.modalShow.get() ?*/}
-                        {/*<Modal*/}
-                            {/*header={'header!'}*/}
-                            {/*closeModal={() => {this.props.tree.modalShow.set(false)}}*/}
-                            {/*closable={true}>*/}
-                            {/*<div>*/}
-                                {/*<FlatBlock*/}
-                                    {/*tree={this.props.tree.flatblock}*/}
-                                    {/*service={getFlatpageService}*/}
-                                    {/*slug="index" />*/}
-                            {/*</div>*/}
-                        {/*</Modal> : null}*/}
                 </div>
             </div>
         );
