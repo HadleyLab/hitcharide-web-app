@@ -8,6 +8,7 @@ import { Route, Link } from 'react-router-dom';
 import { SearchPage } from 'pages';
 import { HomeHeader } from './header';
 import { HomeIntroSection } from './intro';
+import { HomeFooter } from './footer';
 import s from './home.css';
 
 export const Button = ({ to, className, children }) => (
@@ -55,7 +56,10 @@ export const HomePage = createReactClass({
                     path="/"
                     exact
                     render={() => (
-                        <HomeIntroSection {...this.props} token={token} />
+                        <div>
+                            <HomeIntroSection {...this.props} token={token} />
+                            <HomeFooter {..._.pick(this.props, ['tree', 'services'])} />
+                        </div>
                     )}
                 />
                 <Route

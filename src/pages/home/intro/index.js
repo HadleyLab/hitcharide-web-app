@@ -26,6 +26,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
         tree: BaobabPropTypes.cursor.isRequired,
         token: PropTypes.string,
         services: PropTypes.shape({
+            getFlatpageService: PropTypes.func.isRequired,
             getCitiesService: PropTypes.func.isRequired,
         }).isRequired,
     },
