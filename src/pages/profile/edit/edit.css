@@ -52,14 +52,14 @@
 .text {
     white-space: nowrap;
     margin-right: 10px;
-    color: rgba(#1A1B20, .3);
+    color: #1A1B20;
 }
 
 .general {
     margin-top: 0;
 
     input {
-        color: #1A1B20;
+        color: rgba(#1A1B20, .3);
     }
 }
 
@@ -287,4 +287,33 @@
 
 .licensePlate {
     padding-left: 15px;
+}
+
+.notificationsRow {
+    position: relative;
+    height: 45px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    color: #1A1B20;
+    font-size: 17px;
+    line-height: 25px;
+
+    &:after {
+        content: '';
+        height: 1px;
+        position: absolute;
+        left: 15px;
+        bottom: 0;
+        right: 0;
+        background-color: #ddd;
+    }
+}
+
+.notificationsText {
+    color: #F5222D;
+    padding: 25px 15px 0;
+    font-size: 17px;
+    line-height: 25px;
 }

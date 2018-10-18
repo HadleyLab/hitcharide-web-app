@@ -205,6 +205,11 @@ export const ProfileContent = createReactClass({
                         </div>
                     ) : null}
                 </div>
+                {isYourProfile ? (
+                    <div className={s.notifications}>
+                        You receive only SMS notifications.
+                    </div>
+                ) : null}
                 {this.renderCars()}
                 {isYourProfile ? (
                     <div>

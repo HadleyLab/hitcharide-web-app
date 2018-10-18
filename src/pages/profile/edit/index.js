@@ -7,7 +7,9 @@ import { Title, Input, Error } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm, checkInputError } from 'components/utils';
-import { Button, Modal, Toast } from 'antd-mobile';
+import {
+    Button, Modal, Toast, Switch,
+} from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
@@ -478,6 +480,28 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
+    renderNotifications() {
+        return (
+            <div>
+                <div className={s.notificationsRow}>
+                    <div className={s.notificationsTitle}>
+                        E-mail notification
+                    </div>
+                    <Switch checked color="#97B725" />
+                </div>
+                <div className={s.notificationsRow}>
+                    <div className={s.notificationsTitle}>
+                        SMS notification
+                    </div>
+                    <Switch disabled color="#97B725" />
+                </div>
+                <div className={s.notificationsText}>
+                    Before enabling notifications, please save your profile changes and verify phone number.
+                </div>
+            </div>
+        );
+    },
+
     render() {
         const { phone } = this.props.tree.form.get() || '';
 
@@ -519,6 +543,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                         >
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
                         </Input>
+                    </div>
+                    <div className={s.section}>
+                        <Title>Notifications</Title>
+                        {this.renderNotifications()}
                     </div>
                     <div className={s.section}>
                         <Title>Car</Title>
