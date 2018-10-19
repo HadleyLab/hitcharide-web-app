@@ -76,7 +76,7 @@ export const AccountPage = createReactClass({
                     {(services) => (
                         <div>
                             <Route
-                                exect
+                                exact
                                 path={url}
                                 render={(props) => (
                                     <AccountMenu {...props} />

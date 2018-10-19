@@ -13,6 +13,7 @@ import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
 import { checkIfRideStarted } from 'components/utils';
+import arrowDownIcon from 'components/icons/arrow-down-blue.svg';
 import { Timer } from './timer';
 import s from './ride-details.css';
 
@@ -41,6 +42,13 @@ export const RideDetailsPage = schema(model)(createReactClass({
         onBookRide: PropTypes.func.isRequired,
     },
 
+    getInitialState() {
+        return {
+            detailsModalOpened: false,
+            showCostDetails: false,
+        };
+    },
+
     componentDidMount() {
         this.props.tree.select('seatsCount').set(1);
         this.loadRide();
@@ -51,52 +59,6 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const { getRideService } = this.props.services;
 
         await getRideService(tree.ride, match.params.pk);
-    },
-
-    bookRide() {
-        const ride = this.props.tree.ride.get();
-        const seatsCount = this.props.tree.seatsCount.get();
-        const {
-            cityFrom, cityTo, priceWithFee, dateTime,
-        } = ride.data;
-
-        const message = 'You are booking a ride '
-            + `from ${cityFrom.name}, ${cityFrom.state.name} `
-            + `to ${cityTo.name}, ${cityTo.state.name} `
-            + `on ${moment(dateTime).format('MMM D YYYY')} `
-            + `at ${moment(dateTime).format('h:mm A')} `
-            + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
-            + `priced at $${parseFloat(priceWithFee * seatsCount).toString()}`
-            + `${seatsCount > 1 ? ` ($${parseFloat(priceWithFee).toString()} per seat)` : ''}. `
-            + 'Are you sure?';
-
-        Modal.alert('Check your ride', message, [
-            {
-                text: 'YES',
-                onPress: async () => {
-                    const { pk } = this.props.match.params;
-                    const { bookRideService } = this.props.services;
-
-                    const result = await bookRideService(this.props.tree.bookingResult, {
-                        ride: pk,
-                        seatsCount,
-                    });
-
-                    if (result.status === 'Failure') {
-                        this.props.tree.bookingError.set(result.error.data);
-                    }
-
-                    if (result.status === 'Succeed') {
-                        window.location.replace(result.data.paypalApprovalLink);
-                    }
-                },
-                style: { color: '#4263CA' },
-            },
-            {
-                text: 'NO',
-                style: { color: '#4263CA' },
-            },
-        ]);
     },
 
     async onBookingSucceed() {
@@ -135,6 +97,93 @@ export const RideDetailsPage = schema(model)(createReactClass({
         }
 
         return 'Trip information';
+    },
+
+    closeModal() {
+        this.setState({ detailsModalOpened: false, showCostDetails: false });
+    },
+
+    renderBookingModal() {
+        const { detailsModalOpened, showCostDetails } = this.state;
+        const ride = this.props.tree.ride.get();
+        const seatsCount = this.props.tree.seatsCount.get();
+        const { cityFrom, cityTo, dateTime } = ride.data;
+        const price = _.round(parseFloat(ride.data.price), 2).toString();
+        const priceWithFee = _.round(parseFloat(ride.data.priceWithFee), 2).toString();
+        const fee = _.round(parseFloat(ride.data.priceWithFee - ride.data.price), 2).toString();
+        const sum = _.round(parseFloat(ride.data.priceWithFee * seatsCount), 2).toString();
+
+        const message = 'You are booking a ride '
+            + `from ${cityFrom.name}, ${cityFrom.state.name} `
+            + `to ${cityTo.name}, ${cityTo.state.name} `
+            + `on ${moment(dateTime).format('MMM D YYYY')} `
+            + `at ${moment(dateTime).format('h:mm A')} `
+            + `${seatsCount} ${seatsCount === 1 ? 'seat' : 'seats'} `
+            + `priced at $${sum}`
+            + `${seatsCount > 1 ? ` ($${priceWithFee} per seat)` : ''}. `
+            + 'Are you sure?';
+
+        return (
+            <Modal
+                visible={detailsModalOpened}
+                transparent
+                maskClosable={false}
+                title="Check your ride"
+                footer={[
+                    {
+                        text: 'YES',
+                        onPress: async () => {
+                            const { pk } = this.props.match.params;
+                            const { bookRideService } = this.props.services;
+
+                            const result = await bookRideService(this.props.tree.bookingResult, {
+                                ride: pk,
+                                seatsCount,
+                            });
+
+                            if (result.status === 'Failure') {
+                                this.props.tree.bookingError.set(result.error.data);
+                            }
+
+                            if (result.status === 'Succeed') {
+                                window.location.replace(result.data.paypalApprovalLink);
+                                this.closeModal();
+                            }
+                        },
+                        style: { color: '#4263CA' },
+                    },
+                    {
+                        text: 'NO',
+                        onPress: this.closeModal,
+                        style: { color: '#4263CA' },
+                    },
+                ]}
+            >
+                <div className={s.message}>
+                    {message}
+                    <div className={s.details}>
+                        <div
+                            className={s.detailsLink}
+                            onClick={() => this.setState({ showCostDetails: !showCostDetails })}
+                        >
+                            See details
+                            <div
+                                className={classNames(s.arrow, {
+                                    [s._up]: showCostDetails,
+                                })}
+                                style={{ backgroundImage: `url(${arrowDownIcon})` }}
+                            />
+                        </div>
+                        {showCostDetails ? (
+                            <div>
+                                Driver reward: {`$${price}`}<br />
+                                Service fee: {`$${fee}`}
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            </Modal>
+        );
     },
 
     renderRideInfo() {
@@ -459,7 +508,9 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     <Button
                         type="primary"
                         inline
-                        onClick={() => this.props.onBookRide(this.bookRide)}
+                        onClick={() => this.props.onBookRide(
+                            () => this.setState({ detailsModalOpened: true })
+                        )}
                     >
                         Book it
                     </Button>
@@ -487,6 +538,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                         <Title className={s.title}>Passengers</Title>
                         {this.renderBookings()}
                         {this.renderFooter()}
+                        {this.renderBookingModal()}
                     </div>
                 ) : null}
             </Loader>

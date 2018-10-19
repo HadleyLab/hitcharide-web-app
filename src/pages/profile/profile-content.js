@@ -198,12 +198,12 @@ export const ProfileContent = createReactClass({
                             ) : null}
                         </div>
                     ) : null}
-                    <div className={s.infoField}>
-                        {email}
-                        {isYourProfile ? (
+                    {isYourProfile ? (
+                        <div className={s.infoField}>
+                            {email}
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
-                        ) : null}
-                    </div>
+                        </div>
+                    ) : null}
                 </div>
                 {this.renderCars()}
                 {isYourProfile ? (

@@ -9,6 +9,8 @@ import schema from 'libs/state';
 import * as yup from 'yup';
 import { validateForm, checkInputError } from 'components/utils';
 import { Input, Error } from 'components';
+import moment from 'moment';
+import timezone from 'moment-timezone'; // eslint-disable-line
 import s from '../account.css';
 
 const validationSchema = yup.object().shape({
@@ -73,6 +75,7 @@ export const RegistrationPage = schema(model)(createReactClass({
             const result = await service(this.props.tree.result, {
                 email: _.toLower(data.email),
                 password: data.password,
+                timezone: moment.tz.guess(),
             });
 
             if (result.status === 'Failure') {

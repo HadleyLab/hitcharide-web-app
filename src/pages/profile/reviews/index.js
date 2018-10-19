@@ -63,6 +63,10 @@ export const ReviewsPage = schema(modal)(createReactClass({
                 {_.map(_.range(1, 6), (item, index) => {
                     const count = groupedRatings[item] ? groupedRatings[item].length : 0;
 
+                    if (count === 0) {
+                        return null;
+                    }
+
                     return (
                         <div className={s.statisticsItem} key={`statistics-${index}`}>
                             <Stars

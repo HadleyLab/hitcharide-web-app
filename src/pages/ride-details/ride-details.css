@@ -123,3 +123,30 @@
     margin-left: 15px;
     color: #1A1B20;
 }
+
+.message {}
+
+.details {
+    text-align: left;
+    padding: 15px;
+}
+
+.detailsLink {
+    color: #4263CA;
+}
+
+.arrow {
+    display: inline-block;
+    margin-left: 3px;
+    width: 12px;
+    height: 12px;
+    background-size: 12px 12px;
+    background-position: center -1px;
+    background-repeat: no-repeat;
+
+    &._up {
+        margin-left: 4px;
+        transform: rotate(180deg);
+        background-position: center -3px;
+    }
+}

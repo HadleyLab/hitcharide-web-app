@@ -15,6 +15,8 @@ import { AddFilledIcon } from 'components/icons';
 import warningIcon from 'components/icons/warning.svg';
 import minusIcon from 'components/icons/minus-circle.svg';
 import arrowIcon from 'components/icons/arrow-right.svg';
+import moment from 'moment';
+import timezone from 'moment-timezone'; // eslint-disable-line
 import { PhoneInput } from './phone-input';
 import s from './edit.css';
 
@@ -94,7 +96,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     prepareData() {
         const formCursor = this.props.tree.form;
-        const formFields = formCursor.get();
+        const formFields = _.merge({}, formCursor.get(), { timezone: moment.tz.guess() });
         const oldProfile = this.props.profileCursor.get();
         const { photo } = this.state;
 
@@ -201,6 +203,16 @@ export const EditProfilePage = schema(model)(createReactClass({
 
         if (result.status === 'Succeed') {
             await getCarListService(this.props.carsCursor);
+        }
+
+        if (result.status === 'Failure') {
+            Modal.alert('Removing car error', result.error.data.detail,
+                [
+                    {
+                        text: 'OK',
+                        style: { color: '#4263CA' },
+                    },
+                ]);
         }
     },
 
@@ -423,10 +435,51 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
-    render() {
+    renderPhoto() {
         const formCursor = this.props.tree.form;
-        const { phone } = this.props.tree.form.get() || '';
+        const errorsCursor = this.props.tree.errors;
         const photo = formCursor.get('photo');
+        const errorProps = this.checkInputError('photo');
+
+        return (
+            <div className={classNames(s.section, s._photo)}>
+                <Title>Photo</Title>
+                <div
+                    className={classNames(s.photoPicker, {
+                        [s._empty]: !photo,
+                    })}
+                >
+                    <div
+                        className={s.photo}
+                        style={{ backgroundImage: photo ? `url(${photo})` : null }}
+                    />
+                    <input
+                        className={s.photoInput}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                            errorsCursor.select('photo').set(null);
+                            this.handleFileChange(e.target.files);
+                        }}
+                    />
+                </div>
+                {errorProps.error
+                    ? (
+                        <div
+                            className={s.warning}
+                            style={{ backgroundImage: `url(${warningIcon})` }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                errorProps.onErrorClick();
+                            }}
+                        />
+                    ) : null}
+            </div>
+        );
+    },
+
+    render() {
+        const { phone } = this.props.tree.form.get() || '';
 
         return (
             <div>
@@ -439,25 +492,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         <div className={s.text}>Last name</div>
                     </Input>
                 </div>
-                <div className={s.section}>
-                    <Title>Photo</Title>
-                    <div
-                        className={classNames(s.photoPicker, {
-                            [s._empty]: !photo,
-                        })}
-                    >
-                        <div
-                            className={s.photo}
-                            style={{ backgroundImage: photo ? `url(${photo})` : null }}
-                        />
-                        <input
-                            className={s.photoInput}
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => this.handleFileChange(e.target.files)}
-                        />
-                    </div>
-                </div>
+                {this.renderPhoto()}
                 <div className={s.moreInfo}>
                     {this.renderAboutInput()}
                     <div className={s.section}>
