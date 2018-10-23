@@ -17,6 +17,8 @@
 }
 
 .link {
+    color: #FFF;
+    display: block;
     font-size: 16px;
     line-height: 24px;
 }

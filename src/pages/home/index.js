@@ -5,7 +5,7 @@ import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import classNames from 'classnames';
 import { Route, Link } from 'react-router-dom';
-import { SearchPage } from 'pages';
+import { FlatPage, SearchPage } from 'pages';
 import { HomeHeader } from './header';
 import { HomeIntroSection } from './intro';
 import { HomeFooter } from './footer';
@@ -58,7 +58,19 @@ export const HomePage = createReactClass({
                     render={() => (
                         <div>
                             <HomeIntroSection {...this.props} token={token} />
-                            <HomeFooter {..._.pick(this.props, ['tree', 'services'])} />
+                            <HomeFooter />
+                        </div>
+                    )}
+                />
+                <Route
+                    path="/page/:slug"
+                    exact
+                    render={(props) => (
+                        <div>
+                            <FlatPage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.flatpage}
+                            />
                         </div>
                     )}
                 />
@@ -67,6 +79,7 @@ export const HomePage = createReactClass({
                     render={(props) => (
                         <SearchPage
                             {..._.merge(this.props, props)}
+                            tree={this.props.tree.app.search}
                             onCreateRide={() => props.history.push('/app/create-ride')}
                             userType="passenger"
                         />
