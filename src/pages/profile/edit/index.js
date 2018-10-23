@@ -199,6 +199,15 @@ export const EditProfilePage = schema(model)(createReactClass({
         }, this.checkInputError(name));
     },
 
+    getSwitchProps(name) {
+        const formCursor = this.props.tree.form;
+
+        return {
+            checked: formCursor.select(name).get(),
+            onChange: (checked) => formCursor.select(name).set(checked),
+        };
+    },
+
     async removeCar(pk) {
         const { removeCarService, getCarListService } = this.props.services;
         const result = await removeCarService(this.props.tree.removeCarResult, pk);
@@ -481,23 +490,26 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     renderNotifications() {
+        const { isPhoneValidated } = this.props.profileCursor.get();
+
         return (
             <div>
                 <div className={s.notificationsRow}>
                     <div className={s.notificationsTitle}>
-                        E-mail notification
-                    </div>
-                    <Switch checked color="#97B725" />
-                </div>
-                <div className={s.notificationsRow}>
-                    <div className={s.notificationsTitle}>
                         SMS notification
                     </div>
-                    <Switch disabled color="#97B725" />
+                    <Switch
+                        color="#97B725"
+                        disabled={!isPhoneValidated}
+                        {...this.getSwitchProps('smsNotifications')}
+                    />
                 </div>
-                <div className={s.notificationsText}>
-                    Before enabling notifications, please save your profile changes and verify phone number.
-                </div>
+                {!isPhoneValidated
+                    ? (
+                        <div className={s.notificationsText}>
+                            Before enabling notifications, please save your profile changes and verify phone number.
+                        </div>
+                    ) : null}
             </div>
         );
     },

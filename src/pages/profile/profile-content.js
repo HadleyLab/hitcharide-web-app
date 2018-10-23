@@ -160,7 +160,7 @@ export const ProfileContent = createReactClass({
         const { profile, isYourProfile } = this.props;
         const {
             firstName, lastName, phone, email, isPhoneValidated,
-            paypalAccount, shortDesc, age, photo,
+            paypalAccount, shortDesc, age, photo, smsNotifications,
         } = profile;
 
         return (
@@ -205,9 +205,9 @@ export const ProfileContent = createReactClass({
                         </div>
                     ) : null}
                 </div>
-                {isYourProfile ? (
+                {isYourProfile && !smsNotifications ? (
                     <div className={s.notifications}>
-                        You receive only SMS notifications.
+                        You receive only email notifications.
                     </div>
                 ) : null}
                 {this.renderCars()}
