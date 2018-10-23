@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import minusIcon from 'components/icons/minus-circle-empty.svg';
+import warningIcon from 'components/icons/warning.svg';
 import { AddIcon } from 'components/icons';
 import s from './stepper-input.css';
 
@@ -37,12 +38,16 @@ export class StepperInput extends React.Component {
 
     render() {
         const {
-            title, cursor, minValue, maxValue, className,
+            title, cursor, minValue, maxValue, className, error, onErrorClick,
         } = this.props;
         const value = cursor.get();
 
         return (
-            <div className={classNames(s.container, className)}>
+            <div
+                className={classNames(s.container, className, {
+                    [s._error]: error,
+                })}
+            >
                 <div className={s.title}>{title}</div>
                 <div className={s.content}>
                     <div
@@ -62,6 +67,14 @@ export class StepperInput extends React.Component {
                         <AddIcon color="#97B725" />
                     </div>
                 </div>
+                {error
+                    ? (
+                        <div
+                            className={s.icon}
+                            style={{ backgroundImage: `url(${warningIcon})` }}
+                            onClick={onErrorClick}
+                        />
+                    ) : null}
             </div>
         );
     }
@@ -72,6 +85,8 @@ StepperInput.propTypes = {
     cursor: BaobabPropTypes.cursor.isRequired,
     minValue: PropTypes.number.isRequired,
     maxValue: PropTypes.number.isRequired,
+    error: PropTypes.bool,
+    onErrorClick: PropTypes.func,
     className: PropTypes.string,
 };
 

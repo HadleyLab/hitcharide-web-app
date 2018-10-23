@@ -267,6 +267,7 @@ export const CreateRideForm = schema(model)(createReactClass({
                         cursor={formCursor.numberOfSeats}
                         minValue={1}
                         maxValue={100}
+                        {...this.checkInputError('numberOfSeats')}
                     />
                 </div>
                 <div className={s.section}>
