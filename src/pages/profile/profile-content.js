@@ -205,7 +205,7 @@ export const ProfileContent = createReactClass({
                         </div>
                     ) : null}
                 </div>
-                {isYourProfile && !smsNotifications ? (
+                {isYourProfile && !smsNotifications && phone ? (
                     <div className={s.notifications}>
                         You receive only email notifications.
                     </div>
