@@ -7,7 +7,9 @@ import { Title, Input, Error } from 'components';
 import createReactClass from 'create-react-class';
 import schema from 'libs/state';
 import { validateForm, checkInputError } from 'components/utils';
-import { Button, Modal, Toast } from 'antd-mobile';
+import {
+    Button, Modal, Toast, Switch,
+} from 'antd-mobile';
 import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 import tickIcon from 'components/icons/tick-circle.svg';
@@ -195,6 +197,15 @@ export const EditProfilePage = schema(model)(createReactClass({
                 errorsCursor.select(name).set(null);
             },
         }, this.checkInputError(name));
+    },
+
+    getSwitchProps(name) {
+        const formCursor = this.props.tree.form;
+
+        return {
+            checked: formCursor.select(name).get(),
+            onChange: (checked) => formCursor.select(name).set(checked),
+        };
     },
 
     async removeCar(pk) {
@@ -478,6 +489,31 @@ export const EditProfilePage = schema(model)(createReactClass({
         );
     },
 
+    renderNotifications() {
+        const { isPhoneValidated } = this.props.profileCursor.get();
+
+        return (
+            <div>
+                <div className={s.notificationsRow}>
+                    <div className={s.notificationsTitle}>
+                        SMS notification
+                    </div>
+                    <Switch
+                        color="#97B725"
+                        disabled={!isPhoneValidated}
+                        {...this.getSwitchProps('smsNotifications')}
+                    />
+                </div>
+                {!isPhoneValidated
+                    ? (
+                        <div className={s.notificationsText}>
+                            Before enabling notifications, please save your profile changes and verify phone number.
+                        </div>
+                    ) : null}
+            </div>
+        );
+    },
+
     render() {
         const { phone } = this.props.tree.form.get() || '';
 
@@ -519,6 +555,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                         >
                             <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
                         </Input>
+                    </div>
+                    <div className={s.section}>
+                        <Title>Notifications</Title>
+                        {this.renderNotifications()}
                     </div>
                     <div className={s.section}>
                         <Title>Car</Title>

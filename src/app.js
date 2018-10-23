@@ -24,6 +24,7 @@ const model = {
     tree: {
         token: getToken(),
         app: {},
+        flatpage: {},
         account: {},
     },
 };
@@ -64,7 +65,7 @@ const AuthorizedApp = createReactClass({
                     render={(props) => (
                         <HomePage
                             {...props}
-                            tree={this.props.tree.select('app', 'search')}
+                            tree={this.props.tree}
                             tokenCursor={tokenCursor}
                             logout={this.props.logout}
                             services={this.props.services}

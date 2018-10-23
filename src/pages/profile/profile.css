@@ -242,3 +242,10 @@
 .link {
     color: #4263CA;
 }
+
+.notifications {
+    color: #F5222D;
+    padding: 25px 15px 0;
+    font-size: 17px;
+    line-height: 25px;
+}
