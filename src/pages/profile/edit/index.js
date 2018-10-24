@@ -328,7 +328,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         text: 'Cancel',
                         onPress: () => {
                             this.setState({ openCodeModal: false });
-                            this.updateProfile();
+                            this.updateProfile({ isPhoneValidated: false, smsNotifications: false });
                             this.resetCodeRelatedCursors();
                         },
                     },
