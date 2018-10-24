@@ -492,6 +492,7 @@ export const EditProfilePage = schema(model)(createReactClass({
     renderNotifications() {
         const { isPhoneValidated, phone: savedPhone } = this.props.profileCursor.get();
         const currentPhone = this.props.tree.form.phone.get();
+        const isSwitchDisabled = !isPhoneValidated || currentPhone !== savedPhone;
 
         return (
             <div>
@@ -501,12 +502,12 @@ export const EditProfilePage = schema(model)(createReactClass({
                     </div>
                     <Switch
                         color="#97B725"
-                        disabled={!isPhoneValidated || currentPhone !== savedPhone}
+                        disabled={isSwitchDisabled}
                         {...this.getSwitchProps('smsNotifications')}
                         {...(currentPhone !== savedPhone ? {checked: false} : {})}
                     />
                 </div>
-                {!isPhoneValidated
+                {isSwitchDisabled
                     ? (
                         <div className={s.notificationsText}>
                             Before enabling notifications, please save your profile changes and verify phone number.
