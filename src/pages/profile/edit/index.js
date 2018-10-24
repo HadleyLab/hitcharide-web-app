@@ -141,8 +141,9 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     updateProfile(data = {}) {
         const profile = this.props.tree.result.get() || this.props.profileCursor.get();
-
-        this.props.profileCursor.set(_.merge({}, profile ? profile.data : {}, data));
+        const updatedProfile = _.merge({}, profile ? profile.data : {}, data);
+        this.props.profileCursor.set(updatedProfile);
+        this.props.tree.form.set(updatedProfile);
     },
 
     onProfileSuccessfullyEdited(data) {
@@ -201,7 +202,6 @@ export const EditProfilePage = schema(model)(createReactClass({
 
     getSwitchProps(name) {
         const formCursor = this.props.tree.form;
-
         return {
             checked: formCursor.select(name).get(),
             onChange: (checked) => formCursor.select(name).set(checked),
