@@ -140,8 +140,8 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     updateProfile(data = {}) {
-        const profile = this.props.tree.result.get() || this.props.profileCursor.get();
-        const updatedProfile = _.merge({}, profile ? profile.data : {}, data);
+        const profile = this.props.tree.result.data.get() || this.props.profileCursor.get();
+        const updatedProfile = _.merge({}, profile ? profile : {}, data);
         this.props.profileCursor.set(updatedProfile);
         this.props.tree.form.set(updatedProfile);
     },
@@ -490,7 +490,8 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     renderNotifications() {
-        const { isPhoneValidated } = this.props.profileCursor.get();
+        const { isPhoneValidated, phone: savedPhone } = this.props.profileCursor.get();
+        const currentPhone = this.props.tree.form.phone.get();
 
         return (
             <div>
@@ -500,8 +501,9 @@ export const EditProfilePage = schema(model)(createReactClass({
                     </div>
                     <Switch
                         color="#97B725"
-                        disabled={!isPhoneValidated}
+                        disabled={!isPhoneValidated || currentPhone !== savedPhone}
                         {...this.getSwitchProps('smsNotifications')}
+                        {...(currentPhone !== savedPhone ? {checked: false} : {})}
                     />
                 </div>
                 {!isPhoneValidated
