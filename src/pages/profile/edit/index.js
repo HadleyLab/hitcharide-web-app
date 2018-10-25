@@ -77,7 +77,7 @@ export const EditProfilePage = schema(model)(createReactClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         const formCursor = this.props.tree.form;
         const profile = this.props.profileCursor.get();
 
@@ -428,9 +428,10 @@ export const EditProfilePage = schema(model)(createReactClass({
                     <textarea
                         placeholder="A few words about yourself"
                         className={s.aboutInput}
+                        defaultValue={formCursor.shortDesc.get()}
                         onChange={(e) => {
-                            formCursor.description.set(e.target.value);
-                            errorsCursor.select('shortDesc').set(null);
+                            formCursor.shortDesc.set(e.target.value);
+                            errorsCursor.shortDesc.set(null);
                         }}
                     />
                     {errorProps.error
