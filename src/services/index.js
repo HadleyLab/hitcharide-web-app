@@ -6,6 +6,7 @@ import { getStatesService, getCitiesService } from './cities.js';
 import {
     getMyProfileService, updateProfileService, getUserProfileService,
     sendPhoneVerificationCodeService, checkPhoneVerificationCodeService,
+    createUserProxyPhoneService,
 } from './profile.js';
 import {
     addCarImageService, addCarService, getCarListService,
@@ -32,6 +33,7 @@ export default {
     getUserProfileService,
     getMyProfileService,
     updateProfileService,
+    createUserProxyPhoneService,
     sendPhoneVerificationCodeService,
     checkPhoneVerificationCodeService,
     addCarImageService,

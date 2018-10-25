@@ -188,23 +188,25 @@ export const ProfileContent = createReactClass({
                         <div className={s.infoField}>{shortDesc}</div>
                     </div>
                 ) : null}
-                <div className={s.section}>
-                    <Title>Contacts</Title>
-                    {phone ? (
-                        <div className={s.infoField}>
-                            + {phone}
-                            {isPhoneValidated && isYourProfile ? (
+                {isYourProfile ? (
+                    <div className={s.section}>
+                        <Title>Contacts</Title>
+                        {phone ? (
+                            <div className={s.infoField}>
+                                +{phone}
+                                {isPhoneValidated ? (
+                                    <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
+                                ) : null}
+                            </div>
+                        ) : null}
+                        {isYourProfile ? (
+                            <div className={s.infoField}>
+                                {email}
                                 <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
-                            ) : null}
-                        </div>
-                    ) : null}
-                    {isYourProfile ? (
-                        <div className={s.infoField}>
-                            {email}
-                            <div className={s.tick} style={{ backgroundImage: `url(${tickIcon})` }} />
-                        </div>
-                    ) : null}
-                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                ) : null}
                 {isYourProfile && !smsNotifications && phone ? (
                     <div className={s.notifications}>
                         You receive only email notifications.

@@ -36,6 +36,25 @@ export function getUserProfileService(handler, token) {
     };
 }
 
+export function createUserProxyPhoneService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, pk) => {
+        const service = buildPostService(
+            `/accounts/${pk}/create_proxy_phone/`,
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
+    };
+}
+
+
 export function updateProfileService(handler, token) {
     const headers = {
         Accept: 'application/json',

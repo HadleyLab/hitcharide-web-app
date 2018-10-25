@@ -6,7 +6,7 @@ import BaobabPropTypes from 'baobab-prop-types';
 import classNames from 'classnames';
 import schema from 'libs/state';
 import {
-    Title, Loader, StepperInput, Error,
+    Title, Loader, StepperInput, Error, ProxyPhone,
 } from 'components';
 import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
@@ -22,6 +22,10 @@ const model = {
     seatsCount: 1,
     bookingResult: {},
     bookingError: {},
+    proxyPhoneResult: {
+        driver: {},
+        passengers: {},
+    },
 };
 
 export const RideDetailsPage = schema(model)(createReactClass({
@@ -52,6 +56,10 @@ export const RideDetailsPage = schema(model)(createReactClass({
     componentDidMount() {
         this.props.tree.select('seatsCount').set(1);
         this.loadRide();
+    },
+
+    componentWillUnmount() {
+        this.props.tree.proxyPhoneResult.set({});
     },
 
     async loadRide() {
@@ -292,7 +300,13 @@ export const RideDetailsPage = schema(model)(createReactClass({
         ],
         !isMe && isBookingPayed ? {
             title: 'Phone number',
-            content: `+ ${car.owner.phone}`,
+            content: (
+                <ProxyPhone
+                    tree={this.props.tree.driver.proxyPhoneResult}
+                    userPk={car.owner.pk}
+                    service={this.props.services.createUserProxyPhoneService}
+                />
+            ),
         } : []);
 
         return _.map(rows, (row, index) => (
@@ -304,9 +318,10 @@ export const RideDetailsPage = schema(model)(createReactClass({
     },
 
     renderBookings() {
-        const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { bookings } = ride.data;
+        const { car, bookings } = ride.data;
+        const { profile } = this.props;
+        const amIDriver = profile.pk === car.owner.pk;
 
         if (!bookings.length) {
             return (
@@ -321,7 +336,15 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
             return (
                 <div className={s.row} key={`ride-row-booking-${index}`}>
-                    <span className={s.rowTitle}>Passenger</span>
+                    <span className={s.rowTitle}>
+                        {amIDriver ? (
+                            <ProxyPhone
+                                tree={this.props.tree.proxyPhoneResult.passengers.select(client.pk)}
+                                userPk={client.pk}
+                                service={this.props.services.createUserProxyPhoneService}
+                            />
+                        ) : "Passenger"}
+                    </span>
                     <span className={s.rowContent}>
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${client.pk}`} className={s.link}>
