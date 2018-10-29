@@ -101,7 +101,7 @@ const MainPageContent = createReactClass({
         if (!firstName || !lastName || !phone) {
             return {
                 allowed: false,
-                message: 'You should fill your profile',
+                message: 'You should fill your profile: first name, last name and phone number',
             };
         }
 
