@@ -28,6 +28,7 @@ Button.defaultProps = {
 export const HomePage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        searchCursor: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         location: PropTypes.shape().isRequired,
@@ -57,7 +58,7 @@ export const HomePage = createReactClass({
                     exact
                     render={() => (
                         <div>
-                            <HomeIntroSection {...this.props} token={token} />
+                            <HomeIntroSection {...this.props} token={token} tree={this.props.searchCursor} />
                             <HomeFooter />
                         </div>
                     )}

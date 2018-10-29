@@ -66,6 +66,7 @@ const AuthorizedApp = createReactClass({
                         <HomePage
                             {...props}
                             tree={this.props.tree}
+                            searchCursor={this.props.tree.app.search}
                             tokenCursor={tokenCursor}
                             logout={this.props.logout}
                             services={this.props.services}
