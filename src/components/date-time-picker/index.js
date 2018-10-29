@@ -34,8 +34,13 @@ export const DateTimePicker = createReactClass({
                 label: 'Today',
                 value: moment().format('YYYY-MM-DD'),
             },
+            {
+                label: 'Tomorrow',
+                value: moment().add(1, 'days').format('YYYY-MM-DD'),
+            },
+
             ..._.map(
-                _.range(1, 7),
+                _.range(2, 7),
                 (i) => {
                     const date = moment().add(i, 'days');
                     return {
@@ -60,20 +65,13 @@ export const DateTimePicker = createReactClass({
         ];
     },
 
-    onPickerChange(selected) {
-        console.log('selecte',selected);
-        this.setState({
-            options: this.formOptions(selected),
-        });
-    },
-
     convertValueToDate(value) {
         if (_.isEmpty(value)) {
             return null;
         }
         const [date, hour, minute, ampm] = value;
 
-        return moment(`${date} ${hour}:${minute} ${ampm}`, 'YYYY-MM-DD h:m A').format('YYYY-MM-DDTHH:mm:ssZZ');
+        return moment(`${date} ${hour}:${minute} ${ampm}`, 'YYYY-MM-DD hh:mm A').format('YYYY-MM-DDTHH:mm:ssZZ');
     },
 
     convertDateToValue(date) {
@@ -84,11 +82,30 @@ export const DateTimePicker = createReactClass({
         return _.split(moment(date).format('YYYY-MM-DD h m A'), ' ');
     },
 
+     onPickerChange(selected) {
+        console.log('selecte',selected);
+        this.setState({
+            options: this.formOptions(selected),
+        });
+    },
+
     onChange(value) {
         const { onChange } = this.props;
         const fullDate = this.convertValueToDate(value);
 
         onChange(fullDate);
+    },
+
+    formatLabel(labels) {
+        if (_.isEmpty(labels)) {
+            return '';
+        }
+
+        const [date, hour, minute, ampm] = labels;
+        const paddedHour = _.padStart(hour, 2, '0');
+        const paddedMinute = _.padStart(minute, 2, '0');
+
+        return `${date} ${paddedHour}:${paddedMinute} ${ampm}`;
     },
 
     render() {
@@ -104,33 +121,15 @@ export const DateTimePicker = createReactClass({
                 style={{ backgroundColor: 'white' }}
             >
                 <Picker
+                    cols={4}
+                    prefixCls={classNames(s.amDatePicker, 'am-picker')}
                     title="When"
                     value={this.convertDateToValue(value)}
                     cascade={false}
                     data={this.state.options}
+                    onPickerChange={this.onPickerChange}
                     onChange={this.onChange}
-                    format={() => {
-                        const fullDate = value;
-
-                        if (!fullDate) {
-                            return '';
-                        }
-
-                        const today = moment();
-                        const tomorrow = moment().add(1, 'days');
-                        const isToday = moment(fullDate).isSame(today, 'day');
-                        const isTomorrow = moment(fullDate).isSame(tomorrow, 'day');
-
-                        if (isToday) {
-                            return `Today ${moment(fullDate).format('h:mm A')}`;
-                        }
-
-                        if (isTomorrow) {
-                            return `Tomorrow ${moment(fullDate).format('h:mm A')}`;
-                        }
-
-                        return moment(fullDate).format('MMM D h:mm A');
-                    }}
+                    format={this.formatLabel}
                 >
                       <List.Item>{children}</List.Item>
                 </Picker>

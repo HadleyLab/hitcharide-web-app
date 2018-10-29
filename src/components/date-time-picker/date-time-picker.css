@@ -24,4 +24,11 @@
     &._empty :global .am-list-extra {
         display: none;
     }
+
+}
+
+.amDatePicker {
+    :global .am-picker-col:first-of-type {
+        flex: 2 1 0!important;
+    }
 }
