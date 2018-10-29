@@ -41,6 +41,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
         services: PropTypes.shape({
             getRideService: PropTypes.func.isRequired,
             bookRideService: PropTypes.func.isRequired,
+            bookingRequestPassengerPhoneService: PropTypes.func.isRequired,
+            rideRequestDriverPhoneService: PropTypes.func.isRequired,
         }).isRequired,
         history: PropTypes.shape().isRequired,
         onBookRide: PropTypes.func.isRequired,
@@ -267,7 +269,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderDriverInfo() {
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { car, bookings } = ride.data;
+        const { pk: ridePk, car, bookings } = ride.data;
         const isMe = profile.pk === car.owner.pk;
         let isBookingPayed = false;
 
@@ -302,9 +304,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
             title: 'Phone number',
             content: (
                 <ProxyPhone
-                    tree={this.props.tree.driver.proxyPhoneResult}
-                    userPk={car.owner.pk}
-                    service={this.props.services.createUserProxyPhoneService}
+                    tree={this.props.tree.proxyPhoneResult.driver}
+                    service={(tree) => this.props.services.rideRequestDriverPhoneService(tree, ridePk)}
                 />
             ),
         } : []);
@@ -331,7 +332,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             );
         }
 
-        return _.map(bookings, ({ client, seatsCount }, index) => {
+        return _.map(bookings, ({ pk: bookingPk, client, seatsCount }, index) => {
             const isMe = profile.pk === client.pk;
 
             return (
@@ -339,9 +340,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     <span className={s.rowTitle}>
                         {amIDriver ? (
                             <ProxyPhone
-                                tree={this.props.tree.proxyPhoneResult.passengers.select(client.pk)}
-                                userPk={client.pk}
-                                service={this.props.services.createUserProxyPhoneService}
+                                tree={this.props.tree.proxyPhoneResult.passengers.select(bookingPk)}
+                                service={(tree) => this.props.services.bookingRequestPassengerPhoneService(tree, bookingPk)}
                             />
                         ) : "Passenger"}
                     </span>

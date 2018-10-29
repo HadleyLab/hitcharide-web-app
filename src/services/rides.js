@@ -228,3 +228,39 @@ export function bookingCancelService(handler, token) {
         return service(handler, cursor, data);
     };
 }
+
+export function rideRequestDriverPhoneService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, ridePk) => {
+        const service = buildPostService(
+            `/rides/ride/${ridePk}/request_driver_phone/`,
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
+    };
+}
+
+export function bookingRequestPassengerPhoneService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, bookingPk) => {
+        const service = buildPostService(
+            `/rides/booking/${bookingPk}/request_passenger_phone/`,
+            'POST',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
+    };
+}

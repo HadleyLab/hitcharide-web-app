@@ -6,7 +6,6 @@ import { getStatesService, getCitiesService } from './cities.js';
 import {
     getMyProfileService, updateProfileService, getUserProfileService,
     sendPhoneVerificationCodeService, checkPhoneVerificationCodeService,
-    createUserProxyPhoneService,
 } from './profile.js';
 import {
     addCarImageService, addCarService, getCarListService,
@@ -18,6 +17,7 @@ import {
     getRideRequestsListService, getMyRideRequestsListService,
     getMyBookingsListService, getRideRequestService,
     rideComplainService, rideDeleteService, bookingCancelService,
+    rideRequestDriverPhoneService, bookingRequestPassengerPhoneService,
 } from './rides.js';
 import { addReviewService, getReviewsListService } from './reviews.js';
 import { getFlatpageService } from './flatpages.js';
@@ -33,7 +33,6 @@ export default {
     getUserProfileService,
     getMyProfileService,
     updateProfileService,
-    createUserProxyPhoneService,
     sendPhoneVerificationCodeService,
     checkPhoneVerificationCodeService,
     addCarImageService,
@@ -56,6 +55,8 @@ export default {
     rideComplainService,
     rideDeleteService,
     bookingCancelService,
+    rideRequestDriverPhoneService,
+    bookingRequestPassengerPhoneService,
     addReviewService,
     getReviewsListService,
     getFlatpageService,

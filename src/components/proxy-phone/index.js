@@ -20,13 +20,13 @@ class ProxyPhone extends React.Component {
     }
 
     async onShowPhoneClick() {
-        const { userPk, service } = this.props;
+        const { service } = this.props;
 
-        await service(this.props.tree, userPk);
+        await service(this.props.tree);
 
         const error = this.props.tree.error.get();
         if (error) {
-            Modal.alert("Error", error.data, [
+            Modal.alert("Error", "Can not request phone number. Please contact us for help", [
                 {
                     text: 'Ok',
                     onPress: () => null
@@ -78,7 +78,6 @@ class ProxyPhone extends React.Component {
 ProxyPhone.propTypes = {
     tree: BaobabPropTypes.cursor.isRequired,
     service: PropTypes.func.isRequired,
-    userPk: PropTypes.string.isRequired,
 };
 
 const WrapperProxyPhone = schema(model)(ProxyPhone);
