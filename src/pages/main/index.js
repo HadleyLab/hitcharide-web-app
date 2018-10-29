@@ -217,7 +217,7 @@ const MainPageContent = createReactClass({
                                 )}
                             />
                             <Route
-                                path={`${url}/create-ride`}
+                                path={`${url}/create-ride/:requestPk?`}
                                 render={(props) => (
                                     <NewRidePage
                                         {..._.merge(this.props, props)}
@@ -264,6 +264,7 @@ const MainPageContent = createReactClass({
                                     <RideRequestDetailsPage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('rideRequest')}
+                                        userType={userType}
                                         profile={profile.data}
                                     />
                                 )}

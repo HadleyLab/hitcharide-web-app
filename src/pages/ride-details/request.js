@@ -27,6 +27,10 @@ export const RideRequestDetailsPage = schema(model)(createReactClass({
             getRideRequestService: PropTypes.func.isRequired,
             cancelRideRequestService: PropTypes.func.isRequired,
         }).isRequired,
+        profile: PropTypes.shape({
+            pk: PropTypes.string.isRequired,
+        }),
+        userType: PropTypes.string.isRequired,
     },
 
     async componentWillMount() {
@@ -91,42 +95,49 @@ export const RideRequestDetailsPage = schema(model)(createReactClass({
     },
 
     renderFooter() {
-        const { profile } = this.props;
+        const { profile, userType, history } = this.props;
         const rideRequest = this.props.tree.request.get();
-        const { author } = rideRequest.data;
-
+        const { pk, author } = rideRequest.data;
         const isMine = profile.pk === author;
-
-        if (!isMine) {
-            return null;
-        }
+        const isDriver = userType=== 'driver';
 
         return (
             <div className={classNames(s.footer)}>
-                <Button
-                    type="primary"
-                    inline
-                    style={{
-                        backgroundColor: '#4263CA',
-                        borderColor: '#4263CA',
-                    }}
-                    onClick={() => {
-                        Modal.alert('Delete ride request', 'Do you really want to delete your ride request? ',
-                            [
-                                {
-                                    text: 'YES',
-                                    onPress: () => this.cancelRideRequest(),
-                                    style: { color: '#4263CA' },
-                                },
-                                {
-                                    text: 'NO',
-                                    style: { color: '#4263CA' },
-                                },
-                            ]);
-                    }}
-                >
-                    Delete request
-                </Button>
+                {isDriver ? (
+                    <Button
+                        type="primary"
+                        inline
+                        onClick={() => history.push(`/app/create-ride/${pk}`)}
+                    >
+                        Create a ride
+                    </Button>
+                ) : null}
+                {!isDriver && isMine ? (
+                    <Button
+                        type="primary"
+                        inline
+                        style={{
+                            backgroundColor: '#4263CA',
+                            borderColor: '#4263CA',
+                        }}
+                        onClick={() => {
+                            Modal.alert('Delete ride request', 'Do you really want to delete your ride request?',
+                                [
+                                    {
+                                        text: 'YES',
+                                        onPress: () => this.cancelRideRequest(),
+                                        style: { color: '#4263CA' },
+                                    },
+                                    {
+                                        text: 'NO',
+                                        style: { color: '#4263CA' },
+                                    },
+                                ]);
+                        }}
+                    >
+                        Delete request
+                    </Button>
+                ) : null}
             </div>
         );
     },

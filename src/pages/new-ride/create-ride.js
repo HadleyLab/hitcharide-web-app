@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
-    Search, Title, Input, StepperInput, Error,
+    Search, Title, Input, StepperInput, Error, Loader,
 } from 'components';
 import schema from 'libs/state';
 import { Button, List, Picker } from 'antd-mobile';
@@ -40,6 +40,7 @@ const model = {
     form: {},
     result: {},
     errors: {},
+    request: {},
 };
 
 export const CreateRideForm = schema(model)(createReactClass({
@@ -48,10 +49,16 @@ export const CreateRideForm = schema(model)(createReactClass({
         history: PropTypes.shape({
             push: PropTypes.func.isRequired,
         }).isRequired,
+        match: PropTypes.shape({
+            params: PropTypes.shape({
+                requestPk: PropTypes.string,
+            }),
+        }).isRequired,
         cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
             createRideService: PropTypes.func.isRequired,
+            getRideRequestService: PropTypes.func.isRequired,
         }).isRequired,
         searchForm: PropTypes.shape({}),
     },
@@ -60,9 +67,10 @@ export const CreateRideForm = schema(model)(createReactClass({
         this.initForm();
     },
 
-    initForm() {
+    async initForm() {
+        const { params } = this.props.match;
+        const { requestPk } = params;
         const car = this.props.cars[0];
-
         const initData = {
             cityFrom: null,
             cityTo: null,
@@ -74,7 +82,17 @@ export const CreateRideForm = schema(model)(createReactClass({
             description: null,
         };
 
-        this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
+        if (requestPk) {
+            const { getRideRequestService } = this.props.services;
+            const result = await getRideRequestService(this.props.tree.request, requestPk);
+
+            if (result.status === 'Succeed') {
+                this.props.tree.form.set(_.merge(initData, _.pick(result.data, ['cityTo', 'cityFrom', 'dateTime'])));
+                return;
+            }
+        }
+
+        this.props.tree.form.set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
     },
 
     async onSubmit() {
@@ -114,9 +132,7 @@ export const CreateRideForm = schema(model)(createReactClass({
 
     checkInputError(name) {
         const errorsCursor = this.props.tree.errors;
-        const errorProps = checkInputError(name, errorsCursor.get());
-
-        return errorProps;
+        return checkInputError(name, errorsCursor.get());
     },
 
     renderCarPicker() {
@@ -221,93 +237,97 @@ export const CreateRideForm = schema(model)(createReactClass({
         const citiesCursor = this.props.tree.cities;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
+        const requestPk = this.props.match.params;
+        const requestCursor = this.props.tree.request;
 
         return (
-            <div className={s.container}>
-                <div className={s.section}>
-                    <Title>Direction</Title>
-                    <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityFrom.get()}
-                        onChange={(v) => {
-                            formCursor.cityFrom.set(v);
-                            errorsCursor.select('cityFrom').set(null);
-                        }}
-                        {...this.checkInputError('cityFrom')}
-                    >
-                        <div className={s.text}>From</div>
-                    </Search>
-                    <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityTo.get()}
-                        onChange={(v) => {
-                            formCursor.cityTo.set(v);
-                            errorsCursor.select('cityTo').set(null);
-                        }}
-                        {...this.checkInputError('cityTo')}
-                    >
-                        <div className={s.text}>To</div>
-                    </Search>
-                    <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
-                </div>
-                <div className={s.section}>
-                    <Title>Stop overs</Title>
-                    {this.renderStopOvers()}
-                </div>
-                <div className={s.section}>
-                    <Title>Car</Title>
-                    {this.renderCarPicker()}
-                </div>
-                <div className={s.section}>
-                    <Title>Seats</Title>
-                    <StepperInput
-                        className={s.numberOfSeatsInput}
-                        title="Number of seats"
-                        cursor={formCursor.numberOfSeats}
-                        minValue={1}
-                        maxValue={100}
-                        {...this.checkInputError('numberOfSeats')}
-                    />
-                </div>
-                <div className={s.section}>
-                    <Title>Price</Title>
-                    <Input
-                        type="number"
-                        onKeyPress={(e) => {
-                            const isString = e.which < 48 || e.which > 57;
-                            const isDot = e.which === 46;
+            <Loader isLoaded={!requestPk || requestCursor.status.get() === 'Succeed'}>
+                <div className={s.container}>
+                    <div className={s.section}>
+                        <Title>Direction</Title>
+                        <Search
+                            citiesCursor={citiesCursor}
+                            service={getCitiesService}
+                            currentValue={formCursor.cityFrom.get()}
+                            onChange={(v) => {
+                                formCursor.cityFrom.set(v);
+                                errorsCursor.select('cityFrom').set(null);
+                            }}
+                            {...this.checkInputError('cityFrom')}
+                        >
+                            <div className={s.text}>From</div>
+                        </Search>
+                        <Search
+                            citiesCursor={citiesCursor}
+                            service={getCitiesService}
+                            currentValue={formCursor.cityTo.get()}
+                            onChange={(v) => {
+                                formCursor.cityTo.set(v);
+                                errorsCursor.select('cityTo').set(null);
+                            }}
+                            {...this.checkInputError('cityTo')}
+                        >
+                            <div className={s.text}>To</div>
+                        </Search>
+                        <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
+                    </div>
+                    <div className={s.section}>
+                        <Title>Stop overs</Title>
+                        {this.renderStopOvers()}
+                    </div>
+                    <div className={s.section}>
+                        <Title>Car</Title>
+                        {this.renderCarPicker()}
+                    </div>
+                    <div className={s.section}>
+                        <Title>Seats</Title>
+                        <StepperInput
+                            className={s.numberOfSeatsInput}
+                            title="Number of seats"
+                            cursor={formCursor.numberOfSeats}
+                            minValue={1}
+                            maxValue={100}
+                            {...this.checkInputError('numberOfSeats')}
+                        />
+                    </div>
+                    <div className={s.section}>
+                        <Title>Price</Title>
+                        <Input
+                            type="number"
+                            onKeyPress={(e) => {
+                                const isString = e.which < 48 || e.which > 57;
+                                const isDot = e.which === 46;
 
-                            if (isString && !isDot) {
-                                e.preventDefault();
-                            }
-                        }}
-                        onChange={(e) => {
-                            formCursor.price.set(e.target.value);
-                            errorsCursor.select('price').set(null);
-                        }}
-                        {...this.checkInputError('price')}
-                    >
-                        <div className={s.text}>Price for seat, $</div>
-                    </Input>
+                                if (isString && !isDot) {
+                                    e.preventDefault();
+                                }
+                            }}
+                            onChange={(e) => {
+                                formCursor.price.set(e.target.value);
+                                errorsCursor.select('price').set(null);
+                            }}
+                            {...this.checkInputError('price')}
+                        >
+                            <div className={s.text}>Price for seat, $</div>
+                        </Input>
+                    </div>
+                    {this.renderNotes()}
+                    <Error
+                        form={this.props.tree.form.get()}
+                        errors={this.props.tree.errors.get()}
+                    />
+                    <div className={s.footer}>
+                        <Button
+                            type="primary"
+                            inline
+                            style={{ width: 250 }}
+                            onClick={this.onSubmit}
+                        >
+                            Create a ride
+                        </Button>
+                    </div>
                 </div>
-                {this.renderNotes()}
-                <Error
-                    form={this.props.tree.form.get()}
-                    errors={this.props.tree.errors.get()}
-                />
-                <div className={s.footer}>
-                    <Button
-                        type="primary"
-                        inline
-                        style={{ width: 250 }}
-                        onClick={this.onSubmit}
-                    >
-                        Create a ride
-                    </Button>
-                </div>
-            </div>
+            </Loader>
         );
     },
 }));
