@@ -51,8 +51,8 @@ const MainPageContent = createReactClass({
             getMyProfileService: PropTypes.func.isRequired,
             getCarListService: PropTypes.func.isRequired,
             rideComplainService: PropTypes.func.isRequired,
-            rideDeleteService: PropTypes.func.isRequired,
-            bookingCancelService: PropTypes.func.isRequired,
+            cancelRideService: PropTypes.func.isRequired,
+            cancelBookingService: PropTypes.func.isRequired,
         }).isRequired,
         loadProfileData: PropTypes.func.isRequired,
     },
@@ -264,6 +264,7 @@ const MainPageContent = createReactClass({
                                     <RideRequestDetailsPage
                                         {..._.merge(this.props, props)}
                                         tree={this.props.tree.select('rideRequest')}
+                                        profile={profile.data}
                                     />
                                 )}
                             />
@@ -296,7 +297,7 @@ const MainPageContent = createReactClass({
                                         title="Delete trip"
                                         buttonLabel="Delete trip"
                                         placeholder="Indicate the reason for canceling the trip"
-                                        service={this.props.services.rideDeleteService}
+                                        service={this.props.services.cancelRideService}
                                         onSuccessMessage="Your trip succefully deleted!"
                                         hydrateData={(pk, data) => ({ cancelReason: data.description })}
                                     />
@@ -311,7 +312,7 @@ const MainPageContent = createReactClass({
                                         title="Cancel booking"
                                         buttonLabel="Cancel booking"
                                         placeholder="Indicate the reason for canceling the booking"
-                                        service={this.props.services.bookingCancelService}
+                                        service={this.props.services.cancelBookingService}
                                         onSuccessMessage="Your booking succefully canceled!"
                                         hydrateData={(pk, data) => ({ cancelReason: data.description })}
                                     />

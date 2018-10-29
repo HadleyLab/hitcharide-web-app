@@ -25,14 +25,14 @@ const validationSchema = yup.array().of(
 const DRIVER = 1;
 const PASSENGER = 2;
 
-const modal = {
+const model = {
     reviews: {},
     reviewsForm: [],
     addReviewsErrors: {},
     addReviewsResult: {},
 };
 
-export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
+export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         rideCursor: BaobabPropTypes.cursor.isRequired,

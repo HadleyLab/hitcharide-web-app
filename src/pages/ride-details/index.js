@@ -345,7 +345,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                                 tree={this.props.tree.proxyPhoneResult.passengers.select(bookingPk)}
                                 service={(tree) => this.props.services.bookingRequestPassengerPhoneService(tree, bookingPk)}
                             />
-                        ) : "Passenger"}
+                        ) : 'Passenger'}
                     </span>
                     <span className={s.rowContent}>
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>

@@ -16,7 +16,8 @@ import {
     getRideService, bookRideService, requestRideService,
     getRideRequestsListService, getMyRideRequestsListService,
     getMyBookingsListService, getRideRequestService,
-    rideComplainService, rideDeleteService, bookingCancelService,
+    rideComplainService, cancelRideService, cancelBookingService,
+    cancelRideRequestService,
     rideRequestDriverPhoneService, bookingRequestPassengerPhoneService,
 } from './rides.js';
 import { addReviewService, getReviewsListService } from './reviews.js';
@@ -53,8 +54,9 @@ export default {
     bookRideService,
     requestRideService,
     rideComplainService,
-    rideDeleteService,
-    bookingCancelService,
+    cancelRideService,
+    cancelBookingService,
+    cancelRideRequestService,
     rideRequestDriverPhoneService,
     bookingRequestPassengerPhoneService,
     addReviewService,

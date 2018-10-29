@@ -3,11 +3,19 @@ import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
+import schema from 'libs/state';
+import { Button, Modal } from 'antd-mobile';
 import { Title, Loader } from 'components';
 import moment from 'moment';
 import s from './ride-details.css';
+import classNames from 'classnames';
 
-export const RideRequestDetailsPage = createReactClass({
+const model = {
+    request: {},
+    deleteResult: {},
+};
+
+export const RideRequestDetailsPage = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         match: PropTypes.shape({
@@ -17,20 +25,41 @@ export const RideRequestDetailsPage = createReactClass({
         }).isRequired,
         services: PropTypes.shape({
             getRideRequestService: PropTypes.func.isRequired,
+            cancelRideRequestService: PropTypes.func.isRequired,
         }).isRequired,
     },
 
     async componentWillMount() {
         const { getRideRequestService } = this.props.services;
         const { pk } = this.props.match.params;
-        this.props.tree.select('seatsCount').set(1);
 
-        await getRideRequestService(this.props.tree, pk);
+        await getRideRequestService(this.props.tree.request, pk);
+    },
+
+    async cancelRideRequest() {
+        const { pk } = this.props.match.params;
+        const { services, history } = this.props;
+        const { cancelRideRequestService } = services;
+
+        const result = await cancelRideRequestService(this.props.tree.deleteResult, pk);
+        if (result.status === 'Failure') {
+            Modal.alert('Deleting ride request error', result.error.data.detail,
+                [
+                    {
+                        text: 'OK',
+                        style: { color: '#4263CA' },
+                    },
+                ]);
+        }
+
+        if (result.status === 'Succeed') {
+            history.goBack();
+        }
     },
 
     renderRideInfo() {
-        const ride = this.props.tree.get();
-        const { cityFrom, cityTo, dateTime } = ride.data;
+        const rideRequest = this.props.tree.request.get();
+        const { cityFrom, cityTo, dateTime } = rideRequest.data;
 
         const rows = [
             {
@@ -43,11 +72,13 @@ export const RideRequestDetailsPage = createReactClass({
             },
             {
                 title: 'Departure date',
-                content: moment(dateTime).format('MMM D YYYY'),
+                content: moment(dateTime)
+                    .format('MMM D YYYY'),
             },
             {
                 title: 'Departure time',
-                content: moment(dateTime).format('h:mm A'),
+                content: moment(dateTime)
+                    .format('h:mm A'),
             },
         ];
 
@@ -59,19 +90,61 @@ export const RideRequestDetailsPage = createReactClass({
         ));
     },
 
-    render() {
-        const ride = this.props.tree.get();
-        const isRideLoaded = ride && ride.status === 'Succeed';
+    renderFooter() {
+        const { profile } = this.props;
+        const rideRequest = this.props.tree.request.get();
+        const { author } = rideRequest.data;
+
+        const isMine = profile.pk === author;
+
+        if (!isMine) {
+            return null;
+        }
 
         return (
-            <Loader isLoaded={isRideLoaded}>
-                {isRideLoaded ? (
+            <div className={classNames(s.footer)}>
+                <Button
+                    type="primary"
+                    inline
+                    style={{
+                        backgroundColor: '#4263CA',
+                        borderColor: '#4263CA',
+                    }}
+                    onClick={() => {
+                        Modal.alert('Delete ride request', 'Do you really want to delete your ride request? ',
+                            [
+                                {
+                                    text: 'YES',
+                                    onPress: () => this.cancelRideRequest(),
+                                    style: { color: '#4263CA' },
+                                },
+                                {
+                                    text: 'NO',
+                                    style: { color: '#4263CA' },
+                                },
+                            ]);
+                    }}
+                >
+                    Delete request
+                </Button>
+            </div>
+        );
+    },
+
+    render() {
+        const rideRequest = this.props.tree.request.get();
+        const isRideRequestLoaded = rideRequest && rideRequest.status === 'Succeed';
+
+        return (
+            <Loader isLoaded={isRideRequestLoaded}>
+                {isRideRequestLoaded ? (
                     <div className={s.container}>
                         <Title className={s.title}>Trip information</Title>
                         {this.renderRideInfo()}
+                        {this.renderFooter()}
                     </div>
                 ) : null}
             </Loader>
         );
     },
-});
+}));

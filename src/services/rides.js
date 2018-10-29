@@ -193,7 +193,7 @@ export function rideComplainService(handler, token) {
     };
 }
 
-export function rideDeleteService(handler, token) {
+export function cancelRideService(handler, token) {
     const headers = {
         Authorization: `JWT ${token}`,
     };
@@ -211,7 +211,7 @@ export function rideDeleteService(handler, token) {
     };
 }
 
-export function bookingCancelService(handler, token) {
+export function cancelBookingService(handler, token) {
     const headers = {
         Authorization: `JWT ${token}`,
     };
@@ -226,6 +226,24 @@ export function bookingCancelService(handler, token) {
         );
 
         return service(handler, cursor, data);
+    };
+}
+
+export function cancelRideRequestService(handler, token) {
+    const headers = {
+        Authorization: `JWT ${token}`,
+    };
+
+    return (cursor, pk) => {
+        const service = buildPostService(
+            `/rides/request/${pk}/`,
+            'DELETE',
+            JSON.stringify,
+            _.identity,
+            _.merge({}, defaultHeaders, headers)
+        );
+
+        return service(handler, cursor);
     };
 }
 
