@@ -269,7 +269,8 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderDriverInfo() {
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { pk: ridePk, car, bookings } = ride.data;
+        const { pk: ridePk, car, bookings, status } = ride.data;
+        const isRideActual = status === 'created';
         const isMe = profile.pk === car.owner.pk;
         let isBookingPayed = false;
 
@@ -300,7 +301,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                 ),
             },
         ],
-        !isMe && isBookingPayed ? {
+        !isMe && isBookingPayed && isRideActual ? {
             title: 'Phone number',
             content: (
                 <ProxyPhone
@@ -320,8 +321,9 @@ export const RideDetailsPage = schema(model)(createReactClass({
 
     renderBookings() {
         const ride = this.props.tree.ride.get();
-        const { car, bookings } = ride.data;
+        const { car, bookings, status } = ride.data;
         const { profile } = this.props;
+        const isRideActual = status === 'created';
         const amIDriver = profile.pk === car.owner.pk;
 
         if (!bookings.length) {
@@ -338,7 +340,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             return (
                 <div className={s.row} key={`ride-row-booking-${index}`}>
                     <span className={s.rowTitle}>
-                        {amIDriver ? (
+                        {amIDriver && isRideActual ? (
                             <ProxyPhone
                                 tree={this.props.tree.proxyPhoneResult.passengers.select(bookingPk)}
                                 service={(tree) => this.props.services.bookingRequestPassengerPhoneService(tree, bookingPk)}
