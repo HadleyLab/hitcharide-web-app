@@ -36,9 +36,10 @@ export const SuggestRideForm = schema(model)(createReactClass({
             getCitiesService: PropTypes.func.isRequired,
             requestRideService: PropTypes.func.isRequired,
         }).isRequired,
+        searchForm: PropTypes.shape({}),
     },
 
-    componentDidMount() {
+    componentWillMount() {
         this.initForm();
     },
 
@@ -49,7 +50,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
             dateTime: moment().toDate(),
         };
 
-        this.props.tree.select('form').set(initData);
+        this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
     },
 
     async onSubmit() {

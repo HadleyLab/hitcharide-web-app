@@ -23,7 +23,7 @@ export const FlatPage = schema(model)(createReactClass({
         }).isRequired,
     },
 
-    componentDidMount() {
+    componentWillMount() {
         const { getFlatpageService } = this.props.services;
 
         const { tree, match } = this.props;

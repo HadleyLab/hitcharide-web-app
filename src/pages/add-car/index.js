@@ -58,7 +58,7 @@ export const AddCarPage = schema(model)(createReactClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         const { mode } = this.props.match.params;
 
         if (mode === 'edit') {

@@ -16,7 +16,7 @@ const YourProfileContent = createReactClass({
         }).isRequired,
     },
 
-    async componentDidMount() {
+    async componentWillMount() {
         const { getMyProfileService } = this.props.services;
 
         const result = await getMyProfileService(this.props.tree.currentProfile);

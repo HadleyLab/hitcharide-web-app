@@ -57,7 +57,7 @@ const MainPageContent = createReactClass({
         loadProfileData: PropTypes.func.isRequired,
     },
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
 
@@ -189,7 +189,7 @@ const MainPageContent = createReactClass({
                                 render={(props) => (
                                     <SearchPage
                                         {..._.merge(this.props, props)}
-                                        tree={this.props.tree.select('search')}
+                                        tree={this.props.tree.search}
                                         userType={userType}
                                         onCreateRide={() => {
                                             const userRights = this.checkIfUserCanBeDriver(userType);
@@ -221,6 +221,7 @@ const MainPageContent = createReactClass({
                                 render={(props) => (
                                     <NewRidePage
                                         {..._.merge(this.props, props)}
+                                        searchForm={this.props.tree.search.searchForm.get()}
                                         tree={this.props.tree}
                                         userType={userType}
                                         cars={cars.data}

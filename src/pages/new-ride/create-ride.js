@@ -53,9 +53,10 @@ export const CreateRideForm = schema(model)(createReactClass({
             getCitiesService: PropTypes.func.isRequired,
             createRideService: PropTypes.func.isRequired,
         }).isRequired,
+        searchForm: PropTypes.shape({}),
     },
 
-    componentDidMount() {
+    componentWillMount() {
         this.initForm();
     },
 
@@ -73,7 +74,7 @@ export const CreateRideForm = schema(model)(createReactClass({
             description: null,
         };
 
-        this.props.tree.select('form').set(initData);
+        this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
     },
 
     async onSubmit() {

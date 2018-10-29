@@ -56,7 +56,7 @@ export const MyBookingsList = schema(model)(createReactClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         if (!_.isEmpty(this.props.monthRange)) {
             this.loadRidesForCalendar();
         }

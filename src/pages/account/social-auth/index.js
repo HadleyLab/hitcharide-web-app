@@ -17,7 +17,7 @@ export const SocialAuthPage = createReactClass({
         reInitServices: PropTypes.func.isRequired,
     },
 
-    componentDidMount() {
+    componentWillMount() {
         const { search } = this.props.location;
         const token = _.replace(search, '?token=', '');
 

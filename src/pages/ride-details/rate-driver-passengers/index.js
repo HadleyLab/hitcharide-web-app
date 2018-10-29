@@ -53,7 +53,7 @@ export const RateDriverAndPassengersScreen = schema(modal)(createReactClass({
         };
     },
 
-    async componentDidMount() {
+    async componentWillMount() {
         await this.loadRide();
         this.checkUserType();
         await this.loadReviews();

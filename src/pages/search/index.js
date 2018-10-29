@@ -51,7 +51,7 @@ export const SearchPage = schema(model)(createReactClass({
         }).isRequired,
     },
 
-    componentDidMount() {
+    componentWillMount() {
         const isDriver = this.props.userType === 'driver';
         const { history } = this.props;
         const rides = this.props.tree.rides.get();

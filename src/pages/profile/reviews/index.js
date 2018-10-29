@@ -24,7 +24,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
 
     getDefaultProps() {},
 
-    componentDidMount() {
+    componentWillMount() {
         this.loadReviews();
     },
 

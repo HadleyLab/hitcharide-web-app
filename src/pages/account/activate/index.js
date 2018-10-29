@@ -30,7 +30,7 @@ export const ActivateAccountPage = createReactClass({
         };
     },
 
-    async componentDidMount() {
+    async componentWillMount() {
         const { params } = this.props.match;
         const service = this.props.services.activateAccountService;
 

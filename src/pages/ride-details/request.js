@@ -20,7 +20,7 @@ export const RideRequestDetailsPage = createReactClass({
         }).isRequired,
     },
 
-    async componentDidMount() {
+    async componentWillMount() {
         const { getRideRequestService } = this.props.services;
         const { pk } = this.props.match.params;
         this.props.tree.select('seatsCount').set(1);

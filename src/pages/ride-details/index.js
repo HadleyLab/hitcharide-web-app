@@ -55,7 +55,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
         };
     },
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.tree.select('seatsCount').set(1);
         this.loadRide();
     },

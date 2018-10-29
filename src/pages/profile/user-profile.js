@@ -16,7 +16,7 @@ export const UserProfilePage = createReactClass({
         }).isRequired,
     },
 
-    async componentDidMount() {
+    async componentWillMount() {
         const { getUserProfileService } = this.props.services;
         const { pk } = this.props.match.params;
 
