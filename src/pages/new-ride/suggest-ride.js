@@ -51,6 +51,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         };
 
         this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
+        this.props.tree.errors.set({});
     },
 
     async onSubmit() {

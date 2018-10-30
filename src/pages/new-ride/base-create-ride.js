@@ -75,6 +75,7 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         };
 
         this.props.tree.form.set(_.merge(initData, this.props.initData));
+        this.props.tree.errors.set({});
     },
 
     async onSubmit() {
