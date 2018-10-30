@@ -33,9 +33,10 @@ export function checkInputError(name, errors) {
 
     return {
         error: hasError,
-        onErrorClick: () => {
+        onErrorClick: (event) => {
             if (hasError) {
                 Toast.info(_.isArray(errors[name]) ? _.join(errors[name], ' ') : errors[name]);
+                event.stopPropagation();
             }
         },
     };

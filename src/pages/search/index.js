@@ -319,7 +319,7 @@ export const SearchPage = schema(model)(createReactClass({
                     className={s.datePicker}
                     value={formCursor.dateTime.get()}
                     onChange={(date) => {
-                        formCursor.dateTime.set(moment(date).toDate());
+                        formCursor.dateTime.set(date);
                         this.onSearchChange();
                     }}
                 >

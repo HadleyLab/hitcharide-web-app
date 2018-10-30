@@ -64,30 +64,6 @@
         display: flex;
         align-items: center;
     }
-
-    :global .am-list-body {
-        border-top: 0!important;
-    }
-
-    :global .am-list-body:before {
-        content: none!important;
-    }
-
-    :global .am-list-body:after {
-        left: 0!important;
-        right: 0!important;
-        width: auto!important;
-        transform: none!important;
-        transform-origin: none!important;
-    }
-
-    :global .am-list-extra {
-        min-width: 160px;
-    }
-
-    &._empty :global .am-list-extra {
-        display: none;
-    }
 }
 
 .controls {

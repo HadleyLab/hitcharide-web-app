@@ -3,14 +3,14 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
-import { Search, Title, Error } from 'components';
+import { Search, Title, Error, DateTimePicker } from 'components';
 import schema from 'libs/state';
 import moment from 'moment';
 import { Button } from 'antd-mobile';
 import { validateForm, checkInputError } from 'components/utils';
 import * as yup from 'yup';
-import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
+import classNames from 'classnames';
 
 const validationSchema = (date) => yup.object().shape({
     cityFrom: yup.mixed().required('Select a city'),
@@ -47,7 +47,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: moment().toDate(),
+            dateTime: moment().format('YYYY-MM-DDTHH:mm:ssZZ'),
         };
 
         this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
@@ -126,7 +126,22 @@ export const SuggestRideForm = schema(model)(createReactClass({
                         <div className={s.text}>To</div>
                     </Search>
                 </div>
-                <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
+                <div className={classNames(s.section, s.departure)}>
+                    <Title>
+                        Departure
+                    </Title>
+                    <DateTimePicker
+                        value={formCursor.dateTime.get()}
+                        onChange={(date) => {
+                            formCursor.dateTime.set(date);
+                            errorsCursor.select('dateTime')
+                                .set(null);
+                        }}
+                        {...this.checkInputError('dateTime')}
+                    >
+                        When
+                    </DateTimePicker>
+                </div>
                 <Error
                     form={this.props.tree.form.get()}
                     errors={this.props.tree.errors.get()}

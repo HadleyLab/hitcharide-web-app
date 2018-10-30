@@ -4,20 +4,31 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { List, Picker } from 'antd-mobile';
 import moment from 'moment';
+import warningIcon from 'components/icons/warning.svg';
 import s from './date-time-picker.css';
 
 export const DateTimePicker = createReactClass({
     propTypes: {
-        value: PropTypes.instanceOf(Date),
+        value: PropTypes.string,
         className: PropTypes.string,
         onChange: PropTypes.func.isRequired,
         children: PropTypes.node.isRequired,
+        error: PropTypes.bool,
+        onErrorClick: PropTypes.func,
+        minuteStep: PropTypes.number,
+        numberOfDays: PropTypes.number,
     },
+
+    innerDateFormat: 'YYYY-MM-DD h m A',
+    outerDateFormat: 'YYYY-MM-DDTHH:mm:ssZZ',
 
     getDefaultProps() {
         return {
             value: null,
             className: null,
+            minuteStep: 15,
+            // From today + one week
+            numberOfDays: 8,
         };
     },
 
@@ -27,7 +38,7 @@ export const DateTimePicker = createReactClass({
         };
     },
 
-    formOptions(selected) {
+    formOptions() {
         const formOption = (x) => ({ label: _.toString(x), value: _.toString(x) });
         const dateOptions = [
             {
@@ -40,7 +51,7 @@ export const DateTimePicker = createReactClass({
             },
 
             ..._.map(
-                _.range(2, 7),
+                _.range(2, this.props.numberOfDays),
                 (i) => {
                     const date = moment().add(i, 'days');
                     return {
@@ -55,7 +66,7 @@ export const DateTimePicker = createReactClass({
             _.concat([12], _.range(1, 12)),
             formOption
         );
-        const minuteOptions = _.map(_.range(0, 60, 15), formOption);
+        const minuteOptions = _.map(_.range(0, 60, this.props.minuteStep), formOption);
         const ampmOptions = _.map(['AM', 'PM'], formOption);
         return [
             dateOptions,
@@ -65,38 +76,39 @@ export const DateTimePicker = createReactClass({
         ];
     },
 
-    convertValueToDate(value) {
+    takeClosestMin(arr, value) {
+        return _.last(_.takeWhile(arr, (x) => x <= value))
+    },
+
+    convertValueToDateStr(value) {
         if (_.isEmpty(value)) {
             return null;
         }
-        const [date, hour, minute, ampm] = value;
 
-        return moment(`${date} ${hour}:${minute} ${ampm}`, 'YYYY-MM-DD hh:mm A').format('YYYY-MM-DDTHH:mm:ssZZ');
+        return moment(_.join(value, ' '), this.innerDateFormat).format(this.outerDateFormat);
     },
 
-    convertDateToValue(date) {
-        if (!date) {
+    convertDateStrToValue(dateStr) {
+        if (!dateStr) {
             return null;
         }
 
-        return _.split(moment(date).format('YYYY-MM-DD h m A'), ' ');
-    },
+        const [date, hour, minute, ampm] = _.split(moment(dateStr).format(this.innerDateFormat), ' ');
+        const roundedMinute = _.toString(this.takeClosestMin(_.range(0, 60, this.props.minuteStep), minute));
 
-     onPickerChange(selected) {
-        console.log('selecte',selected);
-        this.setState({
-            options: this.formOptions(selected),
-        });
+        return [date, hour, roundedMinute, ampm];
     },
 
     onChange(value) {
         const { onChange } = this.props;
-        const fullDate = this.convertValueToDate(value);
+        const fullDate = this.convertValueToDateStr(value);
 
         onChange(fullDate);
     },
 
     formatLabel(labels) {
+        const { error, onErrorClick } = this.props;
+
         if (_.isEmpty(labels)) {
             return '';
         }
@@ -105,18 +117,35 @@ export const DateTimePicker = createReactClass({
         const paddedHour = _.padStart(hour, 2, '0');
         const paddedMinute = _.padStart(minute, 2, '0');
 
-        return `${date} ${paddedHour}:${paddedMinute} ${ampm}`;
+        const label = `${date} ${paddedHour}:${paddedMinute} ${ampm}`;
+
+        return (
+            <div className={s.label}>
+                <div className={s.labelText}>
+                    {label}
+                </div>
+                {error
+                    ? (
+                        <div
+                            className={s.icon}
+                            style={{ backgroundImage: `url(${warningIcon})` }}
+                            onClick={onErrorClick}
+                        />
+                    ) : null}
+            </div>
+        );
     },
 
     render() {
         const {
-            children, className, value,
+            children, className, value, error,
         } = this.props;
 
         return (
             <List
                 className={classNames(s.datePicker, className, {
                     [s._empty]: !value,
+                    [s._error]: error,
                 })}
                 style={{ backgroundColor: 'white' }}
             >
@@ -124,14 +153,15 @@ export const DateTimePicker = createReactClass({
                     cols={4}
                     prefixCls={classNames(s.amDatePicker, 'am-picker')}
                     title="When"
-                    value={this.convertDateToValue(value)}
+                    value={this.convertDateStrToValue(value)}
                     cascade={false}
                     data={this.state.options}
-                    onPickerChange={this.onPickerChange}
                     onChange={this.onChange}
                     format={this.formatLabel}
                 >
-                      <List.Item>{children}</List.Item>
+                      <List.Item>
+                          {children}
+                      </List.Item>
                 </Picker>
             </List>
         );

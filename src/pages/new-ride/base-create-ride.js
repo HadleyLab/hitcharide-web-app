@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import {
-    Search, Title, Input, StepperInput, Error, Loader,
+    Search, Title, Input, StepperInput, Error, Loader, DateTimePicker,
 } from 'components';
 import schema from 'libs/state';
 import { Button, List, Picker } from 'antd-mobile';
@@ -15,8 +15,8 @@ import minusIcon from 'components/icons/minus-circle.svg';
 import carIcon from 'components/icons/car.svg';
 import warningIcon from 'components/icons/warning.svg';
 import { AddFilledIcon } from 'components/icons';
-import { DateTimePickers } from './date-time-pickers';
 import s from './new-ride.css';
+import classNames from 'classnames';
 
 const validationSchema = (date) => yup.object().shape({
     cityFrom: yup.mixed().required('Select a city'),
@@ -66,7 +66,7 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: moment().toDate(),
+            dateTime: moment().format('YYYY-MM-DDTHH:mm:ssZZ'),
             price: null,
             stops: [],
             car: car.pk,
@@ -249,7 +249,22 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
                     >
                         <div className={s.text}>To</div>
                     </Search>
-                    <DateTimePickers formCursor={formCursor} errorsCursor={errorsCursor} />
+                    <div className={classNames(s.section, s.departure)}>
+                        <Title>
+                            Departure
+                        </Title>
+                        <DateTimePicker
+                            value={formCursor.dateTime.get()}
+                            onChange={(date) => {
+                                formCursor.dateTime.set(date);
+                                errorsCursor.select('dateTime')
+                                    .set(null);
+                            }}
+                            {...this.checkInputError('dateTime')}
+                        >
+                            When
+                        </DateTimePicker>
+                    </div>
                 </div>
                 <div className={s.section}>
                     <Title>Stop overs</Title>

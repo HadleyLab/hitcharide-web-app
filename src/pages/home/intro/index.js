@@ -90,7 +90,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
                     <DateTimePicker
                         className={s.datePicker}
                         value={formCursor.dateTime.get()}
-                        onChange={(date) => formCursor.dateTime.set(moment(date).toDate())}
+                        onChange={(date) => formCursor.dateTime.set(date)}
                     >
                         <div className={s.dateField}>
                             <div className={s.icon}>
