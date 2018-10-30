@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { List, Picker } from 'antd-mobile';
 import moment from 'moment';
 import warningIcon from 'components/icons/warning.svg';
+import { formatDate } from 'components/utils'
 import s from './date-time-picker.css';
 
 export const DateTimePicker = createReactClass({
@@ -20,7 +21,6 @@ export const DateTimePicker = createReactClass({
     },
 
     innerDateFormat: 'YYYY-MM-DD h m A',
-    outerDateFormat: 'YYYY-MM-DDTHH:mm:ssZZ',
 
     getDefaultProps() {
         return {
@@ -85,7 +85,7 @@ export const DateTimePicker = createReactClass({
             return null;
         }
 
-        return moment(_.join(value, ' '), this.innerDateFormat).format(this.outerDateFormat);
+        return formatDate(moment(_.join(value, ' '), this.innerDateFormat));
     },
 
     convertDateStrToValue(dateStr) {

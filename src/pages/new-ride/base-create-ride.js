@@ -8,7 +8,7 @@ import {
 } from 'components';
 import schema from 'libs/state';
 import { Button, List, Picker } from 'antd-mobile';
-import { validateForm, checkInputError } from 'components/utils';
+import { validateForm, checkInputError, formatDate } from 'components/utils';
 import * as yup from 'yup';
 import moment from 'moment';
 import minusIcon from 'components/icons/minus-circle.svg';
@@ -66,7 +66,7 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: moment().format('YYYY-MM-DDTHH:mm:ssZZ'),
+            dateTime: formatDate(moment()),
             price: null,
             stops: [],
             car: car.pk,

@@ -95,3 +95,7 @@ export function checkIfValueEmpty(value) {
 export function checkIfRideStarted(date) {
     return moment().utc().isSameOrAfter(moment(date).utc(), 'minute');
 }
+
+export function formatDate(date) {
+    return date.format('YYYY-MM-DDTHH:mm:ssZZ');
+}

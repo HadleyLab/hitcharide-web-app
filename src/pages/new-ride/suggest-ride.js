@@ -7,7 +7,7 @@ import { Search, Title, Error, DateTimePicker } from 'components';
 import schema from 'libs/state';
 import moment from 'moment';
 import { Button } from 'antd-mobile';
-import { validateForm, checkInputError } from 'components/utils';
+import { validateForm, checkInputError, formatDate } from 'components/utils';
 import * as yup from 'yup';
 import s from './new-ride.css';
 import classNames from 'classnames';
@@ -47,7 +47,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         const initData = {
             cityFrom: null,
             cityTo: null,
-            dateTime: moment().format('YYYY-MM-DDTHH:mm:ssZZ'),
+            dateTime: formatDate(moment()),
         };
 
         this.props.tree.select('form').set(_.merge(initData, _.pickBy(this.props.searchForm, (x) => x)));
