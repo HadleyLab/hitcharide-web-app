@@ -38,11 +38,6 @@ class Search extends React.Component {
         };
         this.onInputChangetimeout = null;
         this.input = null;
-
-        this.onFocus = this.onFocus.bind(this);
-        this.syncAndHideResults = this.syncAndHideResults.bind(this);
-        this.selectPlace = this.selectPlace.bind(this);
-        this.selectCity = this.selectCity.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -86,31 +81,6 @@ class Search extends React.Component {
         this.onInputChange('', newValue);
     }
 
-    onInputChange(inputValue, value) {
-        clearTimeout(this.onInputChangetimeout);
-        this.setState({ inputValue });
-
-        if (value.city && value.place) {
-            return;
-        }
-
-        const { services } = this.props;
-        const resultsCursor = this.props.tree.results;
-        this.input.focus();
-
-        this.onInputChangetimeout = setTimeout(async () => {
-            const service = value.city ? services.getPlacesService : services.getCitiesService;
-            const searchParams = _.merge(
-                {
-                    search: inputValue,
-                },
-                value.city ? { city: value.city.pk } : {},
-            );
-            await service(resultsCursor, searchParams);
-        }, 400);
-    }
-
-
     getPlaceImage({ category }) {
         return {
             ep: educationalPlaceImage,
@@ -128,12 +98,52 @@ class Search extends React.Component {
         ]);
     }
 
-    onFocus() {
+    onInputChange(inputValue, value) {
+        clearTimeout(this.onInputChangetimeout);
+        this.setState({ inputValue });
+        this.input.focus();
+
+        if (value.city && value.place) {
+            return;
+        }
+
+        const { services } = this.props;
+        const resultsCursor = this.props.tree.results;
+
+        this.onInputChangetimeout = setTimeout(async () => {
+            const service = value.city ? services.getPlacesService : services.getCitiesService;
+            const searchParams = _.merge(
+                {
+                    search: inputValue,
+                },
+                value.city ? { city: value.city.pk } : {},
+            );
+            await service(resultsCursor, searchParams);
+        }, 400);
+    }
+
+    onFocus(event) {
         const { onFocus } = this.props;
         if (onFocus) {
-            onFocus();
+            onFocus(event);
         }
         this.showResults();
+    }
+
+    onKeyDown(event, value) {
+        if (event.which === 13 || event.keyCode === 13) {
+            this.syncAndHideResults();
+        }
+
+        if (event.which === 8 || event.keyCode === 8) {
+            if (event.target.value === '') {
+                if (value.place) {
+                    this.selectPlace(null);
+                } else {
+                    this.selectCity(null);
+                }
+            }
+        }
     }
 
     showResults() {
@@ -372,8 +382,9 @@ class Search extends React.Component {
                     visible={focused}
                     type="text"
                     value={this.state.inputValue}
-                    onFocus={this.onFocus}
-                    onChange={(e) => this.onInputChange(e.target.value, value)}
+                    onFocus={(event) => this.onFocus(event)}
+                    onChange={(event) => this.onInputChange(event.target.value, value)}
+                    onKeyDown={(event) => this.onKeyDown(event, value)}
                     ref={(ref) => { this.input = ref; }}
                 >
                     {focused ? this.renderFocusedLabel() : this.renderLabel()}
