@@ -12,7 +12,7 @@ import moment from 'moment';
 import { Button, Modal } from 'antd-mobile';
 import { Link } from 'react-router-dom';
 import passengerIcon from 'components/icons/passenger.svg';
-import { checkIfRideStarted } from 'components/utils';
+import { checkIfRideStarted, displayCityPlace } from 'components/utils';
 import arrowDownIcon from 'components/icons/arrow-down-blue.svg';
 import { Timer } from './timer';
 import s from './ride-details.css';
@@ -199,7 +199,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderRideInfo() {
         const ride = this.props.tree.ride.get();
         const {
-            cityFrom, cityTo, price, priceWithFee, dateTime,
+            cityFrom, placeFrom, cityTo, placeTo, price, priceWithFee, dateTime,
             stops, numberOfSeats, availableNumberOfSeats,
         } = ride.data;
         const amIDriver = this.checkIfIAmDriver();
@@ -207,15 +207,15 @@ export const RideDetailsPage = schema(model)(createReactClass({
         const rows = [
             {
                 title: 'From',
-                content: `${cityFrom.name}, ${cityFrom.state.name}`,
+                content: displayCityPlace(cityFrom, placeFrom),
             },
-            ..._.map(stops, ({ city }) => ({
+            ..._.map(stops, ({ city, place }) => ({
                 title: 'Stop over',
-                content: `${city.name}, ${city.state.name}`,
+                content: displayCityPlace(city, place),
             })),
             {
                 title: 'To',
-                content: `${cityTo.name}, ${cityTo.state.name}`,
+                content: displayCityPlace(cityTo, placeTo),
             },
             {
                 title: 'Departure date',

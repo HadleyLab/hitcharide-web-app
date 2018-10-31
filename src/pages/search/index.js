@@ -23,14 +23,16 @@ const paginationParams = {
 
 const model = {
     tree: {
-        cities: {},
         rides: {},
         rideRequests: {},
         searchForm: {
             cityFrom: null,
+            placeFrom: null,
             cityTo: null,
+            placeTo: null,
             dateTime: null,
         },
+        search: {},
         params: paginationParams,
     },
 };
@@ -46,6 +48,7 @@ export const SearchPage = schema(model)(createReactClass({
         onCreateRide: PropTypes.func.isRequired,
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
+            getPlacesService: PropTypes.func.isRequired,
             getRidesListService: PropTypes.func.isRequired,
             getRideRequestsListService: PropTypes.func.isRequired,
         }).isRequired,
@@ -88,7 +91,7 @@ export const SearchPage = schema(model)(createReactClass({
                 return;
             }
 
-            if (key === 'cityFrom' || key === 'cityTo') {
+            if (key === 'cityFrom' || key === 'cityTo' || key === 'placeFrom' || key === 'placeTo') {
                 params[key] = param.pk;
             }
 
@@ -124,11 +127,7 @@ export const SearchPage = schema(model)(createReactClass({
         await getRidesListService(cursor, _.merge(searchParams, params), dehydrateParams);
     },
 
-    onSearchChange(v) {
-        if (v && v.name && !v.pk) {
-            return;
-        }
-
+    onSearchChange() {
         this.props.tree.params.offset.set(0);
         this.loadRides(paginationParams);
     },
@@ -152,10 +151,18 @@ export const SearchPage = schema(model)(createReactClass({
         );
     },
 
+    isFilterSet() {
+        const form = this.props.tree.searchForm.get();
+
+        return form.dateTime || form.cityFrom || form.placeFrom || form.cityTo || form.placeFrom;
+    },
+
     resetFilters() {
         this.props.tree.searchForm.set({
             cityFrom: null,
+            placeFrom: null,
             cityTo: null,
+            placeTo: null,
             dateTime: null,
         });
         this.onSearchChange();
@@ -272,8 +279,8 @@ export const SearchPage = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.props.services;
-        const citiesCursor = this.props.tree.cities;
+        const { services } = this.props;
+        const searchCursor = this.props.tree.search;
         const formCursor = this.props.tree.searchForm;
 
         return (
@@ -283,15 +290,16 @@ export const SearchPage = schema(model)(createReactClass({
                 </Title>
                 <Search
                     className={s.field}
-                    citiesCursor={citiesCursor}
-                    service={getCitiesService}
-                    currentValue={formCursor.cityFrom.get()}
-                    onChange={(v) => {
-                        formCursor.cityFrom.set(v);
-                        this.onSearchChange(v);
+                    tree={searchCursor}
+                    services={services}
+                    currentValue={{ city: formCursor.cityFrom.get(), place: formCursor.placeFrom.get() }}
+                    onChange={({ city, place }) => {
+                        formCursor.cityFrom.set(city);
+                        formCursor.placeFrom.set(place);
+                        this.onSearchChange();
                     }}
-                    showLoader
-                    name="cityFrom"
+                    name="from"
+                    color="#6FA6F8"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#6FA6F8" />
@@ -300,15 +308,16 @@ export const SearchPage = schema(model)(createReactClass({
                 </Search>
                 <Search
                     className={s.field}
-                    citiesCursor={citiesCursor}
-                    service={getCitiesService}
-                    currentValue={formCursor.cityTo.get()}
-                    onChange={(v) => {
-                        formCursor.cityTo.set(v);
-                        this.onSearchChange(v);
+                    tree={searchCursor}
+                    services={services}
+                    currentValue={{ city: formCursor.cityTo.get(), place: formCursor.placeTo.get() }}
+                    onChange={({ city, place }) => {
+                        formCursor.cityTo.set(city);
+                        formCursor.placeTo.set(place);
+                        this.onSearchChange();
                     }}
-                    showLoader
-                    name="cityTo"
+                    name="to"
+                    color="#97B725"
                 >
                     <div className={s.icon}>
                         <MarkerIcon color="#97B725" />
@@ -340,7 +349,7 @@ export const SearchPage = schema(model)(createReactClass({
                         </div>
                         Create a ride
                     </div>
-                    {!_.isEmpty(_.omitBy(formCursor.get(), (value) => !value)) ? (
+                    {this.isFilterSet() ? (
                         <div
                             className={classNames(s.button, s._reset)}
                             onClick={this.resetFilters}

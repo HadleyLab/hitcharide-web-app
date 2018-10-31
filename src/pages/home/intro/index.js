@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import schema from 'libs/state';
 import createReactClass from 'create-react-class';
-import moment from 'moment';
-import { Search, DateTimePicker } from 'components';
+import { OldSearch, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
 import themeImage from './intro.jpg';
 import { Button } from '../button';
@@ -15,7 +14,9 @@ const model = {
         cities: {},
         searchForm: {
             cityFrom: null,
+            placeFrom: null,
             cityTo: null,
+            placeTo: null,
             dateTime: null,
         },
     },
@@ -61,7 +62,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
         return (
             <div className={s.searchWrapper}>
                 <div className={s.search}>
-                    <Search
+                    <OldSearch
                         className={s.field}
                         resultsClassName={s.fieldResult}
                         citiesCursor={citiesCursor}
@@ -73,8 +74,8 @@ export const HomeIntroSection = schema(model)(createReactClass({
                             <MarkerIcon color="#6FA6F8" />
                         </div>
                         <div className={s.text}>From </div>
-                    </Search>
-                    <Search
+                    </OldSearch>
+                    <OldSearch
                         className={s.field}
                         resultsClassName={s.fieldResult}
                         citiesCursor={citiesCursor}
@@ -86,7 +87,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
                             <MarkerIcon color="#97B725" />
                         </div>
                         <div className={s.text}>To </div>
-                    </Search>
+                    </OldSearch>
                     <DateTimePicker
                         className={s.datePicker}
                         value={formCursor.dateTime.get()}

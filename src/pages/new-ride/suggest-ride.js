@@ -20,9 +20,9 @@ const validationSchema = (date) => yup.object().shape({
 });
 
 const model = {
-    cities: {},
     form: {},
     result: {},
+    search: {},
     errors: {},
 };
 
@@ -34,6 +34,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
         }).isRequired,
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
+            getPlacesService: PropTypes.func.isRequired,
             requestRideService: PropTypes.func.isRequired,
         }).isRequired,
         searchForm: PropTypes.shape({}),
@@ -46,7 +47,9 @@ export const SuggestRideForm = schema(model)(createReactClass({
     initForm() {
         const initData = {
             cityFrom: null,
+            placeFrom: null,
             cityTo: null,
+            placeTo: null,
             dateTime: formatDate(moment()),
         };
 
@@ -72,6 +75,8 @@ export const SuggestRideForm = schema(model)(createReactClass({
             const result = await requestRideService(this.props.tree.result, _.assign({}, data, {
                 cityFrom: data.cityFrom.pk,
                 cityTo: data.cityTo.pk,
+                placeFrom: data.placeFrom ? data.placeFrom.pk : null,
+                placeTo: data.placeTo ? data.placeTo.pk : null,
             }));
 
             if (result.status === 'Failure') {
@@ -92,8 +97,8 @@ export const SuggestRideForm = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.props.services;
-        const citiesCursor = this.props.tree.cities;
+        const { services } = this.props;
+        const searchCursor = this.props.tree.search;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
 
@@ -102,28 +107,41 @@ export const SuggestRideForm = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Direction</Title>
                     <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityFrom.get()}
-                        onChange={(v) => {
-                            formCursor.cityFrom.set(v);
-                            errorsCursor.select('cityFrom').set(null);
+                        tree={searchCursor}
+                        services={services}
+                        currentValue={{ city: formCursor.cityFrom.get(), place: formCursor.placeFrom.get() }}
+                        onChange={({ city, place }) => {
+                            formCursor.cityFrom.set(city);
+                            formCursor.placeFrom.set(place);
+
                         }}
+                        onFocus={() => {
+                            errorsCursor.select('cityFrom').set(null);
+                            errorsCursor.select('placeFrom').set(null);
+                        }}
+                        name="from"
+                        color="#6FA6F8"
                         {...this.checkInputError('cityFrom')}
                     >
-                        <div className={s.text}>From</div>
+                        <div className={s.text}>From </div>
                     </Search>
                     <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityTo.get()}
-                        onChange={(v) => {
-                            formCursor.cityTo.set(v);
-                            errorsCursor.select('cityTo').set(null);
+                        tree={searchCursor}
+                        services={services}
+                        currentValue={{ city: formCursor.cityTo.get(), place: formCursor.placeTo.get() }}
+                        onChange={({ city, place }) => {
+                            formCursor.cityTo.set(city);
+                            formCursor.placeTo.set(place);
                         }}
+                        onFocus={() => {
+                            errorsCursor.select('cityTo').set(null);
+                            errorsCursor.select('placeTo').set(null);
+                        }}
+                        name="to"
+                        color="#97B725"
                         {...this.checkInputError('cityTo')}
                     >
-                        <div className={s.text}>To</div>
+                        <div className={s.text}>To </div>
                     </Search>
                 </div>
                 <div className={classNames(s.section, s.departure)}>

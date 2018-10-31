@@ -7,9 +7,11 @@ import { Button, Modal, Icon } from 'antd-mobile';
 import s from './proxy-phone.css';
 
 const model = {
-    data: {},
-    error: {},
-    status: 'NotAsked',
+    tree: {
+        data: {},
+        error: {},
+        status: 'NotAsked',
+    },
 };
 
 class ProxyPhone extends React.Component {
@@ -80,8 +82,8 @@ ProxyPhone.propTypes = {
     service: PropTypes.func.isRequired,
 };
 
-const WrapperProxyPhone = schema(model)(ProxyPhone);
+const WrappedProxyPhone = schema(model)(ProxyPhone);
 
 export {
-    WrapperProxyPhone as ProxyPhone,
+    WrappedProxyPhone as ProxyPhone,
 };

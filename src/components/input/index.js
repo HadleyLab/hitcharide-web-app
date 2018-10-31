@@ -20,6 +20,12 @@ export const Input = createReactClass({
         type: PropTypes.string,
     },
 
+    componentDidUpdate(prevProps) {
+        if (!prevProps.visible && this.props.visible) {
+            this.focus();
+        }
+    },
+
     getDefaultProps() {
         return {
             onChange: () => {},
@@ -29,6 +35,7 @@ export const Input = createReactClass({
             onErrorClick: () => null,
             disabled: false,
             type: 'text',
+            visible: true,
         };
     },
 
@@ -57,10 +64,14 @@ export const Input = createReactClass({
         this.setState({ value: e.target.value });
     },
 
+    focus() {
+        this.input.focus();
+    },
+
     render() {
         const { showPassword, value } = this.state;
         const {
-            className, children, error, onErrorClick, disabled, type: defaultType,
+            className, children, error, onErrorClick, onFocus, disabled, type: defaultType, visible,
         } = this.props;
         const isPassword = defaultType === 'password';
         const type = showPassword ? 'text' : defaultType;
@@ -70,12 +81,13 @@ export const Input = createReactClass({
                 className={classNames(s.container, className, {
                     [s._error]: error,
                     [s._disabled]: disabled,
+                    [s._hidden]: !visible,
                 })}
             >
                 {children}
-                <div className={s.touchableArea} onClick={() => this.input.focus()} />
+                <div className={s.touchableArea} onClick={() => onFocus ? onFocus() : null} />
                 <input
-                    {..._.omit(this.props, ['className', 'children', 'error', 'onErrorClick'])}
+                    {..._.omit(this.props, ['className', 'children', 'error', 'onErrorClick', 'visible'])}
                     type={type}
                     onChange={this.onChange}
                     ref={(ref) => { this.input = ref; }}

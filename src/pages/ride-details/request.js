@@ -6,6 +6,7 @@ import BaobabPropTypes from 'baobab-prop-types';
 import schema from 'libs/state';
 import { Button, Modal } from 'antd-mobile';
 import { Title, Loader } from 'components';
+import { displayCityPlace } from 'components/utils';
 import moment from 'moment';
 import s from './ride-details.css';
 import classNames from 'classnames';
@@ -63,16 +64,16 @@ export const RideRequestDetailsPage = schema(model)(createReactClass({
 
     renderRideInfo() {
         const rideRequest = this.props.tree.request.get();
-        const { cityFrom, cityTo, dateTime } = rideRequest.data;
+        const { cityFrom, placeFrom, cityTo, placeTo, dateTime } = rideRequest.data;
 
         const rows = [
             {
                 title: 'From',
-                content: `${cityFrom.name}, ${cityFrom.state.name}`,
+                content: displayCityPlace(cityFrom, placeFrom),
             },
             {
                 title: 'To',
-                content: `${cityTo.name}, ${cityTo.state.name}`,
+                content: displayCityPlace(cityTo, placeTo),
             },
             {
                 title: 'Departure date',

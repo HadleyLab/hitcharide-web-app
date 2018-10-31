@@ -1,0 +1,41 @@
+.items {
+    position: absolute;
+    background-color: #fff;
+    z-index: 999;
+    right: 0;
+    bottom: 1px;
+    left: 0;
+    max-height: 200px;
+    overflow: auto;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 5px 10px #ddd;
+    transform: translateY(100%);
+}
+
+.item {
+    padding: 0 15px;
+    height: 44px;
+    font-size: 17px;
+    line-height: 25px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+        border: 0;
+    }
+}
+
+.loader {
+    position: absolute;
+    background-color: #fff;
+    height: 22px;
+    width: 22px;
+    margin-top: 1px;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+}

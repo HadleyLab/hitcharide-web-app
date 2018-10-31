@@ -36,7 +36,7 @@ const validationSchema = (date) => yup.object().shape({
 });
 
 const model = {
-    cities: {},
+    search: {},
     form: {},
     result: {},
     errors: {},
@@ -51,6 +51,7 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         cars: PropTypes.arrayOf(PropTypes.shape()).isRequired,
         services: PropTypes.shape({
             getCitiesService: PropTypes.func.isRequired,
+            getPlacesService: PropTypes.func.isRequired,
             createRideService: PropTypes.func.isRequired,
             getRideRequestService: PropTypes.func.isRequired,
         }).isRequired,
@@ -65,7 +66,9 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         const car = this.props.cars[0];
         const initData = {
             cityFrom: null,
+            placeFrom: null,
             cityTo: null,
+            placeTo: null,
             dateTime: formatDate(moment()),
             price: null,
             stops: [],
@@ -93,12 +96,15 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
         }
 
         if (isDataValid) {
-            const stops = _.filter(data.stops, (stop) => !_.isEmpty(stop));
+            const stops = _.filter(data.stops, (stop) => stop.city);
             const result = await createRideService(this.props.tree.result, _.assign({}, data, {
                 cityFrom: data.cityFrom.pk,
                 cityTo: data.cityTo.pk,
+                placeFrom: data.placeFrom ? data.placeFrom.pk : null,
+                placeTo: data.placeTo ? data.placeTo.pk : null,
                 stops: _.map(stops, (stop, index) => ({
-                    city: stop.pk,
+                    city: stop.city.pk,
+                    place: stop.place ? stop.place.pk : null,
                     order: index,
                 })),
             }));
@@ -148,8 +154,8 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
     },
 
     renderStopOvers() {
-        const { getCitiesService } = this.props.services;
-        const citiesCursor = this.props.tree.cities;
+        const { services } = this.props;
+        const searchCursor = this.props.tree.search;
         const formCursor = this.props.tree.form;
         const stopsCursor = formCursor.stops;
         const stops = stopsCursor.get();
@@ -159,22 +165,25 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
                 {_.map(stops, (stop, index) => (
                     <Search
                         key={`stop-${index}`}
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
+                        tree={searchCursor}
+                        services={services}
                         currentValue={stopsCursor.select(index).get()}
                         onChange={(v) => stopsCursor.select(index).set(v)}
-                        placeholder="Select a stop"
+                        color="#97B725"
                     >
                         <div
                             className={s.stopIcon}
                             style={{ backgroundImage: `url(${minusIcon})` }}
                             onClick={() => stopsCursor.unset(index)}
                         />
+                        <div className={s.text}>
+                            {!stopsCursor.select(index).city.get() ? 'Select a stop' : 'Stop'}
+                        </div>
                     </Search>
                 ))}
                 <div
                     className={s.addStop}
-                    onClick={() => formCursor.stops.push({ name: '', pk: null })}
+                    onClick={() => formCursor.stops.push({ city: null, place: null })}
                 >
                     <div className={s.stopIcon}>
                         <AddFilledIcon />
@@ -216,8 +225,8 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
     },
 
     render() {
-        const { getCitiesService } = this.props.services;
-        const citiesCursor = this.props.tree.cities;
+        const { services } = this.props;
+        const searchCursor = this.props.tree.search;
         const formCursor = this.props.tree.form;
         const errorsCursor = this.props.tree.errors;
 
@@ -226,28 +235,41 @@ export const BaseCreateRideForm = schema(model)(createReactClass({
                 <div className={s.section}>
                     <Title>Direction</Title>
                     <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityFrom.get()}
-                        onChange={(v) => {
-                            formCursor.cityFrom.set(v);
-                            errorsCursor.select('cityFrom').set(null);
+                        tree={searchCursor}
+                        services={services}
+                        currentValue={{ city: formCursor.cityFrom.get(), place: formCursor.placeFrom.get() }}
+                        onChange={({ city, place }) => {
+                            formCursor.cityFrom.set(city);
+                            formCursor.placeFrom.set(place);
+
                         }}
+                        onFocus={() => {
+                            errorsCursor.select('cityFrom').set(null);
+                            errorsCursor.select('placeFrom').set(null);
+                        }}
+                        name="from"
+                        color="#6FA6F8"
                         {...this.checkInputError('cityFrom')}
                     >
-                        <div className={s.text}>From</div>
+                        <div className={s.text}>From </div>
                     </Search>
                     <Search
-                        citiesCursor={citiesCursor}
-                        service={getCitiesService}
-                        currentValue={formCursor.cityTo.get()}
-                        onChange={(v) => {
-                            formCursor.cityTo.set(v);
-                            errorsCursor.select('cityTo').set(null);
+                        tree={searchCursor}
+                        services={services}
+                        currentValue={{ city: formCursor.cityTo.get(), place: formCursor.placeTo.get() }}
+                        onChange={({ city, place }) => {
+                            formCursor.cityTo.set(city);
+                            formCursor.placeTo.set(place);
                         }}
+                        onFocus={() => {
+                            errorsCursor.select('cityTo').set(null);
+                            errorsCursor.select('placeTo').set(null);
+                        }}
+                        name="to"
+                        color="#97B725"
                         {...this.checkInputError('cityTo')}
                     >
-                        <div className={s.text}>To</div>
+                        <div className={s.text}>To </div>
                     </Search>
                     <div className={classNames(s.section, s.departure)}>
                         <Title>

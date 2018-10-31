@@ -60,6 +60,10 @@
     color: rgba(#888, .5);
 }
 
+.container._hidden input {
+    display: none;
+}
+
 .icon {
     position: absolute;
     right: 0;

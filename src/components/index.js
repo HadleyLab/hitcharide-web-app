@@ -1,5 +1,6 @@
 export { Input } from './input';
 export { Search } from './search';
+export { OldSearch } from './old-search';
 export { Title } from './title';
 export { Error } from './error';
 export { TopBar } from './topbar';

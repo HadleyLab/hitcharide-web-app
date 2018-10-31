@@ -99,3 +99,40 @@ export function checkIfRideStarted(date) {
 export function formatDate(date) {
     return date.format('YYYY-MM-DDTHH:mm:ssZZ');
 }
+
+export function hexToRGB(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+
+    if (alpha) {
+        return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    } else {
+        return "rgb(" + r + ", " + g + ", " + b + ")";
+    }
+}
+
+export function displayCity({ name, state }) {
+    if (state) {
+        return `${name}, ${state.shortName}`;
+    }
+
+    return name;
+}
+
+export function displayPlace({ name }) {
+    return name;
+}
+
+export function displayCityPlace(city, place) {
+    let result = '';
+    if (city) {
+        result = displayCity(city);
+    }
+    if (place) {
+        result = `${result}, ${displayPlace(place)}`
+    }
+
+    return result;
+}
+

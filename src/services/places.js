@@ -25,3 +25,15 @@ export function getCitiesService(handler) {
         return service(handler, cursor);
     };
 }
+
+export function getPlacesService(handler) {
+    return (cursor, params) => {
+        const service = buildGetService(
+            `/places/place/${paramsToString(params)}`,
+            dehydrateBundle,
+            defaultHeaders,
+        );
+
+        return service(handler, cursor);
+    };
+}

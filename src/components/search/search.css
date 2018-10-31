@@ -1,3 +1,23 @@
+.mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  transform: translateZ(0);
+  z-index: 1000;
+}
+
+.container {
+    &._focused {
+        z-index: 1001;
+    }
+}
+
 .items {
     position: absolute;
     background-color: #fff;
@@ -9,7 +29,6 @@
     overflow: auto;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
-    box-shadow: 0 5px 10px #ddd;
     transform: translateY(100%);
 }
 
@@ -27,15 +46,107 @@
     }
 }
 
-.loader {
-    position: absolute;
+.itemRightIcon {
+    padding-left: 15px;
+}
+
+.itemIcon {
+    padding-right: 15px;
+}
+
+.itemIconImage {
+    width: 16px;
+    height: 16px;
+}
+
+.itemTextWrapper {
+    max-width: 100%;
+    min-width: 1px;
+    flex: 1;
+}
+
+.itemText {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.tagsContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.tag {
+    border: 1px solid;
+    border-radius: 3px;
+    display: flex;
+    max-width: 130px;
+    margin-right: 5px;
+    padding: 2px 5px;
+}
+
+.tagText {
+    font-size: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex: 1;
+}
+
+.tagIcon {
+    width: 22px;
+    text-align: center;
+    line-height: 20px;
+    padding-left: 5px;
+    z-index: 1;
+}
+
+.icon {
+    min-width: 18px;
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    margin-top: 2px;
+
+    .button._reset & {
+        margin-left: 10px;
+        margin-right: 0;
+    }
+}
+
+.label {
+    margin-right: 10px;
+    color: #1A1B20;
+}
+
+.loaderIcon {
     background-color: #fff;
+    min-width: 18px;
     height: 22px;
     width: 22px;
-    margin-top: 1px;
+    margin-top: 2px;
+    margin-right: 9px;
 
     svg {
         width: 18px;
         height: 18px;
     }
+}
+
+.valueContainer {
+    width: 100%;
+    min-width: 1px;
+    text-align: right;
+}
+
+.value {
+    width: 220px;
+    display: inline;
+}
+
+.valueText {
+    color: #888;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }

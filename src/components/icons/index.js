@@ -6,5 +6,5 @@ export { HappinessIcon } from './happiness';
 export { ClockIcon } from './clock';
 export { AddIcon, AddFilledIcon } from './add';
 export { RouteIcon } from './route';
-export { SearchIcon } from './search';
+export { SearchIcon, SearchDeleteIcon, SearchArrowIcon } from './search';
 export { ResetIcon, ResetFilledIcon } from './reset';
