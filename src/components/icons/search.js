@@ -49,7 +49,7 @@ SearchDeleteIcon.defaultProps = {
 };
 
 export const SearchArrowIcon = ({ color, size = 'small' }) => (
-    <svg width={size === 'small' ? 4 : 8} height={size === 'small' ? 4 : 12} viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width={size === 'small' ? 3 : 8} height={size === 'small' ? 6 : 12} viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
             d={'M1.70711 0.292893C1.31658 -0.0976311 0.683417 -0.0976311 0.292893 0.292893C-0.0976311 0.683417 '
             + '-0.0976311 1.31658 0.292893 1.70711L1.70711 0.292893ZM7 7L7.70711 7.70711C8.09763 7.31658 8.09763 '
