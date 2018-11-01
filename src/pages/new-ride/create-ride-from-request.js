@@ -54,7 +54,7 @@ export const CreateRideFromRequestForm = schema(model)(createReactClass({
             <Loader isLoaded={isLoaded}>
                 <BaseCreateRideForm
                     {...this.props}
-                    initData={_.pick(request.data, ['cityFrom', 'cityTo', 'dateTime'])}
+                    initData={_.omit(request.data, ['author'])}
                 />
             </Loader>
         );
