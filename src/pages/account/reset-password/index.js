@@ -103,6 +103,7 @@ export const ResetPasswordPage = schema(model)(createReactClass({
                             formCursor.select('email').set(e.target.value);
                             errorsCursor.select('email').set(null);
                         }}
+                        type="email"
                         placeholder="E-mail"
                         defaultValue={formCursor.get('email')}
                         {...errorProps}

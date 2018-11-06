@@ -120,6 +120,7 @@ export const RegistrationPage = schema(model)(createReactClass({
                 <form className={s.form}>
                     <Input
                         {...this.getInputProps('email')}
+                        type="email"
                         placeholder="E-mail"
                     />
                     <Input

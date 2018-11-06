@@ -229,16 +229,16 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
                         </div>
                         {`${firstName}`}
                     </div>
-                    <div className={s.stars}>
-                        <Stars
-                            rating={rating}
-                            onChange={(value) => {
-                                formCursor.select(index, 'rating').set(value);
-                                this.props.tree.addReviewsErrors.set({});
-                            }}
-                            clickable={!hasReviews}
-                        />
-                    </div>
+                </div>
+                <div className={s.stars}>
+                    <Stars
+                        rating={rating}
+                        onChange={(value) => {
+                            formCursor.select(index, 'rating').set(value);
+                            this.props.tree.addReviewsErrors.set({});
+                        }}
+                        clickable={!hasReviews}
+                    />
                 </div>
                 <textarea
                     defaultValue={comment}
