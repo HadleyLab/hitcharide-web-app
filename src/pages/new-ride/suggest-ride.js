@@ -171,7 +171,7 @@ export const SuggestRideForm = schema(model)(createReactClass({
                         style={{ width: 250 }}
                         onClick={this.onSubmit}
                     >
-                        Suggest a ride
+                        Suggest my ride
                     </Button>
                 </div>
             </div>
