@@ -422,6 +422,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             const myBooking = _.find(bookings, ({ client }) => client.pk === profile.pk);
             const isBookingPayed = myBooking.status === 'payed';
             const isBookingNotPayed = myBooking.status === 'created';
+            // TODO: get dayBeforeRide from constance
             const dayBeforeRide = moment(dateTime).subtract(1, 'days').utc();
             const canBeCanceled = moment().utc().isSameOrBefore(dayBeforeRide, 'minute');
 
