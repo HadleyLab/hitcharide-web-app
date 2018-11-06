@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import createReactClass from 'create-react-class';
 import classNames from 'classnames';
-import { Route, Link } from 'react-router-dom';
+import { Route, Link, Redirect } from 'react-router-dom';
 import { FlatPage, SearchPage } from 'pages';
 import { HomeHeader } from './header';
 import { HomeIntroSection } from './intro';
@@ -56,12 +56,18 @@ export const HomePage = createReactClass({
                 <Route
                     path="/"
                     exact
-                    render={() => (
-                        <div>
-                            <HomeIntroSection {...this.props} token={token} tree={this.props.searchCursor} />
-                            <HomeFooter />
-                        </div>
-                    )}
+                    render={() => {
+                        if (token) {
+                            return <Redirect to="/app" />;
+                        }
+
+                        return (
+                            <div>
+                                <HomeIntroSection {...this.props} token={token} tree={this.props.searchCursor} />
+                                <HomeFooter />
+                            </div>
+                        )
+                    }}
                 />
                 <Route
                     path="/page/:slug"

@@ -12,7 +12,7 @@ import enUS from 'antd-mobile/lib/locale-provider/en_US';
 import { MainPage, HomePage, AccountPage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
-import { ServiceContext } from 'components';
+import { ServiceContext, Loader } from 'components';
 import { getToken, removeToken } from 'components/utils';
 import services from 'services';
 import 'components/styles/styles.less';
@@ -41,7 +41,15 @@ const AuthorizedApp = createReactClass({
     },
 
     componentDidMount() {
-        this.loadProfileData();
+        this.loadProfileData(() => {
+            this.setState({ isLoaded: true });
+        });
+    },
+
+    getInitialState() {
+        return {
+            isLoaded: false,
+        }
     },
 
     async loadProfileData(onLoad) {
@@ -57,9 +65,10 @@ const AuthorizedApp = createReactClass({
 
     render() {
         const { tokenCursor } = this.props;
+        const { isLoaded } = this.state;
 
         return (
-            <div>
+            <Loader isLoaded={isLoaded}>
                 <Route
                     path="/"
                     render={(props) => (
@@ -95,7 +104,7 @@ const AuthorizedApp = createReactClass({
                         );
                     }}
                 />
-            </div>
+            </Loader>
         );
     },
 });
