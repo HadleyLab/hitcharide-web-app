@@ -39,7 +39,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
     },
 
     getUserType(type) {
-        if (type === '1') {
+        if (type === 1) {
             return 'Driver';
         }
 
@@ -94,7 +94,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
             <div className={s.reviews}>
                 {_.map(filteredReviews, (review, index) => {
                     const {
-                        author: { firstName, lastName, photo },
+                        author: { displayName, photo },
                         comment, authorType, rating, created,
                     } = review;
 
@@ -111,7 +111,7 @@ export const ReviewsPage = schema(modal)(createReactClass({
                                     )}
                                     <div>
                                         <div className={s.name}>
-                                            {`${firstName} ${lastName}`}
+                                            {displayName}
                                         </div>
                                         {this.getUserType(authorType)}
                                     </div>
