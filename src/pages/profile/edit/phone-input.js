@@ -10,12 +10,18 @@ export class PhoneInput extends React.Component {
         super(props);
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
+        this.onChange = this.onChange.bind(this);
         this.state = {
             focused: false,
         };
     }
 
     onFocus(e) {
+        if (e.target.value.length < 1) {
+            e.target.value = '1';
+            this.onChange(e);
+        }
+
         const { onFocus } = this.props;
 
         if (onFocus) {
@@ -28,6 +34,11 @@ export class PhoneInput extends React.Component {
     }
 
     onBlur(e) {
+        if (e.target.value.length === 1) {
+            e.target.value = '';
+            this.onChange(e);
+        }
+
         const { onBlur } = this.props;
 
         if (onBlur) {
@@ -37,6 +48,20 @@ export class PhoneInput extends React.Component {
         this.setState({
             focused: false,
         });
+    }
+
+    onChange(e) {
+        const { onChange } = this.props;
+
+        if (onChange) {
+            onChange(e);
+        }
+    }
+
+    getValue() {
+        const { defaultValue } = this.props;
+
+        return defaultValue;
     }
 
     render() {
@@ -49,6 +74,8 @@ export class PhoneInput extends React.Component {
                 className={classNames(s.phoneInput, {
                     [s._focused]: focused || phoneValue,
                 })}
+                onChange={this.onChange}
+                defaultValue={this.getValue()}
                 onFocus={this.onFocus}
                 onBlur={this.onBlur}
             >
@@ -69,6 +96,7 @@ PhoneInput.propTypes = {
 PhoneInput.defaultProps = {
     onFocus: () => {},
     onBlur: () => {},
+    onChange: () => {},
     children: null,
     phoneValue: '',
 };

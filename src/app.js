@@ -33,6 +33,7 @@ const AuthorizedApp = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
+        location: PropTypes.shape().isRequired,
         services: PropTypes.shape({
             getCarListService: PropTypes.func.isRequired,
             getMyProfileService: PropTypes.func.isRequired,
@@ -64,7 +65,8 @@ const AuthorizedApp = createReactClass({
     },
 
     render() {
-        const { tokenCursor } = this.props;
+        const { tokenCursor, location } = this.props;
+        const { pathname } = location;
         const { isLoaded } = this.state;
 
         return (
@@ -100,7 +102,7 @@ const AuthorizedApp = createReactClass({
                         }
 
                         return (
-                            <Redirect to="/account/login" />
+                            <Redirect to={`/account/login?next=${pathname}`} />
                         );
                     }}
                 />

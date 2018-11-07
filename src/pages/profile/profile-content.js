@@ -159,7 +159,7 @@ export const ProfileContent = createReactClass({
     render() {
         const { profile, isYourProfile } = this.props;
         const {
-            firstName, lastName, phone, email, isPhoneValidated,
+            displayName, phone, email, isPhoneValidated,
             paypalAccount, shortDesc, age, photo, smsNotifications,
         } = profile;
 
@@ -176,7 +176,7 @@ export const ProfileContent = createReactClass({
                         )}
                     </div>
                     <div className={s.name}>
-                        {`${firstName} ${lastName}`}
+                        {displayName}
                         {age ? ` (${age} years)` : null}
                     </div>
                 </div>

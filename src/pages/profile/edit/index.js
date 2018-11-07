@@ -27,6 +27,7 @@ const model = {
         photo: null,
         firstName: '',
         lastName: '',
+        nickname: '',
         shortDesc: '',
         phone: '',
         paypalAccount: null,
@@ -112,7 +113,7 @@ export const EditProfilePage = schema(model)(createReactClass({
 
         const photoData = photo ? { photo } : {};
 
-        return _.merge(formData, _.pick(formFields, ['firstName', 'lastName', 'phone']), photoData);
+        return _.merge(formData, _.pick(formFields, ['firstName', 'lastName', 'nickname', 'phone']), photoData);
     },
 
     async validateForm() {
@@ -530,6 +531,9 @@ export const EditProfilePage = schema(model)(createReactClass({
                     </Input>
                     <Input {...this.getInputProps('lastName')}>
                         <div className={s.text}>Last name</div>
+                    </Input>
+                    <Input {...this.getInputProps('nickname')}>
+                        <div className={s.text}>Public username</div>
                     </Input>
                 </div>
                 {this.renderPhoto()}

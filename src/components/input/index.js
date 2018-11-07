@@ -65,13 +65,21 @@ export const Input = createReactClass({
     },
 
     focus() {
-        this.input.focus();
+        const { visible, onFocus } = this.props;
+
+        if (visible) {
+            this.input.focus();
+        } else {
+            if (onFocus) {
+                onFocus();
+            }
+        }
     },
 
     render() {
         const { showPassword, value } = this.state;
         const {
-            className, children, error, onErrorClick, onFocus, disabled, type: defaultType, visible,
+            className, children, error, onErrorClick, disabled, type: defaultType, visible,
         } = this.props;
         const isPassword = defaultType === 'password';
         const type = showPassword ? 'text' : defaultType;
@@ -85,7 +93,7 @@ export const Input = createReactClass({
                 })}
             >
                 {children}
-                <div className={s.touchableArea} onClick={() => onFocus ? onFocus() : null} />
+                <div className={s.touchableArea} onClick={this.focus} />
                 <input
                     {..._.omit(this.props, ['className', 'children', 'error', 'onErrorClick', 'visible'])}
                     type={type}

@@ -7,7 +7,7 @@ import { Redirect, Link } from 'react-router-dom';
 import { Button } from 'antd-mobile';
 import schema from 'libs/state';
 import { Input, Error } from 'components';
-import { validateForm, checkInputError, setToken } from 'components/utils';
+import { validateForm, checkInputError, setToken, parseQueryString } from 'components/utils';
 import * as yup from 'yup';
 import googleIcon from 'components/icons/google.svg';
 import s from '../account.css';
@@ -44,6 +44,9 @@ export const LoginPage = schema(model)(createReactClass({
         reInitServices: PropTypes.func.isRequired,
         services: PropTypes.shape({
             signInService: PropTypes.func.isRequired,
+        }).isRequired,
+        location: PropTypes.shape({
+            search: PropTypes.string.isRequired,
         }).isRequired,
     },
 
@@ -96,11 +99,20 @@ export const LoginPage = schema(model)(createReactClass({
         }, errorProps);
     },
 
+    getRedirectPath() {
+        const { search } = this.props.location;
+        const searchParams = parseQueryString(search);
+        const { next } = searchParams;
+
+        return next ? next : '/app';
+    },
+
     render() {
         const token = this.props.tokenCursor.get();
+        const redirectPath = this.getRedirectPath();
 
         if (token) {
-            return <Redirect to="/app" />;
+            return <Redirect to={redirectPath} />;
         }
 
         return (
@@ -126,7 +138,7 @@ export const LoginPage = schema(model)(createReactClass({
                         <Button onClick={this.onSubmit} type="primary">Sign in</Button>
                         <a
                             className={s.googleButton}
-                            href={`${BACKEND_URL}/accounts/social/login/google-oauth2/`}
+                            href={`${BACKEND_URL}/accounts/social/login/google-oauth2/?next=${redirectPath}`}
                         >
                             <img src={googleIcon} alt="Google" />
                             Sign in with Google+

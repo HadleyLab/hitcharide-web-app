@@ -269,7 +269,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
     renderDriverInfo() {
         const { profile } = this.props;
         const ride = this.props.tree.ride.get();
-        const { pk: ridePk, car, bookings, status } = ride.data;
+        const { pk: ridePk, car, bookings, status, driverDisplayName } = ride.data;
         const isRideActual = status === 'created';
         const isMe = profile.pk === car.owner.pk;
         let isBookingPayed = false;
@@ -290,7 +290,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     <div>
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${car.owner.pk}`} className={s.link}>
-                            {`${car.owner.firstName} ${car.owner.lastName}`}
+                            {`${driverDisplayName}`}
                             {!isMe ? (
                                 <span className={s.rating}>
                                     {`${_.round(car.owner.rating.value, 2)}/5`}
@@ -334,7 +334,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
             );
         }
 
-        return _.map(bookings, ({ pk: bookingPk, client, seatsCount }, index) => {
+        return _.map(bookings, ({ pk: bookingPk, client, seatsCount, passengerDisplayName }, index) => {
             const isMe = profile.pk === client.pk;
 
             return (
@@ -350,7 +350,7 @@ export const RideDetailsPage = schema(model)(createReactClass({
                     <span className={s.rowContent}>
                         <span className={s.you}>{isMe ? '(You) ' : null}</span>
                         <Link to={`/app/user/${client.pk}`} className={s.link}>
-                            {`${client.firstName} ${client.lastName}`}
+                            {`${passengerDisplayName}`}
                             {seatsCount > 1 ? ` +${seatsCount - 1}` : null}
                             {!isMe ? (
                                 <span className={s.rating}>

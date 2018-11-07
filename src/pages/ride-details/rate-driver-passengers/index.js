@@ -112,14 +112,14 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
     getUsers() {
         const reviews = this.props.tree.reviews.data.get();
         const { userType } = this.state;
-        const { car, bookings } = this.props.rideCursor.data.get();
+        const { car, bookings, driverDisplayName } = this.props.rideCursor.data.get();
 
         if (userType === 'driver') {
-            const passengers = _.map(bookings, ({ client }) => {
+            const passengers = _.map(bookings, ({ client, passengerDisplayName }) => {
                 const review = _.find(reviews, { subject: client.pk });
                 const data = review ? _.pick(review, ['rating', 'comment']) : { rating: null, comment: null };
 
-                return _.merge({}, client, data);
+                return _.merge({}, client, data, { displayName: passengerDisplayName });
             });
             this.setState({ users: passengers });
         }
@@ -129,7 +129,7 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
             const data = review ? _.pick(review, ['rating', 'comment']) : { rating: null, comment: null };
 
             this.setState({
-                users: [_.merge({}, car.owner, data)],
+                users: [_.merge({}, car.owner, data, { displayName: driverDisplayName })],
             });
         }
     },
@@ -208,7 +208,7 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
         const formCursor = this.props.tree.reviewsForm;
         const hasReviews = reviews && reviews.data && reviews.data.length;
         const {
-            firstName, photo, rating, comment,
+            displayName, photo, rating, comment,
         } = subject;
 
         return (
@@ -227,7 +227,7 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
                                 </div>
                             )}
                         </div>
-                        {`${firstName}`}
+                        {`${displayName}`}
                     </div>
                 </div>
                 <div className={s.stars}>
@@ -242,7 +242,7 @@ export const RateDriverAndPassengersScreen = schema(model)(createReactClass({
                 </div>
                 <textarea
                     defaultValue={comment}
-                    placeholder={`Review about ${firstName}`}
+                    placeholder={`Review about ${displayName}`}
                     className={s.textarea}
                     onChange={(e) => {
                         formCursor.select(index, 'comment').set(e.target.value);

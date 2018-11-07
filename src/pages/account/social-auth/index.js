@@ -1,10 +1,9 @@
 import React from 'react';
-import _ from 'lodash';
 import createReactClass from 'create-react-class';
 import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import { Redirect } from 'react-router-dom';
-import { setToken } from 'components/utils';
+import { setToken, parseQueryString } from 'components/utils';
 import { Button } from 'antd-mobile';
 import s from '../account.css';
 
@@ -19,15 +18,26 @@ export const SocialAuthPage = createReactClass({
 
     componentWillMount() {
         const { search } = this.props.location;
-        const token = _.replace(search, '?token=', '');
+        const searchParams = parseQueryString(search);
+        const { token } = searchParams;
 
         setToken(token);
         this.props.tokenCursor.set(token);
         this.props.reInitServices();
     },
 
+    getRedirectPath() {
+      const { search } = this.props.location;
+        const searchParams = parseQueryString(search);
+        const { next } = searchParams;
+
+        return next ? next : '/app';
+    },
+
     render() {
-        return <Redirect to="/app" />;
+        const redirectPath = this.getRedirectPath();
+
+        return <Redirect to={redirectPath} />;
     },
 });
 
