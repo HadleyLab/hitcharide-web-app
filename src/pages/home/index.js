@@ -63,7 +63,7 @@ export const HomePage = createReactClass({
                         }
 
                         return (
-                            <div className={classNames(s.rootContainer, s._root)}>
+                            <div className={classNames(s.container, s._root)}>
                                 {this.renderTopBar()}
                                 <HomeIntroSection
                                     {...this.props}
