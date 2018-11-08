@@ -1,5 +1,9 @@
-.container {
+.rootContainer {
     min-height: 100vh;
+}
+
+.container {
+    padding-top: 45px;
 }
 
 .button {
@@ -20,13 +24,7 @@
 }
 
 @media screen and (min-width: 768px) {
-    .container {
-        padding-top: 80px;
-    }
-}
-
-@media screen and (max-width: 767px) {
-    .container {
-        padding-top: 45px;
+    .rootContainer {
+        padding-top: 35px;
     }
 }

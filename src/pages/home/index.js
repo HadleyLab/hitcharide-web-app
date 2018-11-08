@@ -53,7 +53,7 @@ export const HomePage = createReactClass({
         const userTypeCursor = this.props.userTypeCursor;
 
         return (
-            <div>
+            <div className={s.container}>
                 <Route
                     path="/"
                     exact
@@ -63,7 +63,7 @@ export const HomePage = createReactClass({
                         }
 
                         return (
-                            <div className={s.container}>
+                            <div className={s.rootContainer}>
                                 {this.renderTopBar()}
                                 <HomeIntroSection
                                     {...this.props}
