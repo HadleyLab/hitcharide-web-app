@@ -230,13 +230,14 @@
     }
 
     &._focused input {
-        padding-left: 12px;
+        padding-left: 19px;
     }
 }
 
 .plus {
     position: absolute;
     left: 15px;
+    padding-top: 2px;
     color: #888;
 }
 
