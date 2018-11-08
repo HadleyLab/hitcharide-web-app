@@ -6,6 +6,7 @@ import createReactClass from 'create-react-class';
 import classNames from 'classnames';
 import { Route, Link, Redirect } from 'react-router-dom';
 import { FlatPage, SearchPage } from 'pages';
+import { TopBar } from 'components';
 import { HomeHeader } from './header';
 import { HomeIntroSection } from './intro';
 import { HomeFooter } from './footer';
@@ -29,6 +30,7 @@ export const HomePage = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         searchCursor: BaobabPropTypes.cursor.isRequired,
+        userTypeCursor: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
         history: PropTypes.shape().isRequired,
         location: PropTypes.shape().isRequired,
@@ -37,16 +39,17 @@ export const HomePage = createReactClass({
     checkIfGuestUser() {
         const { pathname } = this.props.location;
 
-        if (_.startsWith(pathname, '/app') || _.startsWith(pathname, '/account')) {
-            return false;
-        }
-
-        return true;
+        return !(
+            _.startsWith(pathname, '/app') ||
+            _.startsWith(pathname, '/search') ||
+            _.startsWith(pathname, '/account')
+        );
     },
 
     render() {
         const isGuest = this.checkIfGuestUser();
         const token = this.props.tokenCursor.get();
+        const userTypeCursor = this.props.userTypeCursor;
 
         return (
             <div className={isGuest ? s.container : null}>
@@ -63,7 +66,12 @@ export const HomePage = createReactClass({
 
                         return (
                             <div>
-                                <HomeIntroSection {...this.props} token={token} tree={this.props.searchCursor} />
+                                <HomeIntroSection
+                                    {...this.props}
+                                    token={token}
+                                    userTypeCursor={userTypeCursor}
+                                    tree={this.props.searchCursor}
+                                />
                                 <HomeFooter />
                             </div>
                         )
@@ -84,12 +92,20 @@ export const HomePage = createReactClass({
                 <Route
                     path="/search"
                     render={(props) => (
-                        <SearchPage
-                            {..._.merge(this.props, props)}
-                            tree={this.props.tree.app.search}
-                            onCreateRide={() => props.history.push('/app/create-ride')}
-                            userType="passenger"
-                        />
+                        <div>
+                            <TopBar
+                                {...this.props}
+                                userTypeCursor={userTypeCursor}
+                                checkUserRights={() => ({ allowed: true })}
+                                isAuthenticated={false}
+                            />
+                            <SearchPage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.app.search}
+                                onCreateRide={() => props.history.push('/app/create-ride')}
+                                userType={userTypeCursor.get()}
+                            />
+                        </div>
                     )}
                 />
             </div>

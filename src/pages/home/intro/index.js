@@ -5,8 +5,10 @@ import schema from 'libs/state';
 import createReactClass from 'create-react-class';
 import { OldSearch, DateTimePicker } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
-import themeImage from './intro.jpg';
+import { getUserType, setUserType } from 'components/utils';
 import { Button } from '../button';
+import themeImage from './intro.jpg';
+import { UserTypeSelector } from './user-type-selector';
 import s from './intro.css';
 
 const model = {
@@ -54,7 +56,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
     },
 
     renderSearchForm() {
-        const { token, services, tree } = this.props;
+        const { userTypeCursor, token, services, tree } = this.props;
         const { getCitiesService } = services;
         const citiesCursor = tree.cities;
         const formCursor = tree.searchForm;
@@ -100,7 +102,20 @@ export const HomeIntroSection = schema(model)(createReactClass({
                             <div className={s.text}>When </div>
                         </div>
                     </DateTimePicker>
-                    <Button to={token ? '/app' : '/search'} className={s.button}>Search a ride</Button>
+                    <UserTypeSelector
+                        className={s.userTypeSelector}
+                        value={userTypeCursor.get()}
+                        onChange={(userType) => {
+                            setUserType(userType);
+                            userTypeCursor.set(userType)
+                        }}
+                    />
+                    <Button
+                        to={token ? '/app' : '/search'}
+                        className={s.button}
+                    >
+                        Search a ride
+                    </Button>
                 </div>
             </div>
         );

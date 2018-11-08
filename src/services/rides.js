@@ -61,16 +61,12 @@ export function getRidesListService(handler) {
     };
 }
 
-export function getRideRequestsListService(handler, token) {
-    const headers = {
-        Authorization: `JWT ${token}`,
-    };
-
+export function getRideRequestsListService(handler) {
     return (cursor, params, dehydrateParams = {}) => {
         const service = buildGetService(
             `/rides/request/${paramsToString(params)}`,
             (data) => dehydrateRidesList(data, dehydrateParams),
-            _.merge({}, defaultHeaders, headers)
+            defaultHeaders
         );
 
         return service(handler, cursor);

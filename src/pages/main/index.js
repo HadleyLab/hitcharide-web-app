@@ -39,6 +39,7 @@ const MainPageContent = createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
         tokenCursor: BaobabPropTypes.cursor.isRequired,
+        userTypeCursor: BaobabPropTypes.cursor.isRequired,
         accountCursor: BaobabPropTypes.cursor.isRequired,
         match: PropTypes.shape({
             url: PropTypes.string.isRequired,
@@ -58,9 +59,9 @@ const MainPageContent = createReactClass({
     },
 
     componentWillMount() {
-        this.props.tree.userType.set(getUserType() || 'passenger');
         this.props.accountCursor.set({});
 
+        this.checkUserRights();
         this.loadProfileData();
     },
 
@@ -68,14 +69,15 @@ const MainPageContent = createReactClass({
         const checkIfUserCanBeDriver = this.checkIfUserCanBeDriver();
 
         if (!checkIfUserCanBeDriver.allowed) {
-            this.props.tree.userType.set('passenger');
+            this.props.userTypeCursor.set('passenger');
             setUserType('passenger');
         }
 
-        this.props.tree.userType.set(getUserType() || 'passenger');
+        this.props.userTypeCursor.set(getUserType());
     },
 
     loadProfileData() {
+        // TODO: is it obsolete?
         const tree = this.props.tree.get();
 
         if (!tree) {
@@ -166,8 +168,8 @@ const MainPageContent = createReactClass({
     render() {
         const profile = this.props.tree.profile.get();
         const cars = this.props.tree.cars.get();
-        const userTypeCursor = this.props.tree.select('userType');
-        const userType = userTypeCursor.get() || 'passenger';
+        const userTypeCursor = this.props.userTypeCursor;
+        const userType = userTypeCursor.get();
         const { url } = this.props.match;
         const isProfileLoaded = profile && profile.status === 'Succeed';
         const isCarsLoaded = cars && cars.status === 'Succeed';
@@ -181,6 +183,7 @@ const MainPageContent = createReactClass({
                             {...this.props}
                             userTypeCursor={userTypeCursor}
                             checkUserRights={this.checkIfUserCanBeDriver}
+                            isAuthenticated={true}
                         />
                         <div className={s.content}>
                             <Route
