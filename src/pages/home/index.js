@@ -35,18 +35,25 @@ export const HomePage = createReactClass({
         location: PropTypes.shape().isRequired,
     },
 
+    renderTopBar() {
+        const userTypeCursor = this.props.userTypeCursor;
+
+        return (
+            <TopBar
+                {...this.props}
+                userTypeCursor={userTypeCursor}
+                checkUserRights={() => ({ allowed: true })}
+                isAuthenticated={false}
+            />
+        )
+    },
+
     render() {
         const token = this.props.tokenCursor.get();
         const userTypeCursor = this.props.userTypeCursor;
 
         return (
-            <div className={s.container}>
-                <TopBar
-                    {...this.props}
-                    userTypeCursor={userTypeCursor}
-                    checkUserRights={() => ({ allowed: true })}
-                    isAuthenticated={false}
-                />
+            <div>
                 <Route
                     path="/"
                     exact
@@ -56,7 +63,8 @@ export const HomePage = createReactClass({
                         }
 
                         return (
-                            <div>
+                            <div className={s.container}>
+                                {this.renderTopBar()}
                                 <HomeIntroSection
                                     {...this.props}
                                     token={token}
@@ -73,6 +81,7 @@ export const HomePage = createReactClass({
                     exact
                     render={(props) => (
                         <div>
+                            {this.renderTopBar()}
                             <FlatPage
                                 {..._.merge(this.props, props)}
                                 tree={this.props.tree.flatpage}
@@ -83,12 +92,15 @@ export const HomePage = createReactClass({
                 <Route
                     path="/search"
                     render={(props) => (
-                        <SearchPage
-                            {..._.merge(this.props, props)}
-                            tree={this.props.tree.app.search}
-                            onCreateRide={() => props.history.push('/app/create-ride')}
-                            userType={userTypeCursor.get()}
-                        />
+                        <div>
+                            {this.renderTopBar()}
+                            <SearchPage
+                                {..._.merge(this.props, props)}
+                                tree={this.props.tree.app.search}
+                                onCreateRide={() => props.history.push('/app/create-ride')}
+                                userType={userTypeCursor.get()}
+                            />
+                        </div>
                     )}
                 />
             </div>
