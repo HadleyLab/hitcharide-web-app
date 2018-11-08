@@ -1,9 +1,12 @@
 .rootContainer {
-    min-height: 100vh;
 }
 
 .container {
     padding-top: 45px;
+
+    &._root {
+        min-height: 100vh;
+    }
 }
 
 .button {
@@ -24,7 +27,9 @@
 }
 
 @media screen and (min-width: 768px) {
-    .rootContainer {
-        padding-top: 35px;
+    .container {
+        &._root {
+            padding-top: 80px;
+        }
     }
 }
