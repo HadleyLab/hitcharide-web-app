@@ -7,7 +7,6 @@ import classNames from 'classnames';
 import { Route, Link, Redirect } from 'react-router-dom';
 import { FlatPage, SearchPage } from 'pages';
 import { TopBar } from 'components';
-import { HomeHeader } from './header';
 import { HomeIntroSection } from './intro';
 import { HomeFooter } from './footer';
 import s from './home.css';
@@ -36,26 +35,18 @@ export const HomePage = createReactClass({
         location: PropTypes.shape().isRequired,
     },
 
-    checkIfGuestUser() {
-        const { pathname } = this.props.location;
-
-        return !(
-            _.startsWith(pathname, '/app') ||
-            _.startsWith(pathname, '/search') ||
-            _.startsWith(pathname, '/account')
-        );
-    },
-
     render() {
-        const isGuest = this.checkIfGuestUser();
         const token = this.props.tokenCursor.get();
         const userTypeCursor = this.props.userTypeCursor;
 
         return (
-            <div className={isGuest ? s.container : null}>
-                {isGuest ? (
-                    <HomeHeader {...this.props} token={token} />
-                ) : null}
+            <div className={s.container}>
+                <TopBar
+                    {...this.props}
+                    userTypeCursor={userTypeCursor}
+                    checkUserRights={() => ({ allowed: true })}
+                    isAuthenticated={false}
+                />
                 <Route
                     path="/"
                     exact
@@ -92,20 +83,12 @@ export const HomePage = createReactClass({
                 <Route
                     path="/search"
                     render={(props) => (
-                        <div>
-                            <TopBar
-                                {...this.props}
-                                userTypeCursor={userTypeCursor}
-                                checkUserRights={() => ({ allowed: true })}
-                                isAuthenticated={false}
-                            />
-                            <SearchPage
-                                {..._.merge(this.props, props)}
-                                tree={this.props.tree.app.search}
-                                onCreateRide={() => props.history.push('/app/create-ride')}
-                                userType={userTypeCursor.get()}
-                            />
-                        </div>
+                        <SearchPage
+                            {..._.merge(this.props, props)}
+                            tree={this.props.tree.app.search}
+                            onCreateRide={() => props.history.push('/app/create-ride')}
+                            userType={userTypeCursor.get()}
+                        />
                     )}
                 />
             </div>

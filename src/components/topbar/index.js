@@ -18,6 +18,7 @@ export class TopBar extends React.Component {
         super(props);
         this.hideModal = this.hideModal.bind(this);
         this.openModal = this.openModal.bind(this);
+        this.onResize = this.onResize.bind(this);
         this.setUserType = this.setUserType.bind(this);
         this.state = {
             modalOpen: false,
@@ -28,11 +29,19 @@ export class TopBar extends React.Component {
     componentDidMount() {
         window.addEventListener('click', this.hideModal, false);
         window.addEventListener('touchend', this.hideModal, false);
+        window.addEventListener('resize', this.onResize, false);
     }
 
     componentWillUnmount() {
         window.removeEventListener('click', this.hideModal);
         window.removeEventListener('touchend', this.hideModal, false);
+        window.removeEventListener('resize', this.onResize);
+    }
+
+    onResize() {
+        if (window.outerWidth > 768) {
+            this.setState({ menuOpened: false });
+        }
     }
 
     hideModal() {
@@ -76,6 +85,12 @@ export class TopBar extends React.Component {
         const rootPaths = ['/search', '/app', '/app/my-rides', '/app/create-ride'];
 
         return _.indexOf(rootPaths, pathname) === -1;
+    }
+
+    checkIfRootPage() {
+        const { pathname } = this.props.location;
+
+        return pathname === '/';
     }
 
     renderArrow() {
@@ -171,11 +186,36 @@ export class TopBar extends React.Component {
         );
     }
 
-    render() {
-        const { modalOpen } = this.state;
+    renderNavBar() {
         const isInnerPage = this.checkIfInnerPage();
+        const isRootPage = this.checkIfRootPage();
         const { isAuthenticated } = this.props;
 
+        if (isRootPage) {
+            return (
+                <NavBar
+                    className={classNames(s.navbar, s._root)}
+                    mode="dark"
+                    leftContent={this.renderLogo()}
+                    rightContent={this.renderMenu()}
+                />
+            );
+        }
+
+        return (
+            <NavBar
+                className={s.navbar}
+                mode="dark"
+                leftContent={isInnerPage ? this.renderArrow() : this.renderUserTypeSwitch()}
+                rightContent={isAuthenticated ? this.renderProfile() : this.renderMenu()}
+            >
+                {this.renderLogo()}
+            </NavBar>
+        );
+    }
+
+    render() {
+        const { modalOpen } = this.state;
 
         const userTypes = [
             {
@@ -192,14 +232,8 @@ export class TopBar extends React.Component {
 
         return (
             <div>
-                <div className={s.navbar}>
-                    <NavBar
-                        mode="dark"
-                        leftContent={isInnerPage ? this.renderArrow() : this.renderUserTypeSwitch()}
-                        rightContent={isAuthenticated ? this.renderProfile() : this.renderMenu()}
-                    >
-                        {this.renderLogo()}
-                    </NavBar>
+                <div className={s.navbarContainer}>
+                    {this.renderNavBar()}
                     {modalOpen ? (
                         <div className={s.modal}>
                             <div className={s.list}>
@@ -218,7 +252,7 @@ export class TopBar extends React.Component {
                         </div>
                     ) : null}
                 </div>
-                {!isAuthenticated ? this.renderMobileMenu() : null}
+                {this.renderMobileMenu()}
             </div>
         );
     }
@@ -230,4 +264,5 @@ TopBar.propTypes = {
     location: PropTypes.shape().isRequired,
     checkUserRights: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool,
+    isRoot: PropTypes.bool,
 };
