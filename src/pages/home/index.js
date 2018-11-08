@@ -53,7 +53,7 @@ export const HomePage = createReactClass({
         const userTypeCursor = this.props.userTypeCursor;
 
         return (
-            <div className={s.container}>
+            <div>
                 <Route
                     path="/"
                     exact
@@ -63,7 +63,7 @@ export const HomePage = createReactClass({
                         }
 
                         return (
-                            <div className={s.rootContainer}>
+                            <div className={classNames(s.rootContainer, s._root)}>
                                 {this.renderTopBar()}
                                 <HomeIntroSection
                                     {...this.props}
@@ -80,7 +80,7 @@ export const HomePage = createReactClass({
                     path="/page/:slug"
                     exact
                     render={(props) => (
-                        <div>
+                        <div className={s.container}>
                             {this.renderTopBar()}
                             <FlatPage
                                 {..._.merge(this.props, props)}
@@ -92,7 +92,7 @@ export const HomePage = createReactClass({
                 <Route
                     path="/search"
                     render={(props) => (
-                        <div>
+                        <div className={s.container}>
                             {this.renderTopBar()}
                             <SearchPage
                                 {..._.merge(this.props, props)}
