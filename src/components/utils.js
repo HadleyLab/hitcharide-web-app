@@ -73,7 +73,7 @@ export function setUserType(type) {
 }
 
 export function getUserType() {
-    return localStorage.getItem('userType');
+    return localStorage.getItem('userType') || 'passenger';
 }
 
 /* */

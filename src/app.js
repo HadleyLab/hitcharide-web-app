@@ -13,7 +13,7 @@ import { MainPage, HomePage, AccountPage } from 'pages';
 import tree from 'libs/tree';
 import schema from 'libs/state';
 import { ServiceContext, Loader } from 'components';
-import { getToken, removeToken } from 'components/utils';
+import { getToken, removeToken, getUserType } from 'components/utils';
 import services from 'services';
 import 'components/styles/styles.less';
 import 'components/styles/styles.css';
@@ -23,6 +23,7 @@ import 'components/robots.txt';
 const model = {
     tree: {
         token: getToken(),
+        userType: getUserType(),
         app: {},
         flatpage: {},
         account: {},
@@ -77,6 +78,7 @@ const AuthorizedApp = createReactClass({
                         <HomePage
                             {...props}
                             tree={this.props.tree}
+                            userTypeCursor={this.props.tree.userType}
                             searchCursor={this.props.tree.app.search}
                             tokenCursor={tokenCursor}
                             logout={this.props.logout}
@@ -92,6 +94,7 @@ const AuthorizedApp = createReactClass({
                             return (
                                 <MainPage
                                     tree={this.props.tree.app}
+                                    userTypeCursor={this.props.tree.userType}
                                     tokenCursor={tokenCursor}
                                     accountCursor={this.props.tree.account}
                                     logout={this.props.logout}

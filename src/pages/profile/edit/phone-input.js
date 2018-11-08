@@ -11,15 +11,11 @@ export class PhoneInput extends React.Component {
         this.onFocus = this.onFocus.bind(this);
         this.onBlur = this.onBlur.bind(this);
         this.onChange = this.onChange.bind(this);
-        this.state = {
-            focused: false,
-        };
     }
 
     onFocus(e) {
-        if (e.target.value.length < 1) {
-            e.target.value = '1';
-            this.onChange(e);
+        if (!e.target.value.length) {
+            this.syncValue('1');
         }
 
         const { onFocus } = this.props;
@@ -27,16 +23,11 @@ export class PhoneInput extends React.Component {
         if (onFocus) {
             onFocus(e);
         }
-
-        this.setState({
-            focused: true,
-        });
     }
 
     onBlur(e) {
-        if (e.target.value.length === 1) {
-            e.target.value = '';
-            this.onChange(e);
+        if (!e.target.value.length) {
+            this.syncValue('');
         }
 
         const { onBlur } = this.props;
@@ -44,42 +35,57 @@ export class PhoneInput extends React.Component {
         if (onBlur) {
             onBlur(e);
         }
-
-        this.setState({
-            focused: false,
-        });
     }
 
     onChange(e) {
-        const { onChange } = this.props;
+        const value = this.transformValue(e.target.value);
 
-        if (onChange) {
-            onChange(e);
+        this.syncValue(value);
+    }
+
+    onKeyPress(e) {
+        const value = e.target.value;
+        const isString = e.which < 48 || e.which > 57;
+        const isFull = value && value.length >= 10;
+
+        if (isString || isFull) {
+            e.preventDefault();
         }
     }
 
-    getValue() {
-        const { defaultValue } = this.props;
+    syncValue(value) {
+        const { onChange } = this.props;
 
-        return defaultValue;
+        if (onChange) {
+            onChange({ target: { value } });
+        }
+    }
+
+    transformValue(value) {
+        return '1' + value;
+    }
+
+    transformDisplay(value) {
+        return value ? value.slice(1) : '';
     }
 
     render() {
-        const { focused } = this.state;
-        const { phoneValue, children } = this.props;
+        const { defaultValue, children } = this.props;
+        const value = this.transformDisplay(defaultValue);
 
         return (
             <Input
-                {..._.omit(this.props, 'phoneValue')}
+                {..._.omit(this.props, 'defaultValue')}
                 className={classNames(s.phoneInput, {
-                    [s._focused]: focused || phoneValue,
+                    [s._focused]: defaultValue,
                 })}
                 onChange={this.onChange}
-                defaultValue={this.getValue()}
                 onFocus={this.onFocus}
                 onBlur={this.onBlur}
+                onKeyPress={this.onKeyPress}
+                value={value}
             >
-                {focused || phoneValue ? <span className={s.plus}>+</span> : null}
+                {defaultValue ? <span className={s.plus}>+1</span> : null}
                 {children}
             </Input>
         );
@@ -90,7 +96,7 @@ PhoneInput.propTypes = {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     children: PropTypes.node,
-    phoneValue: PropTypes.string,
+    defaultValue: PropTypes.string,
 };
 
 PhoneInput.defaultProps = {
@@ -98,5 +104,5 @@ PhoneInput.defaultProps = {
     onBlur: () => {},
     onChange: () => {},
     children: null,
-    phoneValue: '',
+    defaultValue: '',
 };

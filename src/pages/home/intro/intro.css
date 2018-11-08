@@ -1,5 +1,6 @@
 .button {
     display: block;
+    height: 44px;
 }
 
 .introContent {
@@ -66,6 +67,10 @@
     padding-top: 2px;
 }
 
+.userTypeSelector {
+    margin-bottom: 20px;
+}
+
 .datePicker {
     margin-bottom: 20px;
     border-radius: 4px;
@@ -108,7 +113,7 @@
     }
 
     .field, .datePicker, .button {
-        width: 240px;
+        width: 216px;
     }
 }
 

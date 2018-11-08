@@ -1,0 +1,30 @@
+.container {
+    border-radius: 4px;
+    display: flex;
+    height: 44px;
+    align-items: center;
+}
+
+.button {
+    padding: 10px;
+    background-color: #FFF;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+
+    &._active {
+        background-color: #4263CA;
+    }
+
+    &:first-child {
+        border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+        border-radius: 0 4px 4px 0;
+    }
+}
+
+.userIcon {
+    width: 20px;
+}

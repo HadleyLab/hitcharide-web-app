@@ -18,20 +18,30 @@ export class TopBar extends React.Component {
         super(props);
         this.hideModal = this.hideModal.bind(this);
         this.openModal = this.openModal.bind(this);
+        this.onResize = this.onResize.bind(this);
         this.setUserType = this.setUserType.bind(this);
         this.state = {
             modalOpen: false,
+            menuOpened: false,
         };
     }
 
     componentDidMount() {
         window.addEventListener('click', this.hideModal, false);
         window.addEventListener('touchend', this.hideModal, false);
+        window.addEventListener('resize', this.onResize, false);
     }
 
     componentWillUnmount() {
         window.removeEventListener('click', this.hideModal);
         window.removeEventListener('touchend', this.hideModal, false);
+        window.removeEventListener('resize', this.onResize);
+    }
+
+    onResize() {
+        if (window.outerWidth > 768) {
+            this.setState({ menuOpened: false });
+        }
     }
 
     hideModal() {
@@ -55,6 +65,7 @@ export class TopBar extends React.Component {
 
     setUserType(e, type) {
         e.stopPropagation();
+        e.preventDefault();
         const creationRights = this.props.checkUserRights(type);
         const isDriver = type === 'driver';
 
@@ -71,9 +82,15 @@ export class TopBar extends React.Component {
 
     checkIfInnerPage() {
         const { pathname } = this.props.location;
-        const rootPaths = ['/app', '/app/my-rides', '/app/create-ride'];
+        const rootPaths = ['/search', '/app', '/app/my-rides', '/app/create-ride'];
 
         return _.indexOf(rootPaths, pathname) === -1;
+    }
+
+    checkIfRootPage() {
+        const { pathname } = this.props.location;
+
+        return pathname === '/';
     }
 
     renderArrow() {
@@ -111,6 +128,44 @@ export class TopBar extends React.Component {
         );
     }
 
+    renderMobileMenu() {
+        const { menuOpened } = this.state;
+
+        return (
+            <div
+                className={classNames(s.mobileMenu, {
+                    [s._opened]: menuOpened,
+                })}
+            >
+                <Link to="/account/login" className={s.link}>Log in</Link>
+                <Link to="/account/registration" className={s.link}>Sign up</Link>
+            </div>
+        );
+    }
+
+    renderMenu() {
+        const { menuOpened } = this.state;
+
+        return (
+            <div>
+                <div
+                    className={classNames(s.burger, {
+                        [s._opened]: menuOpened,
+                    })}
+                    onClick={() => this.setState({ menuOpened: !menuOpened })}
+                >
+                    <div className={classNames(s.line, s._top)} />
+                    <div className={classNames(s.line, s._center)} />
+                    <div className={classNames(s.line, s._bottom)} />
+                </div>
+                <div className={s.menu}>
+                    <Link to="/account/login" className={s.link}>Log in</Link>
+                    <Link to="/account/registration" className={s.link}>Sign up</Link>
+                </div>
+            </div>
+        );
+    }
+
     renderUserTypeSwitch() {
         const userType = this.props.userTypeCursor.get();
 
@@ -131,9 +186,36 @@ export class TopBar extends React.Component {
         );
     }
 
+    renderNavBar() {
+        const isInnerPage = this.checkIfInnerPage();
+        const isRootPage = this.checkIfRootPage();
+        const { isAuthenticated } = this.props;
+
+        if (isRootPage) {
+            return (
+                <NavBar
+                    className={classNames(s.navbar, s._root)}
+                    mode="dark"
+                    leftContent={this.renderLogo()}
+                    rightContent={this.renderMenu()}
+                />
+            );
+        }
+
+        return (
+            <NavBar
+                className={s.navbar}
+                mode="dark"
+                leftContent={isInnerPage ? this.renderArrow() : this.renderUserTypeSwitch()}
+                rightContent={isAuthenticated ? this.renderProfile() : this.renderMenu()}
+            >
+                {this.renderLogo()}
+            </NavBar>
+        );
+    }
+
     render() {
         const { modalOpen } = this.state;
-        const isInnerPage = this.checkIfInnerPage();
 
         const userTypes = [
             {
@@ -149,31 +231,28 @@ export class TopBar extends React.Component {
         ];
 
         return (
-            <div className={s.navbar}>
-                <NavBar
-                    mode="dark"
-                    leftContent={isInnerPage ? this.renderArrow() : this.renderUserTypeSwitch()}
-                    rightContent={this.renderProfile()}
-                >
-                    {this.renderLogo()}
-                </NavBar>
-                {modalOpen ? (
-                    <div className={s.modal}>
-                        <div className={s.list}>
-                            {_.map(userTypes, ({ type, text, icon }, index) => (
-                                <div
-                                    key={`user-type-${index}`}
-                                    className={s.item}
-                                    onClick={(e) => this.setUserType(e, type)}
-                                    onTouchEnd={(e) => this.setUserType(e, type)}
-                                >
-                                    <div className={s.userIcon}>{icon}</div>
-                                    {text}
-                                </div>
-                            ))}
+            <div>
+                <div className={s.navbarContainer}>
+                    {this.renderNavBar()}
+                    {modalOpen ? (
+                        <div className={s.modal}>
+                            <div className={s.list}>
+                                {_.map(userTypes, ({ type, text, icon }, index) => (
+                                    <div
+                                        key={`user-type-${index}`}
+                                        className={s.item}
+                                        onClick={(e) => this.setUserType(e, type)}
+                                        onTouchEnd={(e) => this.setUserType(e, type)}
+                                    >
+                                        <div className={s.userIcon}>{icon}</div>
+                                        {text}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                ) : null}
+                    ) : null}
+                </div>
+                {this.renderMobileMenu()}
             </div>
         );
     }
@@ -184,4 +263,6 @@ TopBar.propTypes = {
     history: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
     checkUserRights: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+    isRoot: PropTypes.bool,
 };

@@ -520,8 +520,6 @@ export const EditProfilePage = schema(model)(createReactClass({
     },
 
     render() {
-        const { phone } = this.props.tree.form.get() || '';
-
         return (
             <div>
                 <div className={classNames(s.section, s.general)}>
@@ -543,16 +541,7 @@ export const EditProfilePage = schema(model)(createReactClass({
                         <Title>Contacts</Title>
                         <PhoneInput
                             {...this.getInputProps('phone')}
-                            onKeyPress={(e) => {
-                                const isString = e.which < 48 || e.which > 57;
-                                const isFull = phone && phone.length >= 11;
-
-                                if (isString || isFull) {
-                                    e.preventDefault();
-                                }
-                            }}
                             placeholder="Phone number"
-                            phoneValue={phone}
                         >
                             {this.renderVerificationInfo()}
                         </PhoneInput>
