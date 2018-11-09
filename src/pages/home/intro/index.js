@@ -139,13 +139,13 @@ export const HomeIntroSection = schema(model)(createReactClass({
         return (
             <div className={s.createRideWrapper}>
                 <div className={s.createRide}>
-                    <div className={s.createRideLeftBlock}>
+                    <div className={s.createRideImageBlock}>
                         <div
                             className={s.createRideImage}
                             style={{ backgroundImage: `url(${createRideImage})` }}
                         />
                     </div>
-                    <div className={s.createRideRightBlock}>
+                    <div className={s.createRideContentBlock}>
                         {this.renderFlatBlock('planning-a-trip')}
                         <Button
                             to="/app/create-ride"

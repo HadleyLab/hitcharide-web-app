@@ -192,12 +192,12 @@
         align-items: center;
     }
 
-    .createRideRightBlock {
-        padding: 0 107px;
+    .createRideContentBlock {
+        padding-left: 107px;
         flex: 1 1 auto;
     }
 
-    .createRideLeftBlock {
+    .createRideImageBlock {
         flex: 1 1 auto;
     }
 
@@ -263,6 +263,49 @@
         }
     }
 
+    .createRideImageBlock {
+        min-height: 300px;
+        position: relative;
+
+        &:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 300px;
+            background-image: linear-gradient(#4263CA, rgba(0, 0, 0, 0));
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            background-color: #4263CA;
+            opacity: .2;
+        }
+    }
+
+    .createRideImage {
+        height: 300px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: overlay;
+        background-size: cover;
+    }
+
+    .createRideContentBlock {
+        padding: 0 20px 66px;
+    }
+
+    .createRideButton {
+        width: 100%;
+        max-width: 320px;
+    }
+
     .introTitle {
         margin-bottom: 20px;
     }
@@ -273,12 +316,7 @@
 
     .searchWrapper {
         background-color: #4263CA;
-        padding: 0 20px 80px;
-    }
-
-    .createRideWrapper {
-        background-color: #4263CA;
-        padding: 0 20px 80px;
+        padding: 0 20px 10px;
     }
 
     .search {
