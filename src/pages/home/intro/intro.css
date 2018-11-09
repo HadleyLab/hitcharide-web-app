@@ -154,7 +154,7 @@
             right: 0;
             bottom: 0;
             top: 0;
-            background-color: #4263CA;
+            background-color: #39539E;
             opacity: .2;
         }
 
@@ -255,7 +255,7 @@
             right: 0;
             bottom: 0;
             height: 200px;
-            background-image: linear-gradient(rgba(0, 0, 0, 0), #4263CA);
+            background-image: linear-gradient(rgba(0, 0, 0, 0), #39539E);
         }
 
         &:before {
@@ -265,7 +265,7 @@
             right: 0;
             bottom: 0;
             top: 0;
-            background-color: #4263CA;
+            background-color: #39539E;
             opacity: .2;
         }
     }
@@ -281,7 +281,7 @@
             right: 0;
             bottom: 0;
             height: 300px;
-            background-image: linear-gradient(#4263CA, rgba(0, 0, 0, 0));
+            background-image: linear-gradient(#39539E, rgba(0, 0, 0, 0));
         }
 
         &:before {
@@ -291,7 +291,7 @@
             right: 0;
             bottom: 0;
             top: 0;
-            background-color: #4263CA;
+            background-color: #39539E;
             opacity: .2;
         }
     }
@@ -329,7 +329,7 @@
     }
 
     .searchWrapper {
-        background-color: #4263CA;
+        background-color: #39539E;
         padding: 0 20px 10px;
     }
 
