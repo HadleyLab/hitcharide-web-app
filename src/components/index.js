@@ -13,3 +13,4 @@ export { MessageScreen } from './message-screen';
 export { DateTimePicker } from './date-time-picker';
 export { Stars } from './stars';
 export { ProxyPhone } from './proxy-phone';
+export { FlatBlock } from './flatblock';

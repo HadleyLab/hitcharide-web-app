@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import schema from 'libs/state';
 import createReactClass from 'create-react-class';
-import { OldSearch, DateTimePicker } from 'components';
+import { OldSearch, DateTimePicker, FlatBlock } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
 import { getUserType, setUserType } from 'components/utils';
 import { Button } from '../button';
 import themeImage from './intro.jpg';
+import createRideImage from './create-ride.jpg';
 import { UserTypeSelector } from './user-type-selector';
 import s from './intro.css';
 
@@ -21,6 +22,7 @@ const model = {
             placeTo: null,
             dateTime: null,
         },
+        flatBlocks: {},
     },
 };
 
@@ -38,6 +40,18 @@ export const HomeIntroSection = schema(model)(createReactClass({
         return {
             token: null,
         };
+    },
+
+    renderFlatBlock(slug) {
+        const { services, tree } = this.props;
+
+        return (
+            <FlatBlock
+                services={services}
+                tree={tree.flatBlocks.select(slug)}
+                slug={slug}
+            />
+        );
     },
 
     renderIntro() {
@@ -121,11 +135,38 @@ export const HomeIntroSection = schema(model)(createReactClass({
         );
     },
 
+    renderCreateRideBlock() {
+        return (
+            <div className={s.createRideWrapper}>
+                <div className={s.createRide}>
+                    <div className={s.createRideLeftBlock}>
+                        <div
+                            className={s.createRideImage}
+                            style={{ backgroundImage: `url(${createRideImage})` }}
+                        />
+                    </div>
+                    <div className={s.createRideRightBlock}>
+                        {this.renderFlatBlock('planning-a-trip')}
+                        <Button
+                            to="/app/create-ride"
+                            className={s.createRideButton}
+                        >
+                            Create ride
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        );
+    },
+
     render() {
         return (
-            <div className={s.introDesktop} style={{ backgroundImage: `url(${themeImage})` }}>
-                {this.renderIntro()}
-                {this.renderSearchForm()}
+            <div>
+                <div className={s.introDesktop} style={{ backgroundImage: `url(${themeImage})` }}>
+                    {this.renderIntro()}
+                    {this.renderSearchForm()}
+                </div>
+                {this.renderCreateRideBlock()}
             </div>
         );
     },

@@ -176,6 +176,46 @@
         padding: 10px 0 80px;
         z-index: 1;
     }
+
+    .createRideWrapper {
+        position: relative;
+        padding: 70px 0;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .createRide {
+        flex: 1;
+        max-width: 1024px;
+        display: flex;
+        align-items: center;
+    }
+
+    .createRideRightBlock {
+        padding: 0 107px;
+        flex: 1 1 auto;
+    }
+
+    .createRideLeftBlock {
+        flex: 1 1 auto;
+    }
+
+    .createRideImage {
+        height: 350px;
+        max-width: 600px;
+        min-width: 300px;
+        position: relative;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: overlay;
+    }
+
+    .createRideButton {
+        display: block;
+        height: 44px;
+        width: 224px;
+    }
 }
 
 @media screen and (min-width: 420px) {
@@ -232,6 +272,11 @@
     }
 
     .searchWrapper {
+        background-color: #4263CA;
+        padding: 0 20px 80px;
+    }
+
+    .createRideWrapper {
         background-color: #4263CA;
         padding: 0 20px 80px;
     }
