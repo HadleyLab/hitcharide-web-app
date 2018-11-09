@@ -25,10 +25,12 @@
 }
 
 .futureRidesHeaderLink {
+    cursor: pointer;
     display: none;
 }
 
 .futureRidesBottomLink {
+    cursor: pointer;
     display: block;
     padding: 20px 0;
     margin-top: 20px;
@@ -43,6 +45,7 @@
 }
 
 .futureRideItem {
+    cursor: pointer;
     background: #FFFFFF;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 4px;
