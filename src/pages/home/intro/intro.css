@@ -81,7 +81,7 @@
 
     :global .am-list-extra {
         margin-right: 40px;
-        min-width: 125px;
+        min-width: 160px;
     }
 
     :global .am-list-body,
@@ -90,7 +90,7 @@
     }
 
     :global .am-list-content {
-        min-width: 70px;
+        min-width: 60px;
     }
 
     :global .am-list-content,
@@ -110,6 +110,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+    }
+
+    .datePicker {
+        :global .am-list-extra {
+            margin-right: 40px;
+            min-width: 120px;
+        }
     }
 
     .field, .datePicker, .button {
@@ -176,6 +183,46 @@
         padding: 10px 0 80px;
         z-index: 1;
     }
+
+    .createRideWrapper {
+        position: relative;
+        padding: 70px 0;
+        z-index: 1;
+        display: flex;
+        justify-content: center;
+    }
+
+    .createRide {
+        flex: 1;
+        max-width: 1024px;
+        display: flex;
+        align-items: center;
+    }
+
+    .createRideContentBlock {
+        padding-left: 107px;
+        flex: 1 1 auto;
+    }
+
+    .createRideImageBlock {
+        flex: 1 1 auto;
+    }
+
+    .createRideImage {
+        height: 350px;
+        max-width: 600px;
+        min-width: 300px;
+        position: relative;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: overlay;
+    }
+
+    .createRideButton {
+        display: block;
+        height: 44px;
+        width: 224px;
+    }
 }
 
 @media screen and (min-width: 420px) {
@@ -223,6 +270,56 @@
         }
     }
 
+    .createRideImageBlock {
+        min-height: 300px;
+        position: relative;
+
+        &:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 300px;
+            background-image: linear-gradient(#4263CA, rgba(0, 0, 0, 0));
+        }
+
+        &:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            background-color: #4263CA;
+            opacity: .2;
+        }
+    }
+
+    .createRideImage {
+        height: 300px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-blend-mode: overlay;
+        background-size: cover;
+    }
+
+    .createRideContentBlock {
+        padding: 0 20px 66px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .createRideContent {
+        max-width: 320px;
+        flex: 1;
+    }
+
+    .createRideButton {
+        width: 100%;
+        max-width: 320px;
+    }
+
     .introTitle {
         margin-bottom: 20px;
     }
@@ -233,7 +330,7 @@
 
     .searchWrapper {
         background-color: #4263CA;
-        padding: 0 20px 80px;
+        padding: 0 20px 10px;
     }
 
     .search {

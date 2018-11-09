@@ -50,7 +50,7 @@ export const HomePage = createReactClass({
 
     render() {
         const token = this.props.tokenCursor.get();
-        const userTypeCursor = this.props.userTypeCursor;
+        const { userTypeCursor, searchCursor } = this.props;
 
         return (
             <div>
@@ -69,7 +69,8 @@ export const HomePage = createReactClass({
                                     {...this.props}
                                     token={token}
                                     userTypeCursor={userTypeCursor}
-                                    tree={this.props.searchCursor}
+                                    searchCursor={searchCursor}
+                                    tree={this.props.tree}
                                 />
                                 <HomeFooter />
                             </div>
