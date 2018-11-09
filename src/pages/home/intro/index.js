@@ -3,18 +3,22 @@ import PropTypes from 'prop-types';
 import BaobabPropTypes from 'baobab-prop-types';
 import schema from 'libs/state';
 import createReactClass from 'create-react-class';
-import { OldSearch, DateTimePicker, FlatBlock } from 'components';
+import { OldSearch, DateTimePicker, FlatBlock, Loader } from 'components';
 import { MarkerIcon, ClockIcon } from 'components/icons';
 import { getUserType, setUserType } from 'components/utils';
 import { Button } from '../button';
 import themeImage from './intro.jpg';
 import createRideImage from './create-ride.jpg';
 import { UserTypeSelector } from './user-type-selector';
+import { FutureRides } from './future-rides';
 import s from './intro.css';
 
 const model = {
     tree: {
         cities: {},
+        flatBlocks: {},
+    },
+    searchCursor: {
         searchForm: {
             cityFrom: null,
             placeFrom: null,
@@ -22,18 +26,21 @@ const model = {
             placeTo: null,
             dateTime: null,
         },
-        flatBlocks: {},
     },
 };
 
 export const HomeIntroSection = schema(model)(createReactClass({
     propTypes: {
         tree: BaobabPropTypes.cursor.isRequired,
+        userTypeCursor: BaobabPropTypes.cursor.isRequired,
+        searchCursor: BaobabPropTypes.cursor.isRequired,
         token: PropTypes.string,
         services: PropTypes.shape({
             getFlatpageService: PropTypes.func.isRequired,
             getCitiesService: PropTypes.func.isRequired,
+            getRidesListService: PropTypes.func.isRequired,
         }).isRequired,
+        history: PropTypes.shape({}).isRequired,
     },
 
     getDefaultProps() {
@@ -42,16 +49,10 @@ export const HomeIntroSection = schema(model)(createReactClass({
         };
     },
 
-    renderFlatBlock(slug) {
-        const { services, tree } = this.props;
-
-        return (
-            <FlatBlock
-                services={services}
-                tree={tree.flatBlocks.select(slug)}
-                slug={slug}
-            />
-        );
+    setUserType(userType) {
+        const { userTypeCursor } = this.props;
+        setUserType(userType);
+        userTypeCursor.set(userType)
     },
 
     renderIntro() {
@@ -70,10 +71,10 @@ export const HomeIntroSection = schema(model)(createReactClass({
     },
 
     renderSearchForm() {
-        const { userTypeCursor, token, services, tree } = this.props;
+        const { userTypeCursor, token, services, tree, searchCursor } = this.props;
         const { getCitiesService } = services;
         const citiesCursor = tree.cities;
-        const formCursor = tree.searchForm;
+        const formCursor = searchCursor.searchForm;
 
         return (
             <div className={s.searchWrapper}>
@@ -119,10 +120,7 @@ export const HomeIntroSection = schema(model)(createReactClass({
                     <UserTypeSelector
                         className={s.userTypeSelector}
                         value={userTypeCursor.get()}
-                        onChange={(userType) => {
-                            setUserType(userType);
-                            userTypeCursor.set(userType)
-                        }}
+                        onChange={this.setUserType}
                     />
                     <Button
                         to={token ? '/app' : '/search'}
@@ -136,6 +134,8 @@ export const HomeIntroSection = schema(model)(createReactClass({
     },
 
     renderCreateRideBlock() {
+        const { services, tree } = this.props;
+
         return (
             <div className={s.createRideWrapper}>
                 <div className={s.createRide}>
@@ -146,17 +146,38 @@ export const HomeIntroSection = schema(model)(createReactClass({
                         />
                     </div>
                     <div className={s.createRideContentBlock}>
-                        {this.renderFlatBlock('planning-a-trip')}
-                        <Button
-                            to="/app/create-ride"
-                            className={s.createRideButton}
-                        >
-                            Create ride
-                        </Button>
+                        <div className={s.createRideContent}>
+                            <FlatBlock
+                                services={services}
+                                tree={tree.flatBlocks.select('planning-a-trip')}
+                                slug="planning-a-trip"
+                            />
+                            <Button
+                                to="/app/create-ride"
+                                className={s.createRideButton}
+                            >
+                                Create ride
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
         );
+    },
+
+    renderFutureRidesBlock() {
+        return (
+            <FutureRides
+                tree={this.props.tree}
+                services={this.props.services}
+                setUserType={this.setUserType}
+                history={this.props.history}
+            />
+        )
+    },
+
+    renderAdvantagesBlock() {
+
     },
 
     render() {
@@ -167,6 +188,8 @@ export const HomeIntroSection = schema(model)(createReactClass({
                     {this.renderSearchForm()}
                 </div>
                 {this.renderCreateRideBlock()}
+                {this.renderFutureRidesBlock()}
+                {this.renderAdvantagesBlock()}
             </div>
         );
     },

@@ -81,7 +81,7 @@
 
     :global .am-list-extra {
         margin-right: 40px;
-        min-width: 125px;
+        min-width: 160px;
     }
 
     :global .am-list-body,
@@ -90,7 +90,7 @@
     }
 
     :global .am-list-content {
-        min-width: 70px;
+        min-width: 60px;
     }
 
     :global .am-list-content,
@@ -110,6 +110,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+    }
+
+    .datePicker {
+        :global .am-list-extra {
+            margin-right: 40px;
+            min-width: 120px;
+        }
     }
 
     .field, .datePicker, .button {
@@ -299,6 +306,13 @@
 
     .createRideContentBlock {
         padding: 0 20px 66px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .createRideContent {
+        max-width: 320px;
+        flex: 1;
     }
 
     .createRideButton {

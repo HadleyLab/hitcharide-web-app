@@ -218,7 +218,7 @@ export const SearchPage = schema(model)(createReactClass({
                                         { text: 'Cancel', onPress: () => null },
                                         {
                                             text: 'Log in',
-                                            onPress: () => this.props.history.push('/account/login'),
+                                            onPress: () => this.props.history.push(`/account/login?next=/app/ride/${ride.pk}`),
                                         },
                                     ]);
                                 }
