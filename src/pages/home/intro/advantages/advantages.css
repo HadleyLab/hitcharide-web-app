@@ -75,11 +75,11 @@
 
 @media screen and (max-width: 767px) {
     .advantagesWrapper {
-        padding: 60px 0;
+        padding: 60px 20px;
     }
 
     .advantages {
-        width: 280px;
+        width: 320px;
     }
 
     .advantagesSpacer {
@@ -87,6 +87,6 @@
     }
 
     .advantagesItem {
-        width: 279px;
+        width: 280px;
     }
 }
