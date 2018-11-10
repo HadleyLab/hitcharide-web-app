@@ -11,6 +11,7 @@ import themeImage from './intro.jpg';
 import createRideImage from './create-ride.jpg';
 import { UserTypeSelector } from './user-type-selector';
 import { FutureRides } from './future-rides';
+import { Advantages } from './advantages';
 import s from './intro.css';
 
 const model = {
@@ -177,7 +178,9 @@ export const HomeIntroSection = schema(model)(createReactClass({
     },
 
     renderAdvantagesBlock() {
-
+        return (
+            <Advantages />
+        );
     },
 
     render() {
