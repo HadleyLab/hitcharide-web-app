@@ -86,9 +86,15 @@ export const FutureRides = schema(model)(createReactClass({
                                     See all rides
                                 </div>
                             </div>
-                            <div className={s.futureRideItems}>
-                                {_.map(data.results, this.renderItem)}
-                            </div>
+                            {data.results.length ? (
+                                <div className={s.futureRideItems}>
+                                    {_.map(data.results, this.renderItem)}
+                                </div>
+                            ) : (
+                                <div className={s.futureRidesEmpty}>
+                                    For the moment, there are no actual rides.
+                                </div>
+                            )}
                             <div
                                 className={classNames(s.futureRidesBottomLink, s.futureRidesSeeAllLink)}
                                 onClick={this.onSeeAllRidesClick}

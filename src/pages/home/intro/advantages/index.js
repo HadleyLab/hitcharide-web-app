@@ -36,7 +36,7 @@ export const Advantages = createReactClass({
                 content: 'We take the time to get to know our members. All profiles and ratings are checked.',
             },
             {
-                title: 'Choice.',
+                title: 'Covered.',
                 content: 'Really? Free as in nothing to pay? You’ve got it. We partner with AXA.',
             },
         ];
