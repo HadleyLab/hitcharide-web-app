@@ -6,11 +6,17 @@
 }
 
 .button {
+    cursor: pointer;
+    height: 44px;
     padding: 10px;
     background-color: #FFF;
     flex: 1;
     display: flex;
     justify-content: center;
+
+    &:hover {
+        background-color: #EEE;
+    }
 
     &._active {
         background-color: #4263CA;
